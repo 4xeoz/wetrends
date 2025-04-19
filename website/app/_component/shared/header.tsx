@@ -39,71 +39,36 @@ export default function Navbar() {
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           isScrolled
-            ? "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b"
+            ? "bg-wetrends/90 backdrop-blur supports-[backdrop-filter]:bg-wetrends/90"
             : "bg-transparent"
         }`}
       >
-        <div className="container flex h-16 items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 font-bold text-xl">
-            <Edit3 className={`h-6 w-6 ${isScrolled ? "text-wetrends" : "text-white"}`} />
-            <span className={isScrolled ? "text-foreground" : "text-white"}>WeTrends</span>
+        <div className="container flex h-20 items-center justify-between">
+          <Link href="/" className="flex items-center gap-3 font-bold text-3xl">
+            <img src="/images/logo-transparent.svg" alt="WeTrends Logo" className="h-12 w-12" />
+            <span className="text-white">WeTrends</span>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-6 text-sm">
-            <Link
-              href="#services"
-              className={`transition-colors hover:text-wetrends ${isScrolled ? "text-foreground" : "text-white"}`}
-            >
-              Services
-            </Link>
-            <Link
-              href="#how-it-works"
-              className={`transition-colors hover:text-wetrends ${isScrolled ? "text-foreground" : "text-white"}`}
-            >
-              How It Works
-            </Link>
-            <Link
-              href="#why-choose-us"
-              className={`transition-colors hover:text-wetrends ${isScrolled ? "text-foreground" : "text-white"}`}
-            >
-              Why Choose Us
-            </Link>
-            <Link
-              href="#contact"
-              className={`transition-colors hover:text-wetrends ${isScrolled ? "text-foreground" : "text-white"}`}
-            >
-              Contact
-            </Link>
-          </nav>
-
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-5">
             {!isLoading && (
               <>
                 {session ? (
-                  <>
-                    <Button asChild size="sm" className="hidden md:inline-flex bg-wetrends hover:bg-wetrends-700">
-                      <Link href="/dashboard">My Dashboard</Link>
-                    </Button>
-                    <div className="hidden md:inline-flex">
-                      <SignOutButton className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3" />
-                    </div>
-                  </>
+                  <Button asChild size="lg" className="bg-white text-wetrends hover:bg-opacity-90">
+                    <Link href="/dashboard">My Dashboard</Link>
+                  </Button>
                 ) : (
                   <>
                     <Button
                       asChild
-                      size="sm"
-                      variant="outline"
-                      className={`hidden md:inline-flex ${
-                        !isScrolled ? "border-white text-white hover:bg-white hover:bg-opacity-10" : ""
-                      }`}
+                      size="lg"
+                      className={`bg-wetrends-600 text-white hover:bg-opacity-90 `}
                     >
                       <Link href="/sign-in">Log in</Link>
                     </Button>
                     <Button
                       asChild
-                      size="sm"
-                      className="hidden md:inline-flex bg-wetrends hover:bg-wetrends-700 text-white"
+                      size="lg"
+                      className="bg-wetrends-600 text-white  hover:bg-opacity-90"
                     >
                       <Link href="/sign-in">Sign up</Link>
                     </Button>
@@ -111,14 +76,6 @@ export default function Navbar() {
                 )}
               </>
             )}
-
-            <button className="md:hidden" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
-              {isMobileMenuOpen ? (
-                <X className={isScrolled ? "text-foreground" : "text-white"} />
-              ) : (
-                <Menu className={isScrolled ? "text-foreground" : "text-white"} />
-              )}
-            </button>
           </div>
         </div>
       </header>

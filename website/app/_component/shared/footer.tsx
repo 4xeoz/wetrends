@@ -82,11 +82,12 @@ export default function Footer() {
           </div>
 
           <div>
-            <h3 className="text-xl font-bold mb-4">Subscribe</h3>
-            <p className="text-gray-400 mb-4">Stay updated with our latest news and offers.</p>
-            <div className="flex space-x-2">
-              <Input type="email" placeholder="Your email" className="bg-gray-800 border-gray-700 text-white" />
-              <Button className="bg-wetrends hover:bg-wetrends-700">Subscribe</Button>
+            <div>
+              <img
+                src="/images/logo-transparent.svg"
+                alt="WeTrends Logo"
+                className="h-20 w-20 md:h-24 md:w-24 lg:h-28 lg:w-28 mb-4"
+              />
             </div>
           </div>
         </div>
