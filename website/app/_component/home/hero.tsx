@@ -1,110 +1,94 @@
 "use client"
 
-import { motion } from "framer-motion"
+import { delay, motion } from "framer-motion"
 import { useEffect, useState } from "react"
+import Image from "next/image"
 
 export default function Hero() {
   const [isLoaded, setIsLoaded] = useState(false)
 
-  // Delay the animation start by 1.6 seconds
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoaded(true)
-    }, 1900) // 1.6 seconds delay
-
+    const timer = setTimeout(() => setIsLoaded(true), 2000)
     return () => clearTimeout(timer)
   }, [])
 
   const containerVariants = {
-    initial: {
-      height: "100vh",
-    },
-    animate: {
-      height: "50vh",
-      transition: {
-        duration: 0.5,
-        ease: "easeInOut",
-      },
-    },
+    initial: { height: "100vh" },
+    animate: { 
+      height: "40vh",
+      transition: { duration: 0.5, ease: "easeOut" }
+    }
   }
 
   const contentVariants = {
-    initial: {
-      opacity: 0,
-      y: 50,
-    },
+    initial: { opacity: 0, y: 50 },
     animate: (custom: number) => ({
       opacity: 1,
       y: 0,
       transition: {
         duration: 0.5,
         ease: "easeOut",
-        delay: custom * 0.1, // This adds staggered timing on top of the base 1.6s delay
-      },
-    }),
+        delay: custom * 0.1
+      }
+    })
+  }
+
+  const logoVariants = {
+    initial: { 
+      opacity: 0,
+      x: 100,
+      y: -100,
+    },
+    animate: {
+      opacity: 1,
+      x: 0,
+      y: 0,
+      transition: {
+        duration: 0.8,
+        ease: "easeOut",
+        delay: 0.1
+      }
+    }
   }
 
   return (
     <motion.div
-      className="relative overflow-hidden bg-wetrends text-white"
+      className="relative text-white w-full"
       variants={containerVariants}
       initial="initial"
       animate={isLoaded ? "animate" : "initial"}
     >
-      {/* Simple background */}
-      <div className="absolute inset-0 bg-wetrends bg-opacity-20 z-0"></div>
-
-      <div className="container mx-auto px-4  relative z-10 flex items-center justify-center h-full">
-        <div className="flex flex-col items-center text-center max-w-3xl mx-auto">
-          {/* <motion.div
-            className="inline-block px-4 py-1.5 rounded-full bg-white bg-opacity-10 text-white font-medium text-sm mb-6 backdrop-blur-sm"
-            variants={contentVariants}
-            initial="initial"
-            animate={isLoaded ? "animate" : "initial"}
-            custom={1}
-          >
-            UK-Based Digital Content Creation Agency
-          </motion.div> */}
-
+      <div className="w-full h-full relative">
+        <div className="flex flex-col gap-10 items-start justify-end h-full w-full sm:w-[70%] md:w-[60%] lg:w-[50%] p-4 sm:p-6 md:p-8 lg:p-10 relative">
           <motion.h1
-            className="text-7xl md:text-8xl lg:text-9xl tracking-tight mb-16"
+            className="text-8xl lg:text-[10rem] xl:text-[15rem] font-bold leading-tight sm:leading-tight md:leading-tight lg:leading-[10rem] xl:leading-[15rem]"
             variants={contentVariants}
             initial="initial"
             animate={isLoaded ? "animate" : "initial"}
             custom={2}
           >
-            <span className=" font-bold">You</span> create, <span className=" font-bold">We</span><span className="text-white"> elevate.</span>
+            <p>Wanna</p> <p className="text-nowrap">Go Trend?</p>
           </motion.h1>
-
-          <motion.p
-            className="text-lg text-white text-opacity-90 mb-1 max-w-2xl"
-            variants={contentVariants}
-            initial="initial"
-            animate={isLoaded ? "animate" : "initial"}
-            custom={3}
-          >
-            We refine, enhance, and transform your content into high-quality digital assets. With expert editing, strategic design, we ensure your content stands out, and drives real impact.
-          </motion.p>
-
-          {/* <motion.div
-            className="flex flex-col sm:flex-row gap-4"
-            variants={contentVariants}
-            initial="initial"
-            animate={isLoaded ? "animate" : "initial"}
-            custom={4}
-          >
-            <Button className="bg-white hover:bg-gray-100 text-wetrends px-8 py-6 rounded-lg text-lg">
-              Get Started
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-            <Button
-              variant="outline"
-              className="border-white text-white hover:bg-white hover:bg-opacity-10 px-8 py-6 rounded-lg text-lg"
-            >
-              Our Work
-            </Button>
-          </motion.div> */}
         </div>
+
+        <motion.div
+          variants={logoVariants}
+          initial="initial"
+          animate={isLoaded ? "animate" : "initial"}
+          className="absolute right-0 top-0 w-[80%] h-[50%] xl:w-[40%] xl:h-[40rem] pointer-events-none"
+        >
+          <div className="relative w-full h-full flex items-center justify-center">
+            <div className="absolute w-full h-full rotate-[20deg]">
+              <Image
+                src="/images/logo-transparent.svg"
+                alt="WeTrends Logo"
+                fill
+                style={{ objectFit: "contain" }}
+                priority
+              />
+            </div>
+          </div>
+        </motion.div>
       </div>
     </motion.div>
   )

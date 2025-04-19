@@ -112,7 +112,7 @@ export default function ContactForm() {
   }
 
   return (
-    <section className="py-20 bg-gray-50" ref={formRef} id="contact">
+    <section className="py-20 bg-gray-50 rounded-lg" ref={formRef} id="contact">
       <div className="container mx-auto px-4">
         {/* Header */}
         <motion.div

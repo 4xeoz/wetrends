@@ -1,5 +1,6 @@
 "use client"
 import { useEffect, useState } from "react"
+import Image from "next/image"
 import { useInView } from "react-intersection-observer"
 import { motion, AnimatePresence } from "framer-motion"
 
@@ -50,15 +51,22 @@ const Loading = () => {
     >
       <AnimatePresence>
         {isVisible && (
-          <motion.div
+            <motion.div
             variants={divVariants}
             initial="hidden"
             animate="visible"
             exit="exit"
             className="w-full text-center"
-          >
-            <div className="text-wetrends-50 text-9xl w-full h-full flex items-center justify-center font-bold">WeTrends</div>
-          </motion.div>
+            >
+            <div className="relative  w-[20rem] h-[20rem] mx-auto flex items-center justify-center">
+              <Image
+              src="/images/logo-transparent.svg"
+              alt="WeTrends Logo"
+              layout="fill"
+              objectFit="contain"
+              />
+            </div>
+            </motion.div>
         )}
       </AnimatePresence>
     </div>
