@@ -82,7 +82,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <div>
+            <div className="flex items-center justify-center mb-4">
               <img
                 src="/images/logo-transparent.svg"
                 alt="WeTrends Logo"

@@ -48,7 +48,7 @@ export default function WhyChooseUs() {
 
   return (
     <section className="py-20 bg-wetrends text-white" ref={ref}>
-      <div className="container mx-auto px-4">
+      <div className="container_md mx-auto px-4">
         <motion.div
           className="text-center mb-16"
           initial={{ opacity: 0, y: 20 }}

@@ -12,7 +12,6 @@ const Loading = () => {
 
   useEffect(() => {
     if (inView) {
-      // Wait for 3 seconds before triggering the exit animation
       const timer = setTimeout(() => {
         setIsVisible(false)
       }, 1500)
@@ -23,14 +22,14 @@ const Loading = () => {
 
   const divVariants = {
     hidden: {
-      y: 150,
-      opacity: 0,
+      y: 0,
+      opacity: 1,
     },
     visible: {
       y: 0,
       opacity: 1,
       transition: {
-        duration: 0.5,
+        duration: 0.1,
         ease: "easeOut",
       },
     },

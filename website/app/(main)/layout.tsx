@@ -6,13 +6,17 @@ import Footer from '../_component/shared/footer';
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     return (
-        <div className=' relative'>
-            <Navbar />
-            <LoadingPage />
+        <div className=' relative overflow-hidden'>
+            <div className='z-50'>
+                <LoadingPage />
+            </div>
+            <div className='z-40'>
+                <Navbar />
+            </div>
             <main>
                 {children}
             </main>
-            <Footer/>
+            {/* <Footer/> */}
         </div>
     );
 };

@@ -116,24 +116,14 @@ export default function ContactForm() {
 
   return (
     <section
-      className="min-h-screen flex items-center justify-center py-10"
+      className="h-full flex items-center justify-center"
       ref={formRef}
       id="contact"
     >
-      <div className="container mx-auto px-4">
-        {/* Header */}
-        <motion.div
-          className="text-center my-44 "
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-          transition={{ duration: 0.5 }}
-        >
-          <h2 className="text-4xl md:text-9xl font-bold text-white">Let's Get In Touch</h2>
-
-        </motion.div>
+      <div className=" w-full">
 
         {/* Form Container */}
-        <div className="max-w-3xl mx-auto">
+        <div className="">
           <motion.div
             className=" backdrop-blur-md rounded-xl  p-8 md:p-10 border border-white/20 bg-white/10 shadow-lg"
             initial="hidden"

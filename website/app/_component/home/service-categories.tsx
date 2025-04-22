@@ -23,13 +23,13 @@ function ServiceCategory({ title, videoSrc, description, index }: ServiceCategor
       initial={{ opacity: 0, x: isEven ? -50 : 50 }}
       animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: isEven ? -50 : 50 }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
-      className={`flex w-full items-center ${isEven ? "justify-start" : "justify-end"} mb-16`}
+      className={`flex w-full items-center ${isEven ? "justify-start" : "justify-end"} mb-16 relative`}
     >
       <Card
-        className={`overflow-hidden w-full max-w-2xl rounded-none ${isEven ? "mr-auto" : "ml-auto"} border-0 shadow-none`}
+        className={`w-full max-w-2xl rounded-none ${isEven ? "mr-auto" : "ml-auto"} border-0 shadow-none bg-inherit z-10`}
       >
         <div className="flex flex-col">
-          <div className="relative overflow-hidden" style={{ aspectRatio: "4/3" }}>
+          <div className="relative shadow-2xl" style={{ aspectRatio: "4/3" }}>
             <video className="h-full w-full object-cover" autoPlay loop muted playsInline>
               <source src={videoSrc} type="video/mp4" />
               Your browser does not support the video tag.
@@ -41,6 +41,8 @@ function ServiceCategory({ title, videoSrc, description, index }: ServiceCategor
           </CardContent>
         </div>
       </Card>
+
+      <div className={`w-1/3 h-1/2 ${isEven ? "mr-auto left-[-5%]" : "ml-auto right-[-5%]"} bg-wetrends absolute top-[-15%] shadow-xl `}/>
     </motion.div>
   )
 }
@@ -83,18 +85,18 @@ export function ServiceCategories() {
   const isInView = useInView(sectionRef, { once: true, amount: 0.1 })
 
   return (
-    <section ref={sectionRef} className="lg:py-60">
+    <section ref={sectionRef} className="lg:py-60 bg-wetrends-50 ">
       <div className="container">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: 0.5 }}
-          className="mb-20 text-center"
+          className="my-40 text-left w-full "
         >
-          <h2 className="mb-3 text-9xl  tracking-tight text-wetrends max-w-[1000px] mx-auto">
+          <h2 className="text-7xl max-w-[800px] w-full text-left">
             We are really good at
           </h2>
-            <div className="mx-auto h-1 w-24 bg-wetrends mb-44"></div>
+           
         </motion.div>
         <div className="flex flex-col gap-80">
           {categories.map((category, index) => (
