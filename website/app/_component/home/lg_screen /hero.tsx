@@ -31,7 +31,7 @@ export default function Hero() {
 
       <div className="container flex flex-col justify-center items-center z-0 px-4 sm:px-6 md:px-8 lg:px-12">
         <div className="items-start w-full">
-          <h1 className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl text-white text-left w-full sm:w-3/4 md:w-2/3 lg:w-[60%] xl:w-[50%] leading-tight tracking-tight">
+          <h1 className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl text-white text-left w-full sm:w-3/4 md:w-2/3 lg:w-[60%] xl:w-[50%] leading-tight tracking-tight font-bold">
             We Listen First.
           </h1>
         </div>

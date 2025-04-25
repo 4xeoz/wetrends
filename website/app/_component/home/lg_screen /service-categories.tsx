@@ -101,7 +101,7 @@ export function ServiceCategories() {
           transition={{ duration: 0.5 }}
           className="my-10 sm:my-20 md:my-40 text-left w-full"
         >
-          <h2 className="text-3xl sm:text-5xl md:text-7xl max-w-full md:max-w-[800px] w-full text-left">
+          <h2 className="text-3xl sm:text-5xl md:text-7xl max-w-full md:max-w-[800px] w-full text-left font-bold">
             We are really good at
           </h2>
         </motion.div>

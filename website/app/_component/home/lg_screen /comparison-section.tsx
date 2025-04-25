@@ -37,16 +37,16 @@ export default function ComparisonSection() {
 
   return (
     <section className="py-12 md:py-16 lg:py-20 bg-white flex justify-center">
-      <div className="container px-4 sm:px-6 md:px-8 mx-auto max-w-7xl">
-        <div className="text-left mb-10 md:mb-16">
-          <h2 className="text-4xl md:text-5xl lg:text-7xl mb-4 md:mb-6 ">Why WeTrends?</h2>
+      <div className="container px-4 sm:px-6 md:px-8 mx-auto ">
+        <div className="text-left mb-10 md:mb-16 mx-auto ">
+          <h2 className="text-4xl md:text-5xl lg:text-7xl mb-4 md:mb-6 font-bold ">Why WeTrends?</h2>
           <p className="text-lg md:text-xl text-gray-600 max-w-3xl">
             See why businesses choose WeTrends over traditional agencies for their content creation needs
           </p>
         </div>
 
         {/* Desktop Table - Hidden on mobile */}
-        <div className="hidden lg:block overflow-x-auto max-w-5xl mx-auto">
+        <div className="hidden lg:block overflow-x-auto max-w-9xl mx-auto">
           <table className="w-full border-collapse">
             <thead>
               <tr>

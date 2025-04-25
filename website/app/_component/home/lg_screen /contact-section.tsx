@@ -11,9 +11,9 @@ const ContactSection = () => {
   return (
     <motion.section
       ref={ref}
-      className="container py-16 md:py-24 lg:py-32 min-h-[80vh] flex items-center justify-center"
+      className="container py-16 md:py-24 lg:py-32 min-h-[100vh] flex items-center justify-center"
     >
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 p-4 sm:p-6 lg:p-10 w-full max-w-7xl mx-auto">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 p-4 sm:p-6 lg:p-10 w-full">
         <div className="h-full w-full flex flex-col gap-6 md:gap-8 lg:gap-10 text-white">
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl text-white font-bold">Let's Connect</h1>
           <h2 className="text-2xl sm:text-3xl md:text-4xl text-wetrends bg-white p-3 sm:p-4 lg:p-5 w-fit">

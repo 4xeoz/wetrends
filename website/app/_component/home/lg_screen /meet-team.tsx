@@ -33,7 +33,7 @@ export default function TeamSection() {
     <section className="min-h-screen flex items-center py-12 sm:py-16 md:py-20 px-4">
       <div className="container mx-auto">
         <div className="text-center my-16 sm:my-24 md:my-32 lg:my-40">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl w-full text-left">Meet Our Team</h2>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl w-full text-left font-bold">Meet Our Team</h2>
         </div>
 
         <div className="grid gap-6 sm:gap-8 md:gap-10 grid-cols-2 sm:grid-cols-2 lg:grid-cols-4">
@@ -71,7 +71,7 @@ export default function TeamSection() {
 
         <div className="mt-4 sm:mt-6">
           <WordRotate
-            className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl text-wetrends"
+            className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl text-wetrends font-bold"
             words={["Impact", "Growth", "Success"]}
           />
         </div>

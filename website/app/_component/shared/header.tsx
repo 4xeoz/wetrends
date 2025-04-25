@@ -15,8 +15,8 @@ export default function Navbar() {
   return (
     <div className="relative w-full flex items-center justify-center">
       <div
-        className={`fixed left-1/2 top-[-300] -translate-x-1/2 z-50 flex items-center gap-3 rounded-full w-fit bg-wetrends px-8 py-4 shadow-lg transition-transform duration-700 ${
-          animateDown ? "translate-y-80" : ""
+        className={`fixed left-1/2 top-[-10vh] -translate-x-1/2 z-50 flex items-center gap-3 rounded-full w-fit bg-wetrends px-8 py-4 shadow-lg transition-transform duration-700 ${
+          animateDown ? "translate-y-[12vh]" : ""
         }`}
       >
         <Image

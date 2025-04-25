@@ -75,7 +75,7 @@ const StorySection = ({
   return (
     <section ref={ref} className="relative w-full min-h-screen">
       <div className="container min-h-screen flex items-left justify-center flex-col gap-4 sm:gap-6 md:gap-8 lg:gap-10 px-4 sm:px-5 md:px-6">
-        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-6xl text-white">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-6xl text-white font-bold">
           <TextAnimate
             animation="slideUp"
             by="word"
@@ -218,6 +218,7 @@ const StorySection = ({
                 className="object-contain w-full h-full drop-shadow-lg filter"
                 style={{
                   filter: "drop-shadow(-15px 15px 1.2rem rgba(0, 0, 0, 0.5))",
+                  x: i === 0 ? xforImage1 : i === 1 ? xforImage2 : i === 2 ? xforImage3 : xforImage4,
                 }}
               />
             </motion.div>
@@ -249,6 +250,7 @@ const StorySection = ({
                   className="object-contain w-full h-full drop-shadow-xl filter"
                   style={{
                     filter: "drop-shadow(-10px 10px 1rem rgba(0, 0, 0, 0.5))",
+                    x: i === 0 ? xforImage1 : i === 1 ? xforImage2 : i === 2 ? xforImage3 : xforImage4,
                   }}
                 />
               </motion.div>
