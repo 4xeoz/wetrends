@@ -34,10 +34,10 @@ const StorySection = ({
 
   // Medium screen specific positions
   const MEDIUM_POSITIONS = [
-    { top: "12%", left: "20%" },
-    { top: "60%", left: "65%" },
-    { top: "30%", left: "70%" },
-    { top: "65%", left: "25%" },
+    { top: "5%", left: "5%" },
+    { top: "80%", left: "65%" },
+    { top: "15%", left: "60%" },
+    { top: "75%", left: "10%" },
   ]
 
   // Add a floating animation for each image
@@ -197,13 +197,14 @@ const StorySection = ({
 
       {/* Small screen layout (sm to md) */}
       <div className="hidden sm:block md:hidden">
-        {[0, 1, 2, 3].map((i) => (
+        {MEDIUM_POSITIONS.map((pos, i) => (
           <motion.div
             key={i}
-            className="absolute h-36 w-36 rounded-xl"
+            className="h-40 w-40 absolute rounded-xl"
             style={{
-              top: `${15 + i * 18}%`,
-              left: i % 2 === 0 ? "15%" : "65%",
+              x: x,
+              top: pos.top,
+              left: pos.left,
               zIndex: 10 - i,
             }}
           >
@@ -227,17 +228,18 @@ const StorySection = ({
       </div>
 
       {/* Mobile layout (below sm) */}
-      <div className="sm:hidden absolute inset-0 overflow-hidden pointer-events-none">
+      <div className="sm:hidden absolute inset-0 pointer-events-none">
         <div className="relative h-full w-full">
-          {[0, 1, 2, 3].map((i) => (
-            <motion.div
-              key={i}
-              className="absolute h-24 w-24"
-              style={{
-                top: `${15 + i * 20}%`,
-                left: i % 2 === 0 ? "10%" : "70%",
-                zIndex: 10 - i,
-              }}
+          {MEDIUM_POSITIONS.map((pos, i) => (
+          <motion.div
+            key={i}
+            className="h-40 w-40 absolute rounded-xl"
+            style={{
+              x: x,
+              top: pos.top,
+              left: pos.left,
+              zIndex: 10 - i,
+            }}
             >
               <motion.div
                 variants={floatVariants[i % floatVariants.length]}

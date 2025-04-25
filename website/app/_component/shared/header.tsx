@@ -19,14 +19,12 @@ export default function Navbar() {
           animateDown ? "translate-y-[12vh]" : ""
         }`}
       >
-        <Image
+        <img
           src="/images/logo-transparent.svg"
           alt="WeTrends Logo"
-          width={48}
-          height={48}
-          className="object-contain"
+          className="object-contain w-8 h-8 "
         />
-        <span className="text-2xl font-bold text-white select-none">WeTrends</span>
+        <span className="text-xl font-bold text-white select-none">WeTrends</span>
       </div>
     </div>
   );

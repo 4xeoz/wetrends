@@ -57,14 +57,16 @@ const Loading = () => {
             exit="exit"
             className="w-full text-center"
             >
-            <div className="relative  w-[20rem] h-[20rem] mx-auto flex items-center justify-center">
+            <div className="relative w-[10rem] h-[10rem] sm:w-[15rem] sm:h-[15rem] md:w-[20rem] md:h-[20rem] mx-auto flex items-center justify-center">
               <Image
               src="/images/logo-transparent.svg"
               alt="WeTrends Logo"
               layout="fill"
               objectFit="contain"
               />
+              
             </div>
+            <h1 className=" font-bold text-white">Loading...</h1>
             </motion.div>
         )}
       </AnimatePresence>
