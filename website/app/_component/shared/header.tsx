@@ -1,28 +1,33 @@
-"use client"
-
-import Link from "next/link"
-import { useSession } from "next-auth/react"
-
+"use client";
+import React, { useState, useEffect } from "react";
+import Image from "next/image";
 
 export default function Navbar() {
+  const [animateDown, setAnimateDown] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setAnimateDown(true);
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
-    <header className="bg-wetrends ">
-      <div className="container flex h-16 items-center justify-between">
-      <Link href="/" className="flex items-center gap-3 font-bold text-2xl">
-        <img src="/images/logo-transparent.svg" alt="WeTrends Logo" className="h-10 w-10" />
-        <span className="text-white">WeTrends</span>
-      </Link>
-      <nav className="flex items-center gap-4">
-        <Link href="/about" className="text-white hover:underline">
-        About
-        </Link>
-        <Link href="/contact" className="text-white hover:underline">
-        Contact
-        </Link>
-      </nav>
+    <div className="relative w-full flex items-center justify-center">
+      <div
+        className={`fixed left-1/2 top-[-300] -translate-x-1/2 z-50 flex items-center gap-3 rounded-full w-fit bg-wetrends px-8 py-4 shadow-lg transition-transform duration-700 ${
+          animateDown ? "translate-y-80" : ""
+        }`}
+      >
+        <Image
+          src="/images/logo-transparent.svg"
+          alt="WeTrends Logo"
+          width={48}
+          height={48}
+          className="object-contain"
+        />
+        <span className="text-2xl font-bold text-white select-none">WeTrends</span>
       </div>
-    </header>
-  )
+    </div>
+  );
 }
-
