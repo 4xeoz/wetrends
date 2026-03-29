@@ -1,9 +1,9 @@
 import React from 'react';
 import ContactForm from './contact-form';
-import { Linkedin, Instagram } from 'lucide-react';
+import { Linkedin, Instagram, MapPin, Phone, Mail } from 'lucide-react';
 
 /**
- * Contact - Responsive section with contact form
+ * Contact - Responsive section with contact form and local business info
  */
 const Contact = () => {
     return (
@@ -13,6 +13,7 @@ const Contact = () => {
                 <div className="w-full">
                     <div className="mb-8 md:mb-20 relative">
                         <h3 className="text-3xl md:text-4xl lg:text-6xl font-serif italic font-bold text-white">Contact Us</h3>
+                        <p className="text-white/80 mt-2 text-sm md:text-base">Get in touch with Guildford&apos;s creative digital agency</p>
                     </div>
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 lg:gap-16 items-start relative h-full max-w-6xl mx-auto">
 
@@ -23,22 +24,59 @@ const Contact = () => {
                                 Drop us a note, one of our founders will reply within 24 hours and show you how WeTrends can plug straight into your brand.
                             </p>
                             
+                            {/* Location */}
+                            <div className="flex items-start gap-3">
+                                <MapPin className="w-5 h-5 mt-0.5 flex-shrink-0" />
+                                <div>
+                                    <h4 className="font-semibold mb-1">Our Location</h4>
+                                    <p className="text-white/80 text-sm md:text-base">
+                                        Guildford, Surrey, UK<br />
+                                        <span className="text-white/60">Serving businesses across Surrey, London & the UK</span>
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Phone */}
+                            <div className="flex items-center gap-3">
+                                <Phone className="w-5 h-5 flex-shrink-0" />
+                                <div>
+                                    <h4 className="font-semibold mb-1">Call Us</h4>
+                                    <a href="tel:+441483000000" className="text-white/90 hover:text-white transition-colors text-sm md:text-base">
+                                        +44 (0) 1483 XXX XXX
+                                    </a>
+                                </div>
+                            </div>
+                            
                             {/* Email Us Section */}
-                            <div>
-                                <h4 className="text-lg md:text-xl font-semibold mb-2">Email Us</h4>
-                                <a href="mailto:wetrends.uk@gmail.com" className="text-white/90 hover:text-white transition-colors duration-200 underline underline-offset-4 text-sm md:text-base">
-                                    wetrends.uk@gmail.com
-                                </a>
+                            <div className="flex items-center gap-3">
+                                <Mail className="w-5 h-5 flex-shrink-0" />
+                                <div>
+                                    <h4 className="font-semibold mb-1">Email Us</h4>
+                                    <a href="mailto:wetrends.uk@gmail.com" className="text-white/90 hover:text-white transition-colors duration-200 underline underline-offset-4 text-sm md:text-base">
+                                        wetrends.uk@gmail.com
+                                    </a>
+                                </div>
                             </div>
                             
                             {/* Social Links */}
-                            <div className="flex space-x-3 md:space-x-4">
-                                <a href="https://www.instagram.com/wetrends.uk" target="_blank" rel="noopener noreferrer" className="w-10 h-10 md:w-12 md:h-12 rounded-full border border-white/30 flex items-center justify-center hover:bg-white/10 transition-colors cursor-pointer">
-                                    <Instagram className="w-4 h-4" />
-                                </a>
-                                <a href="https://www.linkedin.com/company/wetrends-uk/about/?viewAsMember=true" target="_blank" rel="noopener noreferrer" className="w-10 h-10 md:w-12 md:h-12 rounded-full border border-white/30 flex items-center justify-center hover:bg-white/10 transition-colors cursor-pointer">
-                                    <Linkedin className="w-4 h-4" fill="currentColor" />
-                                </a>
+                            <div>
+                                <h4 className="font-semibold mb-3">Follow Us</h4>
+                                <div className="flex space-x-3 md:space-x-4">
+                                    <a href="https://www.instagram.com/wetrends.uk" target="_blank" rel="noopener noreferrer" className="w-10 h-10 md:w-12 md:h-12 rounded-full border border-white/30 flex items-center justify-center hover:bg-white/10 transition-colors cursor-pointer" aria-label="Follow WeTrends on Instagram">
+                                        <Instagram className="w-4 h-4" />
+                                    </a>
+                                    <a href="https://www.linkedin.com/company/wetrends-uk/about/?viewAsMember=true" target="_blank" rel="noopener noreferrer" className="w-10 h-10 md:w-12 md:h-12 rounded-full border border-white/30 flex items-center justify-center hover:bg-white/10 transition-colors cursor-pointer" aria-label="Follow WeTrends on LinkedIn">
+                                        <Linkedin className="w-4 h-4" fill="currentColor" />
+                                    </a>
+                                </div>
+                            </div>
+
+                            {/* Service Areas */}
+                            <div className="pt-4 border-t border-white/20">
+                                <h4 className="font-semibold mb-2 text-sm">Areas We Serve</h4>
+                                <p className="text-white/70 text-xs md:text-sm">
+                                    Guildford • Woking • Farnham • Dorking • Reigate • Leatherhead • Cobham • Esher • Surrey • London • UK-wide
+                                </p>
                             </div>
                         </div>
 

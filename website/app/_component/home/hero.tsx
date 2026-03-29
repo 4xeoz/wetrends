@@ -223,6 +223,20 @@ const Hero = () => {
                                 </div>
                             </AnimatedContent>
 
+                            {/* Location Tag */}
+                            <AnimatedContent
+                                direction="vertical"
+                                distance={40}
+                                reverse={true}
+                                delay={4.25}
+                                duration={1}
+                                ease="power3.out"
+                            >
+                                <p className="text-white/80 text-sm md:text-base uppercase tracking-widest font-medium">
+                                    Guildford, Surrey • Serving Businesses Across the UK
+                                </p>
+                            </AnimatedContent>
+
                             {/* Description */}
                             <AnimatedContent
                                 direction="vertical"
