@@ -1,0 +1,288 @@
+'use client';
+
+import { useRef } from 'react';
+import { motion, useScroll, useTransform } from 'motion/react';
+import { 
+  Video, 
+  Palette, 
+  Globe, 
+  Users, 
+  Zap, 
+  PenTool,
+  ArrowUpRight,
+  Sparkles
+} from 'lucide-react';
+import AnimatedContent from '@/components/ui/animated-content';
+
+const services = [
+  {
+    number: '01',
+    icon: Video,
+    title: 'Video Production',
+    description: 'Cinematic storytelling that captures attention and drives engagement across all platforms.',
+    features: ['Brand Films', 'Social Content', 'Motion Graphics', 'Commercials'],
+    color: '#C72C5B',
+    bgImage: 'from-rose-500/20 to-orange-500/20',
+  },
+  {
+    number: '02',
+    icon: Palette,
+    title: 'Brand Identity',
+    description: 'Distinctive visual systems that make your brand impossible to ignore.',
+    features: ['Logo Design', 'Visual Identity', 'Brand Guidelines', 'Packaging'],
+    color: '#8B5CF6',
+    bgImage: 'from-violet-500/20 to-purple-500/20',
+  },
+  {
+    number: '03',
+    icon: Globe,
+    title: 'Web Design',
+    description: 'High-converting digital experiences that turn visitors into loyal customers.',
+    features: ['UI/UX Design', 'Development', 'E-commerce', 'Web Apps'],
+    color: '#3B82F6',
+    bgImage: 'from-blue-500/20 to-cyan-500/20',
+  },
+  {
+    number: '04',
+    icon: Users,
+    title: 'Social Media',
+    description: 'Strategic content that builds communities and sparks meaningful conversations.',
+    features: ['Content Strategy', 'Creative Direction', 'Community', 'Analytics'],
+    color: '#10B981',
+    bgImage: 'from-emerald-500/20 to-teal-500/20',
+  },
+  {
+    number: '05',
+    icon: Zap,
+    title: 'Animation',
+    description: 'Dynamic motion design that brings your brand story to life.',
+    features: ['2D Animation', 'Motion Graphics', 'Explainers', 'Micro-interactions'],
+    color: '#F59E0B',
+    bgImage: 'from-amber-500/20 to-yellow-500/20',
+  },
+  {
+    number: '06',
+    icon: PenTool,
+    title: 'Content Strategy',
+    description: 'Data-driven narratives that position you as the authority in your space.',
+    features: ['SEO Content', 'Copywriting', 'Editorial', 'Storytelling'],
+    color: '#EC4899',
+    bgImage: 'from-pink-500/20 to-rose-500/20',
+  },
+];
+
+function ServiceCard({ service, index }: { service: typeof services[0]; index: number }) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: cardRef,
+    offset: ["start end", "end start"]
+  });
+  
+  const y = useTransform(scrollYProgress, [0, 1], [100, -100]);
+  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
+
+  return (
+    <motion.div
+      ref={cardRef}
+      style={{ y, opacity }}
+      className="group relative"
+    >
+      <motion.div
+        whileHover={{ scale: 1.02 }}
+        transition={{ duration: 0.3 }}
+        className="relative overflow-hidden rounded-3xl bg-gray-900 p-8 md:p-12"
+      >
+        {/* Animated Background */}
+        <div className={`absolute inset-0 bg-gradient-to-br ${service.bgImage} opacity-0 transition-opacity duration-500 group-hover:opacity-100`} />
+        
+        {/* Number */}
+        <motion.span
+          initial={{ opacity: 0, x: -50 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          transition={{ delay: index * 0.1 }}
+          className="absolute right-8 top-8 text-8xl font-bold text-white/5 md:text-9xl"
+          style={{ WebkitTextStroke: `1px ${service.color}30` }}
+        >
+          {service.number}
+        </motion.span>
+
+        {/* Content */}
+        <div className="relative z-10">
+          {/* Icon & Title Row */}
+          <div className="mb-8 flex items-start justify-between">
+            <div className="flex items-center gap-4">
+              <motion.div
+                whileHover={{ rotate: 360 }}
+                transition={{ duration: 0.6 }}
+                className="flex h-16 w-16 items-center justify-center rounded-2xl"
+                style={{ backgroundColor: `${service.color}20` }}
+              >
+                <service.icon className="h-8 w-8" style={{ color: service.color }} />
+              </motion.div>
+              <div>
+                <span className="text-sm font-medium" style={{ color: service.color }}>
+                  {service.number}
+                </span>
+                <h3 className="text-2xl font-bold text-white md:text-3xl">
+                  {service.title}
+                </h3>
+              </div>
+            </div>
+            
+            <motion.div
+              whileHover={{ scale: 1.1, rotate: 45 }}
+              className="flex h-12 w-12 items-center justify-center rounded-full border border-white/20 text-white/60 transition-colors group-hover:border-white/40 group-hover:text-white"
+            >
+              <ArrowUpRight className="h-5 w-5" />
+            </motion.div>
+          </div>
+
+          {/* Description */}
+          <p className="mb-8 max-w-lg text-lg text-gray-400">
+            {service.description}
+          </p>
+
+          {/* Features */}
+          <div className="flex flex-wrap gap-3">
+            {service.features.map((feature, i) => (
+              <motion.span
+                key={feature}
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.1 * i }}
+                className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/70 backdrop-blur-sm transition-colors hover:border-white/20 hover:text-white"
+              >
+                {feature}
+              </motion.span>
+            ))}
+          </div>
+        </div>
+
+        {/* Bottom Line Animation */}
+        <motion.div
+          className="absolute bottom-0 left-0 h-1"
+          style={{ backgroundColor: service.color }}
+          initial={{ width: '0%' }}
+          whileInView={{ width: '100%' }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+        />
+      </motion.div>
+    </motion.div>
+  );
+}
+
+export function Services() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end start"]
+  });
+
+  const headerY = useTransform(scrollYProgress, [0, 0.3], [100, 0]);
+
+  return (
+    <section 
+      ref={containerRef}
+      id="services" 
+      className="relative overflow-hidden bg-[#0a0a0a] py-24 md:py-32"
+    >
+      {/* Background Elements */}
+      <div className="absolute inset-0">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(199,44,91,0.15),transparent_50%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(139,92,246,0.1),transparent_50%)]" />
+      </div>
+
+      {/* Grid Pattern */}
+      <div 
+        className="absolute inset-0 opacity-[0.02]"
+        style={{
+          backgroundImage: `linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px)`,
+          backgroundSize: '60px 60px'
+        }}
+      />
+
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <motion.div 
+          style={{ y: headerY }}
+          className="mb-20 text-center"
+        >
+          <AnimatedContent
+            direction="vertical"
+            distance={60}
+            duration={1}
+            ease="power3.out"
+          >
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#C72C5B]/30 bg-[#C72C5B]/10 px-4 py-2">
+              <Sparkles className="h-4 w-4 text-[#C72C5B]" />
+              <span className="text-sm font-medium text-[#C72C5B]">
+                What We Do
+              </span>
+            </div>
+          </AnimatedContent>
+          
+          <AnimatedContent
+            direction="vertical"
+            distance={80}
+            duration={1.2}
+            delay={0.1}
+            ease="power3.out"
+          >
+            <h2 className="mb-6 text-5xl font-bold text-white md:text-6xl lg:text-7xl">
+              Services That
+              <br />
+              <span className="bg-gradient-to-r from-[#C72C5B] via-purple-500 to-[#C72C5B] bg-clip-text text-transparent">
+                Drive Growth
+              </span>
+            </h2>
+          </AnimatedContent>
+          
+          <AnimatedContent
+            direction="vertical"
+            distance={60}
+            duration={1.2}
+            delay={0.2}
+            ease="power3.out"
+          >
+            <p className="mx-auto max-w-2xl text-lg text-gray-400">
+              From concept to execution, we deliver end-to-end creative solutions 
+              that transform brands and accelerate business success.
+            </p>
+          </AnimatedContent>
+        </motion.div>
+
+        {/* Services Grid */}
+        <div className="grid gap-6 md:grid-cols-2 lg:gap-8">
+          {services.map((service, index) => (
+            <ServiceCard key={service.title} service={service} index={index} />
+          ))}
+        </div>
+
+        {/* Bottom CTA */}
+        <AnimatedContent
+          direction="vertical"
+          distance={60}
+          duration={1}
+          delay={0.4}
+          ease="power3.out"
+          className="mt-20 text-center"
+        >
+          <motion.a
+            href="#contact"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="group inline-flex items-center gap-4 rounded-full bg-white px-8 py-4 text-lg font-bold text-gray-900 shadow-2xl shadow-white/10 transition-all hover:shadow-white/20"
+          >
+            Start Your Project
+            <motion.span
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-900 text-white"
+              whileHover={{ scale: 1.1, rotate: 45 }}
+            >
+              <ArrowUpRight className="h-5 w-5" />
+            </motion.span>
+          </motion.a>
+        </AnimatedContent>
+      </div>
+    </section>
+  );
+}

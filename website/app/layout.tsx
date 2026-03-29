@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google"; 
 import "./globals.css";
 import { SessionProvider } from "next-auth/react";
+import { SmoothScrollProvider } from "@/components/providers/smooth-scroll";
+import { LoadingScreen } from "@/components/providers/loading-screen";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
@@ -151,19 +153,40 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en-GB">
       <head>
+        {/* Performance optimizations */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+        
+        {/* Preload critical assets */}
+        <link rel="preload" href="/images/logo-transparent.svg" as="image" type="image/svg+xml" />
+        
+        {/* Schema markup */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
         />
+        
+        {/* Geo tags for local SEO */}
         <meta name="geo.region" content="GB-SRY" />
         <meta name="geo.placename" content="Guildford" />
         <meta name="geo.position" content="51.2362;-0.5704" />
         <meta name="ICBM" content="51.2362, -0.5704" />
+        
+        {/* Theme color */}
+        <meta name="theme-color" content="#C72C5B" />
+        
+        {/* Performance hints */}
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <SessionProvider>
-          {children}
-        </SessionProvider>
+        <LoadingScreen>
+          <SmoothScrollProvider>
+            <SessionProvider>
+              {children}
+            </SessionProvider>
+          </SmoothScrollProvider>
+        </LoadingScreen>
       </body>
     </html>
   );

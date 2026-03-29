@@ -7,18 +7,18 @@ import { Linkedin, Instagram, MapPin, Phone, Mail } from 'lucide-react';
  */
 const Contact = () => {
     return (
-        <section id="contact" className="bg-gradient-to-bl from-[#BC2A50] to-[#891735] text-white py-10 md:py-20 px-4 sm:px-6 lg:px-8 relative min-h-[600px] md:h-screen md:max-h-[1300px] w-full overflow-hidden">
-            <div className="max-w-7xl mx-auto h-full flex items-center justify-center relative">
+        <section id="contact" className="bg-gradient-to-bl from-[#BC2A50] to-[#891735] text-white py-10 md:py-20 px-4 sm:px-6 lg:px-8 relative w-full">
+            <div className="max-w-7xl mx-auto relative">
                 {/* Content Container */}
                 <div className="w-full">
                     <div className="mb-8 md:mb-20 relative">
                         <h3 className="text-3xl md:text-4xl lg:text-6xl font-serif italic font-bold text-white">Contact Us</h3>
                         <p className="text-white/80 mt-2 text-sm md:text-base">Get in touch with Guildford&apos;s creative digital agency</p>
                     </div>
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 lg:gap-16 items-start relative h-full max-w-6xl mx-auto">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 lg:gap-16 relative max-w-6xl mx-auto">
 
                         {/* Left Column - Content */}
-                        <div className="space-y-6 md:space-y-8 lg:ml-10 order-2 lg:order-1">
+                        <div className="space-y-6 md:space-y-8 lg:ml-10 order-2 lg:order-1 pb-8">
                             {/* Description */}
                             <p className="text-base md:text-lg text-white/90 leading-relaxed lg:w-3/4">
                                 Drop us a note, one of our founders will reply within 24 hours and show you how WeTrends can plug straight into your brand.
@@ -82,9 +82,7 @@ const Contact = () => {
 
                         {/* Right Column - Contact Form */}
                         <div className="lg:mr-10 order-1 lg:order-2">
-                            <div className="relative h-full w-full">
-                                <ContactForm />
-                            </div>
+                            <ContactForm />
                         </div>
                     </div>
                 </div>

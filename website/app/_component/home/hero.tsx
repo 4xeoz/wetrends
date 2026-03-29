@@ -3,70 +3,12 @@ import React, { useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowDown } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { gsap } from "gsap";
 import AnimatedContent from "@/components/ui/animated-content";
 
 /**
  * Hero - Responsive hero section with Next.js Image
  */
 const Hero = () => {
-    const logoRef = useRef<HTMLImageElement>(null);
-
-    useEffect(() => {
-        const logo = logoRef.current;
-        if (!logo) return;
-
-        // Skip complex animation on mobile for better performance
-        if (window.innerWidth < 768) {
-            gsap.set(logo, { opacity: 1, scale: 1, x: 0, y: 0 });
-            return;
-        }
-
-        // Get the logo's current position to calculate offset from viewport center
-        const rect = logo.getBoundingClientRect();
-        const viewportCenterX = window.innerWidth / 2;
-        const viewportCenterY = window.innerHeight / 2;
-        
-        // Calculate how far to move from current position to viewport center
-        const deltaX = viewportCenterX - (rect.left + rect.width / 2);
-        const deltaY = viewportCenterY - (rect.top + rect.height / 2);
-
-        // Create timeline for sequential animations
-        const tl = gsap.timeline();
-
-        // Step 1: Fade in from bottom at original position
-        tl.fromTo(logo, 
-            {
-                opacity: 0,
-                y: deltaY + 150, // Start below the viewport center
-                scale: 4,
-                x: deltaX,
-            },
-            {
-                opacity: 1,
-                y: deltaY,
-                scale: 5,
-                x: deltaX,
-                duration: 0.4,
-                ease: "power2.out"
-            }
-        )
-        // Step 2: Wait 1 second
-        .to({}, { duration: 1 })
-        // Step 4: Scale back down and return to original position
-        .to(logo, {
-            scale: 1,
-            x: 0,
-            y: 0,
-            duration: 1.8,
-            ease: "power3.inOut"
-        });
-
-        return () => {
-            tl.kill();
-        };
-    }, []);
 
     return (
         <div className="bg-wetrend pb-10 md:pb-20 px-4 sm:px-6 lg:px-8 text-white relative min-h-[600px] md:h-fit md:max-h-[1300px] w-full overflow-hidden">
@@ -143,49 +85,7 @@ const Hero = () => {
                     />
                 </AnimatedContent>
 
-                {/* Header */}
-                <div className="relative z-30 flex items-center justify-between py-4 md:py-6 px-2 sm:px-4 lg:px-8">
-                    {/* Logo */}
-                    <div className="flex-shrink-0 flex items-center gap-2 md:gap-3">
-                        <Image
-                            ref={logoRef}
-                            src="/images/logo-transparent.svg"
-                            alt="WETRENDS Logo"
-                            width={150}
-                            height={40}
-                            priority
-                            className="h-6 md:h-8 w-auto"
-                        />
-                        <AnimatedContent
-                            direction="vertical"
-                            distance={50}
-                            reverse={true}
-                            delay={3}
-                        >
-                            <h1 className="text-lg md:text-2xl font-bold text-white">WETRENDS</h1>
-                        </AnimatedContent>
-                    </div>
-
-                    {/* CTA Button */}
-                    <AnimatedContent
-                        direction="vertical"
-                        distance={60}
-                        reverse={true}
-                        delay={3.15}
-                        duration={1.2}
-                        ease="power3.out"
-                    >
-                        <Link href="#contact">
-                            <Button
-                                variant="outline"
-                                className="border-white text-white hover:bg-white hover:text-[#C72C5B] rounded-full px-4 md:px-8 py-4 md:py-8 text-sm md:text-lg font-bold bg-transparent border-2 md:border-4"
-                            >
-                                <span className="hidden sm:inline">Contact Us</span>
-                                <span className="sm:hidden">Contact</span>
-                            </Button>
-                        </Link>
-                    </AnimatedContent>
-                </div>
+                
 
                 {/* Content Container */}
                 <div className="relative z-20 flex flex-col items-center justify-center min-h-[400px] md:h-fit md:max-h-[1300px] py-8 md:py-0">

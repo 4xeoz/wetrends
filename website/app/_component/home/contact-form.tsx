@@ -93,12 +93,12 @@ export default function ContactForm() {
 
   return (
     <section
-      className="h-full flex items-center justify-center"
+      className="w-full"
     >
       <div className="w-full">
         {/* Form Container */}
         <div>
-          <div className="w-full min-h-[300px] md:h-96 flex items-center justify-center">
+          <div className="w-full py-4">
             {/* Success Message */}
             {isSubmitted ? (
               <div className="text-center py-6 md:py-10">

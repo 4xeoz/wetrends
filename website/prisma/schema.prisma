@@ -19,8 +19,8 @@ model User {
 
   accounts      Account[]
   sessions      Session[]
-
   Authenticator Authenticator[]
+  blogPosts     BlogPost[]
  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -94,4 +94,40 @@ model ContactMessage {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   isRead    Boolean  @default(false)
+}
+
+model BlogCategory {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String   @unique
+  slug        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  posts       BlogPost[]
+}
+
+model BlogPost {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  slug        String   @unique
+  excerpt     String
+  content     String
+  featuredImage String?
+  published   Boolean  @default(false)
+  publishedAt DateTime?
+  views       Int      @default(0)
+  
+  // SEO fields
+  metaTitle   String?
+  metaDescription String?
+  keywords    String[]
+  
+  // Relations
+  categoryId  String?  @db.ObjectId
+  category    BlogCategory? @relation(fields: [categoryId], references: [id])
+  authorId    String   @db.ObjectId
+  author      User     @relation(fields: [authorId], references: [id])
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
