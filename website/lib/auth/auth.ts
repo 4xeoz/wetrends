@@ -3,22 +3,23 @@ import authConfig from "@/lib/auth/auth.config";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/prisma/prisma";
 
-
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),
   pages: {
-    signIn: "/auth/signin",
+    signIn: "/sign-in",
   },
   callbacks: {
-    async jwt({ token }) {
-      if (token.id) {
-        token.id = token.id as string;
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.email = user.email;
       }
       return token;
     },
     async session({ session, token }) {
-      if (session.user) {
+      if (session.user && token) {
         session.user.id = token.id as string;
+        session.user.email = token.email as string;
       }
       return session;
     },

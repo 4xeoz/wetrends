@@ -4,20 +4,14 @@ import Credentials from "next-auth/providers/credentials"
 import { prisma } from "@/prisma/prisma"
 import { z } from "zod"
 import bcrypt from "bcryptjs"
-// import { getNameFromEmail } from "@/utils/helpers"
 
-
- 
 const credentialsSchema = z.object({
   email: z.string().email("Invalid email format"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
+  password: z.string().min(1, "Password is required"),
 })
 
-
 export default {
-  
   providers: [
-    // Google,
     Credentials({
       credentials: {
         email: { label: "Email", type: "text" },
@@ -25,58 +19,54 @@ export default {
       },
       authorize: async (credentials) => {
         try {
+          console.log("[Auth] Attempting login with credentials:", credentials);
+          
           // Validate credentials with Zod
           const validatedCredentials = credentialsSchema.parse(credentials);
           const { email, password } = validatedCredentials;
 
-          // Check if user exists (for login)
+          console.log("[Auth] Looking up user:", email);
+          
+          // Check if user exists
           const existingUser = await prisma.user.findUnique({
             where: { email },
           });
 
-          if(!existingUser){
+          if (!existingUser) {
+            console.log("[Auth] User not found:", email);
             return null;
           }
 
-          // Login flow
-          if (existingUser && existingUser.password) {
-            // Compare passwords
-            const passwordMatch = await bcrypt.compare(
-              password,
-              existingUser.password
-            );
+          console.log("[Auth] User found, checking password...");
 
-            if (passwordMatch) {
-              return existingUser;
-            }
-            
+          // Check if user has password
+          if (!existingUser.password) {
+            console.log("[Auth] User has no password set");
             return null;
-            
           }
 
+          // Compare passwords
+          const passwordMatch = await bcrypt.compare(password, existingUser.password);
+          console.log("[Auth] Password match:", passwordMatch);
 
-
-          // Sign-up flow - user doesn't exist
-          // if (!existingUser) {
-            // // Hash password
-            // const hashedPassword = await bcrypt.hash(password, 10);
-
-            // // Create new user
-            // const newUser = await prisma.user.create({
-            //   data: {
-            //     email,
-            //     password: hashedPassword,
-            //     name: getNameFromEmail(email),
-            //   },
-            // });
-
-            // return newUser;
-          // }
-
-          // User exists but doesn't have a password (e.g., they signed up with Google)
+          if (passwordMatch) {
+            console.log("[Auth] Login successful for:", email);
+            return {
+              id: existingUser.id,
+              email: existingUser.email,
+              name: existingUser.name,
+              image: existingUser.image,
+            };
+          }
+          
+          console.log("[Auth] Password mismatch");
           return null;
+          
         } catch (error) {
-          console.error("Authentication error:", error);
+          console.error("[Auth] Authentication error:", error);
+          if (error instanceof z.ZodError) {
+            console.error("[Auth] Validation errors:", error.errors);
+          }
           return null;
         }
       }
