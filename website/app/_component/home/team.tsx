@@ -119,7 +119,9 @@ export function Team() {
                       alt={member.name}
                       fill
                       className="object-cover transition-transform duration-500 group-hover:scale-110"
-                      unoptimized
+                      quality={60}
+                      sizes="(max-width: 768px) 100vw, 25vw"
+                      loading={index < 2 ? "eager" : "lazy"}
                     />
                   </motion.div>
                   

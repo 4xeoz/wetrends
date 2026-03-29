@@ -116,15 +116,15 @@ const Showcase = () => {
     return (
         <section id="work" className="bg-gray-900 text-white py-10 md:py-20 px-4 sm:px-6 lg:px-8 relative h-fit w-full overflow-hidden">
             <div className="max-w-7xl mx-auto h-full">
-                {/* Background Image */}
+                {/* Background Image - Lazy loaded with lower quality */}
                 <Image
                     src="/images/Gradient 30.png"
-                    alt="Showcase background"
+                    alt=""
                     fill
                     className="object-cover"
-                    priority
-                    quality={90}
+                    quality={50}
                     sizes="100vw"
+                    loading="lazy"
                 />
 
                 {/* Content Container */}

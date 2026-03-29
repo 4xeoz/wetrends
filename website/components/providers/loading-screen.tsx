@@ -8,9 +8,9 @@ export function LoadingScreen({ children }: { children: React.ReactNode }) {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    // Simulate loading progress
-    const duration = 2000; // 2 seconds minimum
-    const interval = 50;
+    // Fast loading - 500ms max for better UX
+    const duration = 400;
+    const interval = 20;
     const steps = duration / interval;
     let currentStep = 0;
 
@@ -21,8 +21,8 @@ export function LoadingScreen({ children }: { children: React.ReactNode }) {
 
       if (currentStep >= steps) {
         clearInterval(timer);
-        // Small delay at 100% before hiding
-        setTimeout(() => setIsLoading(false), 300);
+        // Minimal delay at 100% before showing content
+        setTimeout(() => setIsLoading(false), 100);
       }
     }, interval);
 
