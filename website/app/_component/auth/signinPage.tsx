@@ -49,16 +49,17 @@ function SignInForm() {
     try {
       // Use server action for login
       const result = await login(formData);
+      console.log("[Login Client] Result:", result);
       
       // Check if login was successful
-      if (result && !result.error) {
+      if (result && result.success) {
         router.push(callbackUrl);
         router.refresh();
       } else {
-        setErrors(result?.error === "CredentialsSignin" ? "Invalid email or password" : "Invalid email or password");
+        setErrors("Invalid email or password");
       }
     } catch (error) {
-      console.error("Sign in error:", error);
+      console.error("[Login Client] Error:", error);
       setErrors("An error occurred during sign in");
     } finally {
       setIsPending(false);
