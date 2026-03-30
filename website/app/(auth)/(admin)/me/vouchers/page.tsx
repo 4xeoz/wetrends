@@ -142,7 +142,7 @@ export default function VouchersPage() {
           <p className="mt-1 text-gray-600">Manage actor vouchers and spending</p>
         </div>
         <div className="flex gap-2">
-          <Link href="/me/vouchers/scan">
+          <Link href="/voucher/scan">
             <Button variant="outline">
               <QrCode className="mr-2 h-4 w-4" />
               Scan
@@ -255,7 +255,7 @@ export default function VouchersPage() {
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Link href={`/me/vouchers/${voucher.id}`}>
+                      <Link href={`/me/vouchers/${voucher.code}`}>
                         <Button variant="ghost" size="icon">
                           <Eye className="h-4 w-4" />
                         </Button>
