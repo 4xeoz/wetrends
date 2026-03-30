@@ -7,7 +7,7 @@ import { getVoucherByCode, getVoucherTransactions } from '@/actions/voucher';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, ArrowLeft, User, Calendar, PoundSterling, Receipt } from 'lucide-react';
+import { Loader2, ArrowLeft, User, Calendar, PoundSterling, Receipt, Copy, Check, ExternalLink } from 'lucide-react';
 import { motion } from 'motion/react';
 import { format } from 'date-fns';
 import QRCode from 'react-qr-code';
@@ -47,6 +47,16 @@ export default function VoucherDetailPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  const copyLink = () => {
+    if (voucher && typeof window !== 'undefined') {
+      const link = `${window.location.origin}/voucher/view?code=${voucher.code}`;
+      navigator.clipboard.writeText(link);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
 
   useEffect(() => {
     fetchVoucherData();
@@ -164,6 +174,41 @@ export default function VoucherDetailPage() {
               <p className="text-sm text-gray-500 text-center">
                 Scan this QR code to view and update voucher
               </p>
+            </CardContent>
+          </Card>
+
+          {/* Shareable Link */}
+          <Card className="mt-6">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <ExternalLink className="h-4 w-4 text-[#C72C5B]" />
+                Actor Link
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-gray-600 mb-3">
+                Share this link with the actor. They will need the password to view their voucher.
+              </p>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  readOnly
+                  value={`${typeof window !== 'undefined' ? window.location.origin : ''}/voucher/view?code=${voucher.code}`}
+                  className="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm font-mono text-gray-600"
+                />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={copyLink}
+                  className="shrink-0"
+                >
+                  {copied ? (
+                    <Check className="h-4 w-4 text-green-600" />
+                  ) : (
+                    <Copy className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </motion.div>
