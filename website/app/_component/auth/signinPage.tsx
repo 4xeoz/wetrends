@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AlertCircle, ArrowRight, Lock, Mail, Sparkles } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { login } from "@/actions/auth";
 
 // Separate component that uses useSearchParams
 function SignInForm() {
@@ -44,26 +45,17 @@ function SignInForm() {
     setErrors(null);
 
     const formData = new FormData(e.currentTarget);
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
 
     try {
-      // First, try to sign in via the credentials callback
-      await fetch("/api/auth/callback/credentials", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({ email, password, callbackUrl }),
-      });
-
-      // Verify session was created by checking the session endpoint
-      const sessionRes = await fetch("/api/auth/session", { cache: "no-store" });
-      const session = await sessionRes.json();
+      // Use server action for login
+      const result = await login(formData);
       
-      if (session?.user) {
+      // Check if login was successful
+      if (result && !result.error) {
         router.push(callbackUrl);
         router.refresh();
       } else {
-        setErrors("Invalid email or password");
+        setErrors(result?.error === "CredentialsSignin" ? "Invalid email or password" : "Invalid email or password");
       }
     } catch (error) {
       console.error("Sign in error:", error);
