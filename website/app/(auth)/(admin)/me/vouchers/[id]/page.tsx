@@ -7,7 +7,7 @@ import { getVoucherByCode, getVoucherTransactions } from '@/actions/voucher';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, ArrowLeft, User, Calendar, PoundSterling, Receipt, Copy, Check, ExternalLink } from 'lucide-react';
+import { Loader2, ArrowLeft, User, Calendar, PoundSterling, Receipt, Copy, Check, ExternalLink, Eye, Lock, RefreshCw, Key } from 'lucide-react';
 import { motion } from 'motion/react';
 import { format } from 'date-fns';
 import QRCode from 'react-qr-code';
@@ -48,13 +48,25 @@ export default function VoucherDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [previewCopied, setPreviewCopied] = useState(false);
+
+  const actorLink = voucher && typeof window !== 'undefined' 
+    ? `${window.location.origin}/voucher/view?code=${voucher.code}`
+    : '';
 
   const copyLink = () => {
-    if (voucher && typeof window !== 'undefined') {
-      const link = `${window.location.origin}/voucher/view?code=${voucher.code}`;
-      navigator.clipboard.writeText(link);
+    if (actorLink) {
+      navigator.clipboard.writeText(actorLink);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  const copyPreviewLink = () => {
+    if (actorLink) {
+      navigator.clipboard.writeText(actorLink);
+      setPreviewCopied(true);
+      setTimeout(() => setPreviewCopied(false), 2000);
     }
   };
 
@@ -193,7 +205,7 @@ export default function VoucherDetailPage() {
                 <input
                   type="text"
                   readOnly
-                  value={`${typeof window !== 'undefined' ? window.location.origin : ''}/voucher/view?code=${voucher.code}`}
+                  value={actorLink}
                   className="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm font-mono text-gray-600"
                 />
                 <Button
@@ -209,6 +221,74 @@ export default function VoucherDetailPage() {
                   )}
                 </Button>
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Preview as Actor */}
+          <Card className="mt-6 border-blue-200 bg-blue-50/50">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base text-blue-900">
+                <Eye className="h-4 w-4 text-blue-600" />
+                Preview as Actor
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-blue-700 mb-3">
+                See what the actor sees when they access their voucher.
+              </p>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex-1 border-blue-300 text-blue-700 hover:bg-blue-100"
+                  onClick={() => window.open(actorLink, '_blank')}
+                >
+                  <Eye className="h-4 w-4 mr-2" />
+                  Open Preview
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={copyPreviewLink}
+                  className="shrink-0 border-blue-300 text-blue-700 hover:bg-blue-100"
+                >
+                  {previewCopied ? (
+                    <Check className="h-4 w-4 text-green-600" />
+                  ) : (
+                    <Copy className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Password Info */}
+          <Card className="mt-6 border-amber-200 bg-amber-50/50">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base text-amber-900">
+                <Lock className="h-4 w-4 text-amber-600" />
+                Access Password
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center gap-2 mb-3">
+                <Key className="h-4 w-4 text-amber-600" />
+                <span className="text-sm text-amber-800 font-medium">
+                  Password is set and encrypted
+                </span>
+              </div>
+              <p className="text-xs text-amber-700 mb-3">
+                For security, the password is stored encrypted. You provided this password when creating the voucher.
+              </p>
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full border-amber-300 text-amber-700 hover:bg-amber-100"
+                onClick={() => alert('Password reset functionality coming soon!')}
+              >
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Reset Password
+              </Button>
             </CardContent>
           </Card>
         </motion.div>
