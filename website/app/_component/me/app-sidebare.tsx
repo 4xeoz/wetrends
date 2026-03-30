@@ -1,7 +1,7 @@
 "use client"
 
 import type * as React from "react"
-import { Bot, Command, GalleryVerticalEnd, PieChart, Settings2 } from "lucide-react"
+import { FileText, LayoutDashboard, Command, Settings2, PenTool, Users, MessageSquare } from "lucide-react"
 import { NavMain } from "./nav-main"
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from "@/components/ui/sidebar"
 import { useEffect, useState } from "react"
@@ -12,44 +12,37 @@ const data = {
   navMain: [
     {
       title: "Dashboard",
-      url: "/dashboard",
-      icon: PieChart,
+      url: "/me/dashboard",
+      icon: LayoutDashboard,
       isActive: true,
     },
     {
-      title: "Analyzer",
-      url: "/me/upload",
-      icon: Bot,
+      title: "Blog",
+      url: "/me/blog",
+      icon: FileText,
       items: [
         {
-          title: "Upload Files",
-          url: "/me/upload",
-          isActive: true,
+          title: "All Posts",
+          url: "/me/blog",
         },
         {
-          title: "Analysis History",
-          url: "/me/history",
+          title: "Create Post",
+          url: "/me/blog/create",
+        },
+        {
+          title: "Categories",
+          url: "/me/blog/categories",
         },
       ],
     },
     {
-      title: "Reports",
-      url: "/reports",
-      icon: GalleryVerticalEnd,
-      items: [
-        {
-          title: "Monthly",
-          url: "/reports/monthly",
-        },
-        {
-          title: "Annual",
-          url: "/reports/annual",
-        },
-      ],
+      title: "Messages",
+      url: "/me/messages",
+      icon: MessageSquare,
     },
     {
       title: "Settings",
-      url: "/settings",
+      url: "/me/settings",
       icon: Settings2,
     },
   ],
@@ -85,7 +78,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <Command className="h-4 w-4" />
           </div>
           <h1 className="text-lg font-semibold text-sidebar-foreground group-data-[collapsible=icon]:hidden">
-            moneygrad
+            WeTrends Admin
           </h1>
         </div>
       </SidebarHeader>

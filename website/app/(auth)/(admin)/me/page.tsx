@@ -1,15 +1,5 @@
-"use client"
-import DashboardContent from "./dashboard/page"
+import { redirect } from 'next/navigation';
 
-export default function DashboardPage() {
-
-  return (
-    <div className="flex h-screen bg-gray-100">
-        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100">
-          <DashboardContent />
-        </main>
-    </div>
-
-  )
+export default function MePage() {
+  redirect('/me/dashboard');
 }
-
