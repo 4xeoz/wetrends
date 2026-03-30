@@ -7,6 +7,8 @@ export async function login(formData: FormData) {
     // Extract and validate form data
     const email = formData.get('email') as string
     const password = formData.get('password') as string
+    
+    console.log("[Login Action] Attempting login for:", email)
 
     // Use NextAuth signIn function
     const result = await signInServer("credentials", {
@@ -14,10 +16,12 @@ export async function login(formData: FormData) {
       password,
       redirect: false,
     })
-
+    
+    console.log("[Login Action] Login successful:", result)
     return { success: true, ...result }
 
   } catch (error) {
+    console.error("[Login Action] Error:", error)
     if (error instanceof AuthError) {
       return { error: error.type, message: error.message }
     }
