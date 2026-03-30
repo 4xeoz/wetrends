@@ -130,7 +130,7 @@ function VoucherView() {
                 <CardContent className="p-8 flex flex-col items-center">
                   <div className="bg-white p-4 rounded-xl mb-4">
                     <QRCode
-                      value={`${typeof window !== 'undefined' ? window.location.origin : ''}/voucher/verify?code=${selectedVoucher.code}`}
+                      value={`${typeof window !== 'undefined' ? window.location.origin : ''}/voucher/scan?code=${selectedVoucher.code}`}
                       size={200}
                       level="H"
                     />

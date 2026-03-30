@@ -54,7 +54,7 @@ const data = {
         },
         {
           title: "Scan Voucher",
-          url: "/me/vouchers/scan",
+          url: "/voucher/scan",
         },
       ],
     },
