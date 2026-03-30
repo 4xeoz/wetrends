@@ -2,7 +2,8 @@
 'use server'
 
 import { prisma } from '@/prisma/prisma';
-import { z } from 'zod' // Optional: for validation
+import { auth } from '@/lib/auth/auth';
+import { z } from 'zod'
 
 
 // Define the form data interface
@@ -39,10 +40,10 @@ const ContactFormSchema = z.object({
 
 export async function submitContactForm(formData: ContactFormData): Promise<ContactFormResponse> {
   try {
-       
+
     // Validate the data with Zod
     const validatedData = ContactFormSchema.parse(formData)
-    
+
     // Save to database using Prisma
     const savedMessage = await prisma.contactMessage.create({
       data: {
@@ -51,37 +52,37 @@ export async function submitContactForm(formData: ContactFormData): Promise<Cont
         message: validatedData.message
       }
     })
-    
+
     return { success: true, messageId: Number(savedMessage.id) }
-    
+
   } catch (error) {
     console.error("Error submitting contact form:", error)
-    
+
     // Return validation errors if applicable
     if (error instanceof z.ZodError) {
       const errorMap: Record<string, string> = {};
-      
+
       error.errors.forEach((err) => {
         if (typeof err.path[0] === 'string') {
           errorMap[err.path[0]] = err.message;
         }
       });
-      
-      return { 
-        success: false, 
+
+      return {
+        success: false,
         errors: errorMap
       }
     }
-    
+
     // Return generic error
-    return { 
-      success: false, 
-      message: "Failed to submit your message. Please try again." 
+    return {
+      success: false,
+      message: "Failed to submit your message. Please try again."
     }
   }
 }
 
-// Optional: Create an action to get all messages (for admin panel)
+// Get all messages (admin only)
 interface GetMessagesResponse {
   success: boolean;
   messages?: any[];
@@ -89,11 +90,16 @@ interface GetMessagesResponse {
 }
 
 export async function getContactMessages(): Promise<GetMessagesResponse> {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { success: false, message: 'Unauthorized' };
+  }
+
   try {
     const messages = await prisma.contactMessage.findMany({
       orderBy: { createdAt: 'desc' }
     })
-    
+
     return { success: true, messages }
   } catch (error) {
     console.error("Error fetching messages:", error)
@@ -101,21 +107,24 @@ export async function getContactMessages(): Promise<GetMessagesResponse> {
   }
 }
 
-// Optional: Mark a message as read
+// Mark a message as read (admin only)
 interface MarkAsReadResponse {
   success: boolean;
   message?: string;
 }
 
 export async function markMessageAsRead(messageId: string): Promise<MarkAsReadResponse> {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { success: false, message: 'Unauthorized' };
+  }
 
-    console.log("messageId", messageId)
   try {
     await prisma.contactMessage.update({
       where: { id: messageId },
       data: { isRead: true }
     })
-    
+
     return { success: true }
   } catch (error) {
     console.error("Error marking message as read:", error)
@@ -125,14 +134,19 @@ export async function markMessageAsRead(messageId: string): Promise<MarkAsReadRe
 
 
 export async function deleteMessage(messageId: string): Promise<MarkAsReadResponse> {
-    try {
-        await prisma.contactMessage.delete({
-        where: { id: messageId }
-        })
-        
-        return { success: true }
-    } catch (error) {
-        console.error("Error deleting message:", error)
-        return { success: false, message: "Failed to delete message" }
-    }
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { success: false, message: 'Unauthorized' };
+  }
+
+  try {
+    await prisma.contactMessage.delete({
+      where: { id: messageId }
+    })
+
+    return { success: true }
+  } catch (error) {
+    console.error("Error deleting message:", error)
+    return { success: false, message: "Failed to delete message" }
+  }
 }

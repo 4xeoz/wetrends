@@ -292,7 +292,7 @@ export default function CreateBlogPostPage() {
                     value={keywordInput}
                     onChange={(e) => setKeywordInput(e.target.value)}
                     placeholder="Add keyword"
-                    onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddKeyword())}
+                    onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddKeyword())}
                   />
                   <Button type="button" variant="outline" onClick={handleAddKeyword}>
                     <Plus className="h-4 w-4" />
