@@ -132,3 +132,65 @@ model BlogPost {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
+
+// Voucher System for Micro-influencers/Actors
+model Actor {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  email       String   @unique
+  phone       String?
+  image       String?
+  bio         String?
+  
+  // Voucher relation
+  vouchers    Voucher[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Voucher {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  code            String   @unique
+  actorId         String   @db.ObjectId
+  actor           Actor    @relation(fields: [actorId], references: [id], onDelete: Cascade)
+  
+  // Financial details
+  totalAmount     Float
+  spentAmount     Float    @default(0)
+  remainingAmount Float
+  
+  // Client access password (hashed)
+  clientPassword  String
+  
+  // Voucher details
+  description     String?
+  projectName     String?
+  status          VoucherStatus @default(ACTIVE)
+  
+  // Tracking
+  transactions    VoucherTransaction[]
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  expiresAt       DateTime?
+}
+
+enum VoucherStatus {
+  ACTIVE
+  EXHAUSTED
+  EXPIRED
+  CANCELLED
+}
+
+model VoucherTransaction {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  voucherId   String   @db.ObjectId
+  voucher     Voucher  @relation(fields: [voucherId], references: [id], onDelete: Cascade)
+  
+  amount      Float
+  description String?
+  location    String?
+  
+  createdAt   DateTime @default(now())
+}

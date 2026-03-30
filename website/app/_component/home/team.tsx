@@ -2,43 +2,12 @@
 
 import { motion } from 'motion/react';
 import Image from 'next/image';
-import { Linkedin, Twitter } from 'lucide-react';
+import Link from 'next/link';
+import { Linkedin, Twitter, ArrowUpRight } from 'lucide-react';
 import AnimatedContent from '@/components/ui/animated-content';
+import { teamMembers } from '@/lib/team-data';
 
-const team = [
-  {
-    name: 'Eyad Cherifi',
-    role: 'Founder & Creative Director',
-    image: '/images/iyad_cherifi.webp',
-    bio: 'Visionary leader with a passion for storytelling and brand building. 10+ years in creative industry.',
-    linkedin: '#',
-    twitter: '#',
-  },
-  {
-    name: 'Sarah Mitchell',
-    role: 'Head of Strategy',
-    image: '/images/person1.webp',
-    bio: 'Data-driven strategist who turns insights into impactful campaigns that deliver ROI.',
-    linkedin: '#',
-    twitter: '#',
-  },
-  {
-    name: 'James Anderson',
-    role: 'Lead Designer',
-    image: '/images/person2.webp',
-    bio: 'Award-winning designer crafting visual experiences that captivate and convert.',
-    linkedin: '#',
-    twitter: '#',
-  },
-  {
-    name: 'Emily Chen',
-    role: 'Video Production Lead',
-    image: '/images/person3.webp',
-    bio: 'Video wizard bringing stories to life through cinematic visuals and motion.',
-    linkedin: '#',
-    twitter: '#',
-  },
-];
+const team = teamMembers;
 
 export function Team() {
   return (
@@ -85,79 +54,67 @@ export function Team() {
         </div>
 
         {/* Team Grid */}
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4" id="team">
           {team.map((member, index) => (
             <AnimatedContent
-              key={member.name}
+              key={member.id}
               direction="vertical"
               distance={100}
               duration={1}
               delay={0.1 * index}
               ease="power3.out"
             >
-              <motion.div
-                whileHover={{ y: -10 }}
-                transition={{ duration: 0.3 }}
-                className="group relative"
-              >
-                {/* Image Container */}
-                <div className="relative mb-6 overflow-hidden rounded-2xl bg-gray-100">
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    transition={{ duration: 0.4 }}
-                    className="aspect-[3/4] w-full"
-                  >
-                    <Image
-                      src={member.image}
-                      alt={member.name}
-                      fill
-                      className="object-cover transition-transform duration-500 group-hover:scale-110"
-                      quality={60}
-                      sizes="(max-width: 768px) 100vw, 25vw"
-                      loading={index < 2 ? "eager" : "lazy"}
-                    />
-                  </motion.div>
-                  
-                  {/* Overlay with social links */}
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    whileHover={{ opacity: 1 }}
-                    className="absolute inset-0 flex items-end justify-center bg-black/70 p-6"
-                  >
-                    <div className="flex gap-3">
-                      <motion.a
-                        href={member.linkedin}
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
-                        className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-sm transition-colors hover:bg-[#C72C5B]"
-                      >
-                        <Linkedin className="h-5 w-5" />
-                      </motion.a>
-                      <motion.a
-                        href={member.twitter}
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
-                        className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-sm transition-colors hover:bg-[#C72C5B]"
-                      >
-                        <Twitter className="h-5 w-5" />
-                      </motion.a>
-                    </div>
-                  </motion.div>
-                </div>
+              <Link href={`/who/${member.id}`}>
+                <motion.div
+                  whileHover={{ y: -10 }}
+                  transition={{ duration: 0.3 }}
+                  className="group relative cursor-pointer"
+                >
+                  {/* Image Container */}
+                  <div className="relative mb-6 overflow-hidden rounded-2xl bg-gray-100">
+                    <motion.div
+                      whileHover={{ scale: 1.05 }}
+                      transition={{ duration: 0.4 }}
+                      className="aspect-[3/4] w-full"
+                    >
+                      <Image
+                        src={member.image}
+                        alt={member.name}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-110"
+                        quality={60}
+                        sizes="(max-width: 768px) 100vw, 25vw"
+                        loading={index < 2 ? "eager" : "lazy"}
+                      />
+                    </motion.div>
+                    
+                    {/* Overlay with view profile */}
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      whileHover={{ opacity: 1 }}
+                      className="absolute inset-0 flex items-center justify-center bg-black/60"
+                    >
+                      <span className="flex items-center gap-2 text-white font-medium">
+                        View Profile
+                        <ArrowUpRight className="w-4 h-4" />
+                      </span>
+                    </motion.div>
+                  </div>
 
-                {/* Content */}
-                <div className="text-center">
-                  <h3 className="mb-1 text-xl font-bold text-gray-900">
-                    {member.name}
-                  </h3>
-                  <p className="mb-3 text-sm font-medium text-[#C72C5B]">
-                    {member.role}
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    {member.bio}
-                  </p>
-                </div>
-              </motion.div>
+                  {/* Content */}
+                  <div className="text-center">
+                    <h3 className="mb-1 text-xl font-bold text-gray-900 group-hover:text-[#C72C5B] transition-colors">
+                      {member.name}
+                    </h3>
+                    <p className="mb-3 text-sm font-medium text-[#C72C5B]">
+                      {member.role}
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      {member.bio}
+                    </p>
+                  </div>
+                </motion.div>
+              </Link>
             </AnimatedContent>
           ))}
         </div>

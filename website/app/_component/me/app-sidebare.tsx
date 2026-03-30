@@ -1,7 +1,7 @@
 "use client"
 
 import type * as React from "react"
-import { FileText, LayoutDashboard, Command, Settings2, PenTool, Users, MessageSquare } from "lucide-react"
+import { FileText, LayoutDashboard, Command, Settings2, MessageSquare, Users, Ticket, ScanLine } from "lucide-react"
 import { NavMain } from "./nav-main"
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from "@/components/ui/sidebar"
 import { useEffect, useState } from "react"
@@ -32,6 +32,29 @@ const data = {
         {
           title: "Categories",
           url: "/me/blog/categories",
+        },
+      ],
+    },
+    {
+      title: "Vouchers",
+      url: "/me/vouchers",
+      icon: Ticket,
+      items: [
+        {
+          title: "All Vouchers",
+          url: "/me/vouchers",
+        },
+        {
+          title: "Create Voucher",
+          url: "/me/vouchers/create",
+        },
+        {
+          title: "Actors",
+          url: "/me/vouchers/actors",
+        },
+        {
+          title: "Scan Voucher",
+          url: "/me/vouchers/scan",
         },
       ],
     },
@@ -92,10 +115,3 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     </Sidebar>
   )
 }
-
-
-
-
-
-
-
