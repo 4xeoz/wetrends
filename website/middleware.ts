@@ -23,7 +23,7 @@ export async function middleware(req: NextRequest) {
     nextUrl.pathname.startsWith("/me") &&
     !isAuthenticated
   ) {
-    return NextResponse.redirect(new URL("/", nextUrl.origin));
+    return NextResponse.redirect(new URL("/sign-in", nextUrl.origin));
   }
 
   // Prevent authenticated users from accessing sign-in page
