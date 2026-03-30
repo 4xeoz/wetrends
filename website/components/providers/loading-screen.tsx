@@ -2,10 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useRouter } from 'next/navigation';
 
 export function LoadingScreen({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [progress, setProgress] = useState(0);
+  const router = useRouter();
 
   useEffect(() => {
     // Fast loading - 500ms max for better UX
@@ -28,6 +30,18 @@ export function LoadingScreen({ children }: { children: React.ReactNode }) {
 
     return () => clearInterval(timer);
   }, []);
+
+  // Force hide loading screen after 10 seconds as fallback
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (isLoading) {
+        console.warn('Loading screen timeout - forcing close');
+        setIsLoading(false);
+      }
+    }, 10000);
+
+    return () => clearTimeout(timeout);
+  }, [isLoading]);
 
   return (
     <>
