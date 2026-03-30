@@ -48,26 +48,20 @@ function SignInForm() {
     const password = formData.get("password") as string;
 
     try {
-      // Use the proper NextAuth credentials callback with redirect
-      const res = await fetch("/api/auth/callback/credentials", {
+      // First, try to sign in via the credentials callback
+      await fetch("/api/auth/callback/credentials", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams({ email, password, callbackUrl }),
-        redirect: "manual", // Don't auto-follow redirects
       });
 
-      // Check if it's a redirect (successful login)
-      if (res.status === 302 || res.ok) {
-        // Verify session was created
-        const sessionRes = await fetch("/api/auth/session");
-        const session = await sessionRes.json();
-        
-        if (session?.user) {
-          router.push(callbackUrl);
-          router.refresh();
-        } else {
-          setErrors("Invalid email or password");
-        }
+      // Verify session was created by checking the session endpoint
+      const sessionRes = await fetch("/api/auth/session", { cache: "no-store" });
+      const session = await sessionRes.json();
+      
+      if (session?.user) {
+        router.push(callbackUrl);
+        router.refresh();
       } else {
         setErrors("Invalid email or password");
       }
