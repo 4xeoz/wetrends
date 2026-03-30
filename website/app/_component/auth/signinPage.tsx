@@ -1,10 +1,8 @@
 "use client";
 
 import type React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useSession } from "next-auth/react";
-import { signIn } from "next-auth/react";
 import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,8 +10,8 @@ import { Label } from "@/components/ui/label";
 import { AlertCircle, ArrowRight, Lock, Mail, Sparkles } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
-export default function SignInPage() {
-  const session = useSession();
+// Separate component that uses useSearchParams
+function SignInForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/me";
@@ -21,13 +19,24 @@ export default function SignInPage() {
   const [errors, setErrors] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Redirect if already authenticated
+  // Check authentication status
   useEffect(() => {
-    if (session.status === "authenticated") {
-      router.push(callbackUrl);
-    }
-  }, [session.status, router, callbackUrl]);
+    const checkAuth = async () => {
+      try {
+        const res = await fetch("/api/auth/session");
+        const session = await res.json();
+        if (session?.user) {
+          setIsAuthenticated(true);
+          router.push(callbackUrl);
+        }
+      } catch (error) {
+        console.error("Auth check failed:", error);
+      }
+    };
+    checkAuth();
+  }, [router, callbackUrl]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -39,19 +48,17 @@ export default function SignInPage() {
     const password = formData.get("password") as string;
 
     try {
-      const result = await signIn("credentials", {
-        email,
-        password,
-        redirect: false,
-        callbackUrl,
+      const res = await fetch("/api/auth/callback/credentials", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({ email, password, callbackUrl }),
       });
 
-      if (result?.error) {
-        setErrors("Invalid email or password");
-      } else if (result?.ok) {
-        // Successful login - redirect to /me or callback URL
+      if (res.ok) {
         router.push(callbackUrl);
         router.refresh();
+      } else {
+        setErrors("Invalid email or password");
       }
     } catch (error) {
       console.error("Sign in error:", error);
@@ -61,6 +68,145 @@ export default function SignInPage() {
     }
   }
 
+  if (isAuthenticated) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          className="w-8 h-8 border-2 border-white/30 border-t-white rounded-full"
+        />
+      </div>
+    );
+  }
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+      className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8"
+    >
+      <div className="text-center mb-8">
+        <h2 className="text-xl font-semibold text-white mb-1">
+          Welcome Back
+        </h2>
+        <p className="text-white/50 text-sm">
+          Sign in to access your dashboard
+        </p>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-5">
+        {/* Email Field */}
+        <div className="space-y-2">
+          <Label htmlFor="email" className="text-white/80 text-sm font-medium">
+            Email Address
+          </Label>
+          <div className="relative">
+            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              placeholder="admin@wetrends.co.uk"
+              autoComplete="email"
+              required
+              className="pl-12 h-12 bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-[#C72C5B] focus:ring-[#C72C5B]/20 rounded-xl"
+            />
+          </div>
+        </div>
+
+        {/* Password Field */}
+        <div className="space-y-2">
+          <Label htmlFor="password" className="text-white/80 text-sm font-medium">
+            Password
+          </Label>
+          <div className="relative">
+            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
+            <Input
+              id="password"
+              name="password"
+              type={showPassword ? "text" : "password"}
+              placeholder="••••••••"
+              autoComplete="current-password"
+              required
+              className="pl-12 h-12 bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-[#C72C5B] focus:ring-[#C72C5B]/20 rounded-xl"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/60 text-xs"
+            >
+              {showPassword ? "Hide" : "Show"}
+            </button>
+          </div>
+        </div>
+
+        {/* Error Alert */}
+        {errors && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <Alert variant="destructive" className="bg-red-500/10 border-red-500/20 text-red-400">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{errors}</AlertDescription>
+            </Alert>
+          </motion.div>
+        )}
+
+        {/* Submit Button */}
+        <Button
+          type="submit"
+          disabled={isPending}
+          className="w-full h-12 bg-[#C72C5B] hover:bg-[#A3244A] text-white font-medium rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isPending ? (
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+              className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full"
+            />
+          ) : (
+            <span className="flex items-center gap-2">
+              Sign In
+              <ArrowRight className="w-4 h-4" />
+            </span>
+          )}
+        </Button>
+      </form>
+
+      {/* Footer */}
+      <div className="mt-6 text-center">
+        <p className="text-white/40 text-sm">
+          Protected area. Authorized personnel only.
+        </p>
+      </div>
+    </motion.div>
+  );
+}
+
+// Loading fallback for Suspense
+function SignInFormSkeleton() {
+  return (
+    <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 animate-pulse">
+      <div className="h-8 bg-white/10 rounded mb-8 mx-auto w-32" />
+      <div className="space-y-5">
+        <div className="space-y-2">
+          <div className="h-4 bg-white/10 rounded w-24" />
+          <div className="h-12 bg-white/10 rounded-xl" />
+        </div>
+        <div className="space-y-2">
+          <div className="h-4 bg-white/10 rounded w-20" />
+          <div className="h-12 bg-white/10 rounded-xl" />
+        </div>
+        <div className="h-12 bg-white/10 rounded-xl mt-4" />
+      </div>
+    </div>
+  );
+}
+
+export default function SignInPage() {
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-black relative overflow-hidden">
       {/* Animated Background Elements */}
@@ -119,109 +265,10 @@ export default function SignInPage() {
           <p className="text-white/60">Admin Dashboard</p>
         </motion.div>
 
-        {/* Login Card */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-          className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8"
-        >
-          <div className="text-center mb-8">
-            <h2 className="text-xl font-semibold text-white mb-1">
-              Welcome Back
-            </h2>
-            <p className="text-white/50 text-sm">
-              Sign in to access your dashboard
-            </p>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Email Field */}
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-white/80 text-sm font-medium">
-                Email Address
-              </Label>
-              <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  placeholder="admin@wetrends.co.uk"
-                  autoComplete="email"
-                  required
-                  className="pl-12 h-12 bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-[#C72C5B] focus:ring-[#C72C5B]/20 rounded-xl"
-                />
-              </div>
-            </div>
-
-            {/* Password Field */}
-            <div className="space-y-2">
-              <Label htmlFor="password" className="text-white/80 text-sm font-medium">
-                Password
-              </Label>
-              <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
-                <Input
-                  id="password"
-                  name="password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="••••••••"
-                  autoComplete="current-password"
-                  required
-                  className="pl-12 h-12 bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-[#C72C5B] focus:ring-[#C72C5B]/20 rounded-xl"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/60 text-xs"
-                >
-                  {showPassword ? "Hide" : "Show"}
-                </button>
-              </div>
-            </div>
-
-            {/* Error Alert */}
-            {errors && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-              >
-                <Alert variant="destructive" className="bg-red-500/10 border-red-500/20 text-red-400">
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertDescription>{errors}</AlertDescription>
-                </Alert>
-              </motion.div>
-            )}
-
-            {/* Submit Button */}
-            <Button
-              type="submit"
-              disabled={isPending}
-              className="w-full h-12 bg-[#C72C5B] hover:bg-[#A3244A] text-white font-medium rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isPending ? (
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                  className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full"
-                />
-              ) : (
-                <span className="flex items-center gap-2">
-                  Sign In
-                  <ArrowRight className="w-4 h-4" />
-                </span>
-              )}
-            </Button>
-          </form>
-
-          {/* Footer */}
-          <div className="mt-6 text-center">
-            <p className="text-white/40 text-sm">
-              Protected area. Authorized personnel only.
-            </p>
-          </div>
-        </motion.div>
+        {/* Login Form with Suspense */}
+        <Suspense fallback={<SignInFormSkeleton />}>
+          <SignInForm />
+        </Suspense>
 
         {/* Back to Site Link */}
         <motion.div
