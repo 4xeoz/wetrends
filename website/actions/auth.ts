@@ -13,13 +13,17 @@ export async function login(formData: FormData) {
       redirect: false,
     })
 
+    if (!result) {
+      return { success: false, error: "InvalidCredentials", message: "Invalid email or password" }
+    }
+
     return { success: true, ...result }
 
   } catch (error) {
     if (error instanceof AuthError) {
-      return { error: error.type, message: error.message }
+      return { success: false, error: error.type, message: error.message }
     }
-    return { error: "UnknownError", message: "An error occurred during sign in" }
+    return { success: false, error: "UnknownError", message: "An error occurred during sign in" }
   }
 }
 
