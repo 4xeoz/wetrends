@@ -1,5 +1,9 @@
-import { auth } from "@/lib/auth";
+import NextAuth from "next-auth";
+import { authConfig } from "@/lib/auth.config";
 import { NextResponse } from "next/server";
+
+// Use edge-safe config — no Prisma, no bcrypt
+const { auth } = NextAuth(authConfig);
 
 export default auth((req) => {
   const isAuthenticated = !!req.auth;
