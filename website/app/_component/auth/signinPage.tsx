@@ -84,17 +84,9 @@ export default function SignInPage() {
   return (
     <div className="flex min-h-screen items-center justify-center p-4 bg-slate-300">
       <div className="flex w-full max-w-5xl overflow-hidden rounded-xl shadow-lg">
-        {/* Left side - Image */}
-        <div className="hidden md:block md:w-1/2 relative bg-primary">
-          <Image
-            src="/placeholder.svg?height=800&width=600"
-            alt="Login illustration"
-            width={600}
-            height={800}
-            className="h-full w-full object-cover"
-            priority
-          />
-          <div className="absolute inset-0 bg-primary/40 flex items-center justify-center">
+        {/* Left side - Solid Color Background */}
+        <div className="hidden md:block md:w-1/2 relative bg-[#C72C5B]">
+          <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-white text-center p-8">
               <h2 className="text-3xl font-bold mb-4">Welcome Back</h2>
               <p className="text-lg">We're glad to see you again!</p>

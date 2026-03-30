@@ -262,7 +262,7 @@ const Showcase = () => {
                                                     muted
                                                     loop
                                                     playsInline
-                                                    poster={`/placeholder.svg?height=500&width=400&text=${item.category}`}
+                                                    
                                                 >
                                                     <source src={item.videoSrc} type="video/mp4" />
                                                     Your browser does not support the video tag.
@@ -316,7 +316,7 @@ const Showcase = () => {
                                                     muted
                                                     loop
                                                     playsInline
-                                                    poster={`/placeholder.svg?height=500&width=400&text=${item.category}`}
+                                                    
                                                 >
                                                     <source src={item.videoSrc} type="video/mp4" />
                                                 </video>
