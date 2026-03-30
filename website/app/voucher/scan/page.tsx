@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { verifyVoucherAccess, addVoucherTransaction, getVoucherTransactions } from '@/actions/voucher';
 import { Button } from '@/components/ui/button';
@@ -35,7 +35,7 @@ interface Transaction {
   createdAt: Date;
 }
 
-export default function ScanVoucherPage() {
+function ScanVoucherContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialCode = searchParams.get('code');
@@ -394,5 +394,18 @@ export default function ScanVoucherPage() {
         )}
       </AnimatePresence>
     </div>
+  );
+}
+
+// Wrapper with Suspense for useSearchParams
+export default function ScanVoucherPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-[#C72C5B]" />
+      </div>
+    }>
+      <ScanVoucherContent />
+    </Suspense>
   );
 }
