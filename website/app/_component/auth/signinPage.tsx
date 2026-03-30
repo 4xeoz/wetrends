@@ -1,36 +1,33 @@
 "use client";
 
-import { CardFooter } from "@/components/ui/card";
-
 import type React from "react";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { signIn } from "next-auth/react";
-import { login } from "@/actions/auth";
-import SignOutButton from "./signOutButton";
-import Image from "next/image";
-
+import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, ArrowRight, Lock, Mail, Sparkles } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export default function SignInPage() {
   const session = useSession();
-  const [errors, setErrors] = useState<any>(null);
-  const [isPending, setIsPending] = useState(false);
-  const [isSignIn, setIsSignIn] = useState(true);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/me";
+  
+  const [errors, setErrors] = useState<string | null>(null);
+  const [isPending, setIsPending] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (session.status === "authenticated") {
+      router.push(callbackUrl);
+    }
+  }, [session.status, router, callbackUrl]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -38,195 +35,208 @@ export default function SignInPage() {
     setErrors(null);
 
     const formData = new FormData(e.currentTarget);
-
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
+
     try {
-      // const result = await login(formData);
       const result = await signIn("credentials", {
         email,
         password,
         redirect: false,
+        callbackUrl,
       });
-      if (!result) {
-        setErrors("Invalid email or password");
-        setIsPending(false);
-        return;
-      }
+
       if (result?.error) {
-        setErrors(result.error);
-        console.log("result.error", result.error);
+        setErrors("Invalid email or password");
       } else if (result?.ok) {
-        // Successfully signed in
+        // Successful login - redirect to /me or callback URL
+        router.push(callbackUrl);
         router.refresh();
       }
     } catch (error) {
-      console.error("Sign in error:", error); // Add this for debugging
+      console.error("Sign in error:", error);
       setErrors("An error occurred during sign in");
     } finally {
       setIsPending(false);
     }
-
-    //router.push("/me");
-    setIsPending(false);
   }
 
-  // async function handleGoogleSignIn() {
-  //   await signIn("google");
-  // }
-  useEffect(() => {
-    if (session.status === "authenticated") {
-      console.log("session.status", session.status);
-      router.refresh();
-    }
-  }, [session, router]);
-
   return (
-    <div className="flex min-h-screen items-center justify-center p-4 bg-slate-300">
-      <div className="flex w-full max-w-5xl overflow-hidden rounded-xl shadow-lg">
-        {/* Left side - Solid Color Background */}
-        <div className="hidden md:block md:w-1/2 relative bg-[#C72C5B]">
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-white text-center p-8">
-              <h2 className="text-3xl font-bold mb-4">Welcome Back</h2>
-              <p className="text-lg">We're glad to see you again!</p>
-            </div>
+    <div className="min-h-screen w-full flex items-center justify-center bg-black relative overflow-hidden">
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        {/* Gradient Orbs */}
+        <motion.div
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.3, 0.5, 0.3],
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+          className="absolute -top-1/4 -right-1/4 w-[600px] h-[600px] bg-[#C72C5B]/30 rounded-full blur-[120px]"
+        />
+        <motion.div
+          animate={{
+            scale: [1.2, 1, 1.2],
+            opacity: [0.2, 0.4, 0.2],
+          }}
+          transition={{
+            duration: 10,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+          className="absolute -bottom-1/4 -left-1/4 w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-[100px]"
+        />
+        
+        {/* Grid Pattern */}
+        <div 
+          className="absolute inset-0 opacity-[0.03]"
+          style={{
+            backgroundImage: `linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px)`,
+            backgroundSize: '60px 60px'
+          }}
+        />
+      </div>
+
+      {/* Main Content */}
+      <div className="relative z-10 w-full max-w-md px-6">
+        {/* Logo & Header */}
+        <motion.div
+          initial={{ opacity: 0, y: -30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          className="text-center mb-8"
+        >
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#C72C5B] mb-6">
+            <Sparkles className="w-8 h-8 text-white" />
           </div>
-        </div>
+          <h1 className="text-3xl font-bold text-white mb-2">
+            WeTrends
+          </h1>
+          <p className="text-white/60">Admin Dashboard</p>
+        </motion.div>
 
-        {/* Right side - Form */}
-        <div className="w-full md:w-1/2 bg-white">
-          <Card className="border-0 shadow-none h-full">
-            <CardHeader>
-              <CardTitle className="text-2xl font-bold text-center text-primary">
-                {isSignIn ? "Sign In" : "Sign Up"}
-              </CardTitle>
-              <CardDescription className="text-center">
-                {isSignIn
-                  ? "Enter your credentials to access your account"
-                  : "Create a new account to get started"}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    placeholder="name@example.com"
-                    autoComplete="email"
-                    className="border-input focus:ring-primary"
-                  />
-                  {errors?.email && (
-                    <p className="text-sm text-destructive mt-1">
-                      {errors.email[0]}
-                    </p>
-                  )}
-                </div>
+        {/* Login Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+          className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8"
+        >
+          <div className="text-center mb-8">
+            <h2 className="text-xl font-semibold text-white mb-1">
+              Welcome Back
+            </h2>
+            <p className="text-white/50 text-sm">
+              Sign in to access your dashboard
+            </p>
+          </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="password">Password</Label>
-                  <Input
-                    id="password"
-                    name="password"
-                    type="password"
-                    autoComplete="current-password"
-                    className="border-input focus:ring-primary"
-                  />
-                  {errors?.password && (
-                    <p className="text-sm text-destructive mt-1">
-                      {errors.password[0]}
-                    </p>
-                  )}
-                </div>
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Email Field */}
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-white/80 text-sm font-medium">
+                Email Address
+              </Label>
+              <div className="relative">
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  placeholder="admin@wetrends.co.uk"
+                  autoComplete="email"
+                  required
+                  className="pl-12 h-12 bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-[#C72C5B] focus:ring-[#C72C5B]/20 rounded-xl"
+                />
+              </div>
+            </div>
 
-                {errors && typeof errors === "string" && (
-                  <Alert variant="destructive">
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertDescription>{errors}</AlertDescription>
-                  </Alert>
-                )}
-
-                <Button
-                  type="submit"
-                  className="w-full bg-primary hover:bg-primary/90"
-                  disabled={isPending}
+            {/* Password Field */}
+            <div className="space-y-2">
+              <Label htmlFor="password" className="text-white/80 text-sm font-medium">
+                Password
+              </Label>
+              <div className="relative">
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
+                <Input
+                  id="password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  autoComplete="current-password"
+                  required
+                  className="pl-12 h-12 bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-[#C72C5B] focus:ring-[#C72C5B]/20 rounded-xl"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/60 text-xs"
                 >
-                  {isPending
-                    ? isSignIn
-                      ? "Signing in..."
-                      : "Signing up..."
-                    : isSignIn
-                    ? "Sign in"
-                    : "Sign up"}
-                </Button>
-              </form>
-
-              {session.data?.user?.email && (
-                <div className="p-3 bg-muted rounded-md text-center">
-                  <p className="text-sm font-medium">Signed in as:</p>
-                  <p className="font-bold">{session.data.user.email}</p>
-                </div>
-              )}
-
-              <div className="relative my-4">
-                <Separator className=" bg-muted-foreground" />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className=" bg-white px-2 text-xs text-muted-foreground">
-                    OR
-                  </span>
-                </div>
+                  {showPassword ? "Hide" : "Show"}
+                </button>
               </div>
+            </div>
 
-              {/* <Button
-                variant="outline"
-                className="w-full border-input bg-slate-300 hover:bg-muted"
-                onClick={handleGoogleSignIn}
+            {/* Error Alert */}
+            {errors && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
               >
-                <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
-                  <path
-                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                    fill="#4285F4"
-                  />
-                  <path
-                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                    fill="#34A853"
-                  />
-                  <path
-                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                    fill="#FBBC05"
-                  />
-                  <path
-                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                    fill="#EA4335"
-                  />
-                  <path d="M1 1h22v22H1z" fill="none" />
-                </svg>
-                Sign in with Google
-              </Button> */}
+                <Alert variant="destructive" className="bg-red-500/10 border-red-500/20 text-red-400">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{errors}</AlertDescription>
+                </Alert>
+              </motion.div>
+            )}
 
-              <div className="text-center mt-6">
-                <p className="text-sm text-gray-600">
-                  {isSignIn
-                    ? "Don't have an account?"
-                    : "Already have an account?"}
-                  <button
-                    type="button"
-                    className="ml-1 text-primary hover:text-primary/80 font-medium"
-                    onClick={() => setIsSignIn(!isSignIn)}
-                  >
-                    {isSignIn ? "Sign up" : "Log in"}
-                  </button>
-                </p>
-              </div>
-            </CardContent>
-            <CardFooter className="justify-center">
-              <SignOutButton className={""} />
-            </CardFooter>
-          </Card>
-        </div>
+            {/* Submit Button */}
+            <Button
+              type="submit"
+              disabled={isPending}
+              className="w-full h-12 bg-[#C72C5B] hover:bg-[#A3244A] text-white font-medium rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isPending ? (
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                  className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full"
+                />
+              ) : (
+                <span className="flex items-center gap-2">
+                  Sign In
+                  <ArrowRight className="w-4 h-4" />
+                </span>
+              )}
+            </Button>
+          </form>
+
+          {/* Footer */}
+          <div className="mt-6 text-center">
+            <p className="text-white/40 text-sm">
+              Protected area. Authorized personnel only.
+            </p>
+          </div>
+        </motion.div>
+
+        {/* Back to Site Link */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="text-center mt-8"
+        >
+          <a
+            href="/"
+            className="text-white/40 hover:text-white/60 text-sm transition-colors"
+          >
+            ← Back to website
+          </a>
+        </motion.div>
       </div>
     </div>
   );
