@@ -200,7 +200,7 @@ const Pricing = () => {
                         >
                             {/* Gradient Background Image */}
                             <Image
-                                src="/images/Gradient 31.png"
+                                src="/images/Gradient 31.webp"
                                 alt="Enterprise package background"
                                 fill
                                 className="object-cover rounded-2xl"

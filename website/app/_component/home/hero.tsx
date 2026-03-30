@@ -15,7 +15,7 @@ const Hero = () => {
             <div className="max-w-7xl mx-auto">
                 {/* Background Image - Priority loaded */}
                 <Image
-                    src="/images/background 1.png"
+                    src="/images/background 1.webp"
                     alt="Hero background"
                     fill
                     className="object-cover z-0"
@@ -32,7 +32,7 @@ const Hero = () => {
                     className="absolute inset-0 z-10"
                 >
                     <Image
-                        src="/images/Ellipse 1.png"
+                        src="/images/Ellipse 1.webp"
                         alt=""
                         fill
                         className="object-cover"
@@ -49,7 +49,7 @@ const Hero = () => {
                     className="absolute inset-0 z-10"
                 >
                     <Image
-                        src="/images/Ellipse 2.png"
+                        src="/images/Ellipse 2.webp"
                         alt=""
                         fill
                         className="object-cover"
@@ -66,7 +66,7 @@ const Hero = () => {
                     className="absolute inset-0 z-10"
                 >
                     <Image
-                        src="/images/Ellipse 3.png"
+                        src="/images/Ellipse 3.webp"
                         alt=""
                         fill
                         className="object-cover"

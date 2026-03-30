@@ -9,7 +9,7 @@ const team = [
   {
     name: 'Eyad Cherifi',
     role: 'Founder & Creative Director',
-    image: '/images/iyad_cherifi.jpeg',
+    image: '/images/iyad_cherifi.webp',
     bio: 'Visionary leader with a passion for storytelling and brand building. 10+ years in creative industry.',
     linkedin: '#',
     twitter: '#',
@@ -17,7 +17,7 @@ const team = [
   {
     name: 'Sarah Mitchell',
     role: 'Head of Strategy',
-    image: '/images/person1.png',
+    image: '/images/person1.webp',
     bio: 'Data-driven strategist who turns insights into impactful campaigns that deliver ROI.',
     linkedin: '#',
     twitter: '#',
@@ -25,7 +25,7 @@ const team = [
   {
     name: 'James Anderson',
     role: 'Lead Designer',
-    image: '/images/person2.png',
+    image: '/images/person2.webp',
     bio: 'Award-winning designer crafting visual experiences that captivate and convert.',
     linkedin: '#',
     twitter: '#',
@@ -33,7 +33,7 @@ const team = [
   {
     name: 'Emily Chen',
     role: 'Video Production Lead',
-    image: '/images/person3.png',
+    image: '/images/person3.webp',
     bio: 'Video wizard bringing stories to life through cinematic visuals and motion.',
     linkedin: '#',
     twitter: '#',

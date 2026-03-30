@@ -12,7 +12,7 @@ const SubHero = () => {
                 {/* Background Image - Shown on all screens */}
                 <div className="absolute inset-0">
                     <Image
-                        src="/images/MacBook-Pro-16.png"
+                        src="/images/MacBook-Pro-16.webp"
                         alt="MacBook Pro background"
                         fill
                         className="object-cover opacity-30 md:opacity-100"
@@ -37,7 +37,7 @@ const SubHero = () => {
                         <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-5 shadow-lg transform rotate-1">
                             <div className="flex items-center space-x-3 mb-4">
                                 <Image
-                                    src="/images/iyad_cherifi.jpeg"
+                                    src="/images/iyad_cherifi.webp"
                                     alt="Eyad Cherifi"
                                     width={48}
                                     height={48}
@@ -91,7 +91,7 @@ const SubHero = () => {
                         <div className="bg-white rounded-2xl p-6 py-10 shadow-lg max-w-xs transform rotate-2">
                             <div className="flex items-center space-x-3 mb-4">
                                 <Image
-                                    src="/images/iyad_cherifi.jpeg"
+                                    src="/images/iyad_cherifi.webp"
                                     alt="Eyad Cherifi"
                                     width={48}
                                     height={48}

@@ -118,7 +118,7 @@ const Showcase = () => {
             <div className="max-w-7xl mx-auto h-full">
                 {/* Background Image - Lazy loaded with lower quality */}
                 <Image
-                    src="/images/Gradient 30.png"
+                    src="/images/Gradient 30.webp"
                     alt=""
                     fill
                     className="object-cover"
@@ -176,7 +176,7 @@ const Showcase = () => {
                                     <div className="bg-black rounded-2xl p-5 md:p-6 lg:p-8 max-w-lg">
                                         <div className="flex items-start gap-3 md:gap-4 mb-4">
                                             <Image
-                                                src="/images/person2.pn"
+                                                src="/images/person2.webp"
                                                 alt="designs alton profile"
                                                 width={48}
                                                 height={48}
@@ -198,7 +198,7 @@ const Showcase = () => {
                                     <div className="bg-white rounded-2xl p-5 md:p-6 lg:p-8 max-w-lg">
                                         <div className="flex items-start gap-3 md:gap-4 mb-4">
                                             <Image
-                                                src="/images/person1.png"
+                                                src="/images/person1.webp"
                                                 alt="Chris profile"
                                                 width={48}
                                                 height={48}

@@ -91,7 +91,7 @@ const WhyLoveUs = () => {
                             >
                                 <div className="relative rounded-2xl overflow-hidden h-64 md:h-72 lg:h-80">
                                     <Image
-                                        src="/images/Gradient 27.png"
+                                        src="/images/Gradient 27.webp"
                                         alt="Radar & Strategy background"
                                         fill
                                         className="object-cover"
@@ -126,7 +126,7 @@ const WhyLoveUs = () => {
                             >
                                 <div className="relative rounded-2xl overflow-hidden h-64 md:h-72 lg:h-80">
                                     <Image
-                                        src="/images/Gradient 28.png"
+                                        src="/images/Gradient 28.webp"
                                         alt="Hands-Free Production background"
                                         fill
                                         className="object-cover"
@@ -161,7 +161,7 @@ const WhyLoveUs = () => {
                             >
                                 <div className="relative rounded-2xl overflow-hidden h-64 md:h-72 lg:h-80">
                                     <Image
-                                        src="/images/Gradient 29.png"
+                                        src="/images/Gradient 29.webp"
                                         alt="Launch & Optimize background"
                                         fill
                                         className="object-cover"
