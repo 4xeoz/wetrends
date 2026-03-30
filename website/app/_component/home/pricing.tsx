@@ -1,16 +1,19 @@
 import React from 'react';
 import { Check, Star, Zap, ArrowUpRight } from 'lucide-react';
 import { Badge } from '../../../components/ui/badge';
-import Image from 'next/image';
 import AnimatedContent from "@/components/ui/animated-content";
 
 /**
- * Pricing - Responsive section following Showcase layout pattern
+ * Pricing - Full height section with CSS gradients
  */
 const Pricing = () => {
     return (
-        <section className="text-black py-10 md:py-20 px-4 sm:px-6 lg:px-8 relative h-fit w-full overflow-hidden">
-            <div className="max-w-7xl mx-auto h-full">
+        <section className="relative min-h-screen text-black py-10 md:py-20 px-4 sm:px-6 lg:px-8 overflow-hidden flex items-center bg-gray-50">
+            {/* Subtle Background Pattern */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(199,44,91,0.03),transparent_50%)]" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(139,92,246,0.02),transparent_50%)]" />
+
+            <div className="relative z-10 max-w-7xl mx-auto w-full">
                 {/* Content Container */}
                 <div>
                     <AnimatedContent
@@ -20,7 +23,7 @@ const Pricing = () => {
                         ease="power3.out"
                         animateOpacity={true}
                         threshold={0.1}
-                        className="mb-6 md:mb-10 relative"
+                        className="mb-6 md:mb-10"
                     >
                         <h2 className="text-3xl md:text-4xl lg:text-6xl font-bold mb-2">Results</h2>
                         <h3 className="text-3xl md:text-4xl lg:text-6xl font-serif italic font-bold">Come First</h3>
@@ -43,7 +46,7 @@ const Pricing = () => {
                     </AnimatedContent>
 
                     {/* 3 Pricing Cards Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 relative h-full max-w-7xl mx-auto">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 h-full max-w-7xl mx-auto">
 
                         {/* Card 1 - Core */}
                         <AnimatedContent
@@ -103,7 +106,7 @@ const Pricing = () => {
                                     </div>
                                     <div className="flex items-start gap-3">
                                         <Check className="w-5 h-5 md:w-6 md:h-6 text-wetrends flex-shrink-0 mt-0.5" />
-                                        <span className="text-gray-700 text-sm md:text-base">Unlimited revisions until you're happy</span>
+                                        <span className="text-gray-700 text-sm md:text-base">Unlimited revisions until you&apos;re happy</span>
                                     </div>
                                 </div>
                             </div>
@@ -181,13 +184,13 @@ const Pricing = () => {
                                     </div>
                                     <div className="flex items-start gap-3">
                                         <Check className="w-5 h-5 md:w-6 md:h-6 text-wetrends flex-shrink-0 mt-0.5" />
-                                        <span className="text-sm md:text-base">Unlimited revisions until you're thrilled</span>
+                                        <span className="text-sm md:text-base">Unlimited revisions until you&apos;re thrilled</span>
                                     </div>
                                 </div>
                             </div>
                         </AnimatedContent>
 
-                        {/* Card 3 - Enterprise - Gets the Gradient Image */}
+                        {/* Card 3 - Enterprise - Gets the Gradient Background */}
                         <AnimatedContent
                             direction="vertical"
                             distance={100}
@@ -198,14 +201,9 @@ const Pricing = () => {
                             threshold={0.1}
                             className="relative"
                         >
-                            {/* Gradient Background Image */}
-                            <Image
-                                src="/images/Gradient 31.webp"
-                                alt="Enterprise package background"
-                                fill
-                                className="object-cover rounded-2xl"
-                                quality={90}
-                            />
+                            {/* Gradient Background */}
+                            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#C72C5B] via-purple-600 to-blue-600" />
+                            <div className="absolute inset-0 rounded-2xl bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.1),transparent_50%)]" />
                             <div className="absolute inset-0 bg-black/10 rounded-2xl" />
                             
                             <div className="relative z-10 p-6 md:p-8 h-full flex flex-col text-white">
@@ -280,4 +278,3 @@ const Pricing = () => {
 };
 
 export default Pricing;
-                                        

@@ -42,7 +42,7 @@ const team = [
 
 export function Team() {
   return (
-    <section className="relative overflow-hidden bg-white py-20 md:py-32">
+    <section className="relative min-h-screen overflow-hidden bg-white py-20 md:py-32 flex items-center">
       {/* Background pattern */}
       <div className="absolute inset-0 opacity-[0.02]"
         style={{

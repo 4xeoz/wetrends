@@ -1,9 +1,8 @@
 'use client';
 
 import { motion } from 'motion/react';
-import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight, Calendar, ArrowUpRight } from 'lucide-react';
+import { ArrowRight, Calendar, ArrowUpRight, BookOpen } from 'lucide-react';
 import AnimatedContent from '@/components/ui/animated-content';
 
 // Static blog data for preview (will show even before database has posts)
@@ -12,38 +11,38 @@ const previewPosts = [
     id: '1',
     title: 'The Future of Video Marketing in 2024',
     excerpt: 'Discover how short-form video content is reshaping brand storytelling and driving unprecedented engagement rates.',
-    image: '/images/Gradient 27.webp',
     category: 'Video Production',
     date: 'Dec 15, 2024',
     slug: '#',
+    gradient: 'from-purple-600 to-pink-600',
   },
   {
     id: '2',
     title: 'Building a Brand That Stands Out',
     excerpt: 'Learn the key principles of creating a distinctive brand identity that resonates with your target audience.',
-    image: '/images/Gradient 28.webp',
     category: 'Branding',
     date: 'Dec 10, 2024',
     slug: '#',
+    gradient: 'from-blue-600 to-cyan-600',
   },
   {
     id: '3',
     title: 'Social Media Trends to Watch',
     excerpt: 'Stay ahead of the curve with these emerging social media trends that will define the coming year.',
-    image: '/images/Gradient 29.webp',
     category: 'Social Media',
     date: 'Dec 5, 2024',
     slug: '#',
+    gradient: 'from-emerald-600 to-teal-600',
   },
 ];
 
 export function BlogPreview() {
   return (
-    <section className="relative overflow-hidden bg-white py-24 md:py-32">
+    <section className="relative min-h-screen overflow-hidden bg-white py-24 md:py-32 flex items-center">
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-b from-gray-50/50 to-white" />
 
-      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full">
         {/* Header */}
         <div className="mb-16 flex flex-col items-start justify-between gap-6 md:flex-row md:items-end">
           <div>
@@ -118,17 +117,13 @@ export function BlogPreview() {
                 className="group"
               >
                 <Link href={post.slug}>
-                  {/* Image */}
-                  <div className="relative mb-6 aspect-[4/3] overflow-hidden rounded-2xl">
-                    <Image
-                      src={post.image}
-                      alt={post.title}
-                      fill
-                      className="object-cover transition-transform duration-700 group-hover:scale-110"
-                      quality={50}
-                      sizes="(max-width: 768px) 100vw, 33vw"
-                      loading={index === 0 ? "eager" : "lazy"}
-                    />
+                  {/* Gradient Card */}
+                  <div className={`relative mb-6 aspect-[4/3] overflow-hidden rounded-2xl bg-gradient-to-br ${post.gradient}`}>
+                    {/* Content */}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <BookOpen className="w-16 h-16 text-white/30" />
+                    </div>
+                    
                     {/* Overlay */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                     

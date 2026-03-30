@@ -29,12 +29,12 @@ const CTASection: React.FC<CTASectionProps> = ({
           <span className="text-sm text-gray-600 w-1/3">{teamText}</span>
             <div className="flex -space-x-2">
             <img
-              src="/images/iyad_cherifi.jpeg"
+              src="/images/iyad_cherifi.webp"
               alt="Iyad Cherifi"
               className="w-8 h-8 rounded-full border-2 border-white object-cover"
             />
             <img
-              src="/images/becca_ralph.png"
+              src="/images/becca_ralph.webp"
               alt="Becca Ralph"
               className="w-8 h-8 rounded-full border-2 border-white object-cover"
             />

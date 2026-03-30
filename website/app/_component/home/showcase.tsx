@@ -7,7 +7,7 @@ import { Badge } from '../../../components/ui/badge';
 import AnimatedContent from "@/components/ui/animated-content";
 
 /**
- * Showcase - Responsive section with background image
+ * Showcase - Full height section with CSS gradient background
  */
 const Showcase = () => {
     const [isPlaying, setIsPlaying] = useState(false);
@@ -111,22 +111,16 @@ const Showcase = () => {
             videoSrc: "/videos/animations-preview-wetrends.mp4",
             gradient: "from-indigo-600/80 to-purple-600/80",
         },
-    ]
+    ];
 
     return (
-        <section id="work" className="bg-gray-900 text-white py-10 md:py-20 px-4 sm:px-6 lg:px-8 relative h-fit w-full overflow-hidden">
-            <div className="max-w-7xl mx-auto h-full">
-                {/* Background Image - Lazy loaded with lower quality */}
-                <Image
-                    src="/images/Gradient 30.webp"
-                    alt=""
-                    fill
-                    className="object-cover"
-                    quality={50}
-                    sizes="100vw"
-                    loading="lazy"
-                />
+        <section id="work" className="relative min-h-screen bg-gray-900 text-white py-10 md:py-20 px-4 sm:px-6 lg:px-8 overflow-hidden flex items-center">
+            {/* CSS Gradient Background */}
+            <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-slate-900 to-gray-800" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(199,44,91,0.1),transparent_50%)]" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(139,92,246,0.08),transparent_50%)]" />
 
+            <div className="relative z-10 max-w-7xl mx-auto w-full">
                 {/* Content Container */}
                 <div>
                     <AnimatedContent
@@ -136,13 +130,13 @@ const Showcase = () => {
                         ease="power3.out"
                         animateOpacity={true}
                         threshold={0.1}
-                        className="mb-8 md:mb-20 relative"
+                        className="mb-8 md:mb-20"
                     >
                         <h2 className="text-3xl md:text-4xl lg:text-6xl font-bold text-white mb-2">We Take care</h2>
                         <h3 className="text-3xl md:text-4xl lg:text-6xl font-serif italic font-bold text-white">of everything</h3>
                     </AnimatedContent>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 lg:gap-16 items-start lg:items-center relative h-full max-w-6xl mx-auto">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 lg:gap-16 items-start lg:items-center h-full max-w-6xl mx-auto">
                         {/* Left Column - Content */}
                         <div className="space-y-6 md:space-y-8 lg:ml-10 order-2 lg:order-1">
                             {/* Description */}
@@ -175,42 +169,34 @@ const Showcase = () => {
                                     {/* First Testimonial - Dark */}
                                     <div className="bg-black rounded-2xl p-5 md:p-6 lg:p-8 max-w-lg">
                                         <div className="flex items-start gap-3 md:gap-4 mb-4">
-                                            <Image
-                                                src="/images/person2.webp"
-                                                alt="designs alton profile"
-                                                width={48}
-                                                height={48}
-                                                className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover flex-shrink-0"
-                                            />
+                                            <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-br from-[#C72C5B] to-purple-600 flex-shrink-0 flex items-center justify-center text-white font-bold">
+                                                D
+                                            </div>
                                             <div>
                                                 <h4 className="text-white font-semibold text-sm md:text-base">designs alton.</h4>
                                                 <p className="text-gray-400 text-xs md:text-sm">Lead Software Engineer</p>
                                             </div>
                                         </div>
                                         <blockquote className="text-white text-sm md:text-base leading-relaxed">
-                                            "Such a great team, they are friends more then business patterns, thank you.
+                                            &ldquo;Such a great team, they are friends more then business patterns, thank you.
                                             <br />
-                                            <span className="font-bold">LOVE IT :)"</span>
+                                            <span className="font-bold">LOVE IT :)&rdquo;</span>
                                         </blockquote>
                                     </div>
 
                                     {/* Second Testimonial - Light */}
                                     <div className="bg-white rounded-2xl p-5 md:p-6 lg:p-8 max-w-lg">
                                         <div className="flex items-start gap-3 md:gap-4 mb-4">
-                                            <Image
-                                                src="/images/person1.webp"
-                                                alt="Chris profile"
-                                                width={48}
-                                                height={48}
-                                                className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover flex-shrink-0"
-                                            />
+                                            <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex-shrink-0 flex items-center justify-center text-white font-bold">
+                                                C
+                                            </div>
                                             <div>
                                                 <h4 className="text-gray-900 font-semibold text-sm md:text-base">designs alton.</h4>
                                                 <p className="text-gray-500 text-xs md:text-sm">Lead Software Engineer</p>
                                             </div>
                                         </div>
                                         <blockquote className="text-gray-800 text-sm md:text-base leading-relaxed mb-4">
-                                            "I never imagined I'd be praising a team like this, but their work truly impressed me. Every design wasn't just beautiful — it had purpose, built as part of a real sales funnel. They gave my brand a unique character that stands out from the competition."
+                                            &ldquo;I never imagined I&apos;d be praising a team like this, but their work truly impressed me. Every design wasn&apos;t just beautiful — it had purpose, built as part of a real sales funnel.&rdquo;
                                         </blockquote>
 
                                         {/* Voice Over Progress Bar */}
@@ -271,7 +257,7 @@ const Showcase = () => {
                                         easing="elastic"
                                     >
                                     {showcaseItems.map((item) => {
-                                        const IconComponent = item.icon
+                                        const IconComponent = item.icon;
                                         return (
                                             <Card key={item.id} className="overflow-hidden shadow-2xl shadow-black/50">
                                                 {/* Video Background */}
@@ -282,8 +268,6 @@ const Showcase = () => {
                                                     loop
                                                     playsInline
                                                     poster={`/placeholder.svg?height=500&width=400&text=${item.category}`}
-                                                    onError={(e) => console.error('Video error:', e)}
-                                                    onLoadStart={() => console.log('Video loading:', item.videoSrc)}
                                                 >
                                                     <source src={item.videoSrc} type="video/mp4" />
                                                     Your browser does not support the video tag.
@@ -311,7 +295,7 @@ const Showcase = () => {
                                                     </div>
                                                 </div>
                                             </Card>
-                                        )
+                                        );
                                     })}
                                 </CardSwap>
                                 </div>
@@ -321,7 +305,7 @@ const Showcase = () => {
                             <div className="lg:hidden">
                                 <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 snap-x snap-mandatory scrollbar-hide">
                                     {showcaseItems.map((item) => {
-                                        const IconComponent = item.icon
+                                        const IconComponent = item.icon;
                                         return (
                                             <div 
                                                 key={item.id} 
@@ -361,7 +345,7 @@ const Showcase = () => {
                                                     </div>
                                                 </div>
                                             </div>
-                                        )
+                                        );
                                     })}
                                 </div>
                             </div>
