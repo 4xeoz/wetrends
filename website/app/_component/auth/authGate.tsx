@@ -4,60 +4,51 @@ import React from 'react'
 import ErrorBoundary from '../shared/error-boundary'
 import { LoadingWrapper } from '../shared/loading-wrapper'
 
-/**
- * Props for the AuthGate component
- * @interface AuthGateProps
- */
 interface AuthGateProps {
-  /** Child components to render when authentication requirements are met */
   children: React.ReactNode
-  /** Whether authentication is required to access the wrapped content */
   requireAuth?: boolean
-  /** URL to redirect to when authentication is required but user is not authenticated */
   redirectTo?: string
-  /** Custom fallback component to show during loading states */
   fallback?: React.ReactNode
 }
 
-/**
- * AuthGate - A wrapper component that handles authentication-based rendering and redirection
- * 
- * This component serves as a guard for protected routes and provides consistent
- * authentication handling across the application.
- * 
- * @param {AuthGateProps} props - The component props
- * @returns {Promise<JSX.Element>} The rendered component with auth protection
- * 
- * @example
- * // Protect a route - redirects to sign-in if not authenticated
- * <AuthGate requireAuth={true} redirectTo="/login">
- *   <ProtectedContent />
- * </AuthGate>
- * 
- * @example
- * // Public route - renders regardless of auth status
- * <AuthGate requireAuth={false}>
- *   <PublicContent />
- * </AuthGate>
- */
+// Debug logging utility - works in both Vercel and local dev
+const debugLog = (stage: string, data: any) => {
+  const timestamp = new Date().toISOString()
+  console.log(`[AuthGate ${timestamp}] ${stage}:`, JSON.stringify(data, null, 2))
+}
+
 const AuthGate = async ({ 
   children, 
   requireAuth = false, 
   redirectTo = '/sign-in',
   fallback 
 }: AuthGateProps) => {
+  const startTime = Date.now()
+  debugLog('START', { requireAuth, redirectTo })
+
   try {
-    // Get the current user session from the auth provider
     const session = await auth()
-    
-    // If authentication is required but user is not authenticated, redirect
+    const authTime = Date.now() - startTime
+
+    debugLog('SESSION_FETCHED', {
+      hasSession: !!session,
+      userId: session?.user?.id || 'none',
+      userEmail: session?.user?.email || 'none',
+      requireAuth,
+      fetchTimeMs: authTime
+    })
+
+    // Check if auth is required but user not authenticated
     if (requireAuth && !session) {
+      debugLog('AUTH_REQUIRED_REDIRECT', { redirectTo })
       redirect(redirectTo)
     }
 
-    // Wrap children with error boundary and loading states
-    // If auth is required but user is not authenticated, this won't render (due to redirect above)
-    // If auth is not required, render regardless of auth status
+    debugLog('RENDERING', { 
+      withErrorBoundary: true,
+      withLoadingWrapper: true 
+    })
+
     return (
       <ErrorBoundary>
         <LoadingWrapper fallback={fallback}>
@@ -66,56 +57,41 @@ const AuthGate = async ({
       </ErrorBoundary>
     )
   } catch (error) {
-    // Log authentication errors and redirect to error page
-    console.error('AuthGate error:', error)
+    const errorTime = Date.now() - startTime
+    const errorMessage = error instanceof Error ? error.message : String(error)
+    const errorStack = error instanceof Error ? error.stack : 'no stack'
+
+    debugLog('ERROR', {
+      message: errorMessage,
+      stack: errorStack,
+      timeMs: errorTime,
+      requireAuth
+    })
+
+    // Only redirect to error page on critical failures, not redirects
+    if (error instanceof Error && error.message.includes('NEXT_REDIRECT')) {
+      throw error
+    }
+
     redirect('/error')
   }
 }
 
 export default AuthGate
 
-/**
- * ProtectedRoute - Higher-order component for routes that require authentication
- * 
- * Automatically redirects unauthenticated users to the sign-in page.
- * 
- * @param {Object} props - Component props
- * @param {React.ReactNode} props.children - Child components to protect
- * @returns {JSX.Element} AuthGate configured for protected routes
- * 
- * @example
- * <ProtectedRoute>
- *   <UserDashboard />
- * </ProtectedRoute>
- */
+// Protect a route - redirects unauthenticated users to sign-in
 export const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <AuthGate requireAuth={true}>
     {children}
   </AuthGate>
 )
 
-/**
- * PublicRoute - Component for public routes that can optionally redirect authenticated users
- * 
- * Useful for login/register pages that should redirect logged-in users elsewhere.
- * 
- * @param {Object} props - Component props
- * @param {React.ReactNode} props.children - Child components
- * @param {string} [props.redirectTo='/me'] - Where to redirect authenticated users
- * @returns {JSX.Element} AuthGate configured for public routes
- * 
- * @example
- * <PublicRoute redirectTo="/dashboard">
- *   <LoginForm />
- * </PublicRoute>
- */
+// Public route - renders for any user (authenticated or not)
 export const PublicRoute: React.FC<{ 
   children: React.ReactNode
   redirectTo?: string 
-}> = ({ children, redirectTo = '/me' }) => {
-  return (
-    <AuthGate requireAuth={false}>
-      {children}
-    </AuthGate>
-  )
-}
+}> = ({ children, redirectTo = '/me' }) => (
+  <AuthGate requireAuth={false}>
+    {children}
+  </AuthGate>
+)
