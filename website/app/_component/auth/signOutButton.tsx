@@ -1,23 +1,19 @@
-'use client'
+"use client";
 
-import React from 'react'
-import { signOut } from 'next-auth/react'
+import { logout } from "@/actions/auth";
 
-const SignOutButton = ({ className } : { className : any}) => {
+const SignOutButton = ({ className }: { className?: string }) => {
   const handleSignOut = async () => {
-    localStorage.clear()
-    await signOut()
-  }
+    localStorage.clear();
+    await logout();
+    window.location.href = "/sign-in";
+  };
 
   return (
-    <button 
-      type="button" 
-      onClick={handleSignOut}
-      className={className}
-    >
+    <button type="button" onClick={handleSignOut} className={className}>
       Sign out
     </button>
-  )
-}
+  );
+};
 
-export default SignOutButton
+export default SignOutButton;

@@ -2,7 +2,7 @@
 'use server'
 
 import { prisma } from '@/prisma/prisma';
-import { auth } from '@/lib/auth/auth';
+import { auth } from '@/lib/auth';
 import { z } from 'zod'
 
 

@@ -1,38 +1,22 @@
+import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
-import { getToken } from "next-auth/jwt";
-import type { NextRequest } from "next/server";
 
-export async function middleware(req: NextRequest) {
-  const { nextUrl } = req;
-  
-  // Get the token using JWT
-  const token = await getToken({ 
-    req, 
-    secret: process.env.AUTH_SECRET 
-  });
-  
-  const isAuthenticated = !!token;
+export default auth((req) => {
+  const isAuthenticated = !!req.auth;
+  const { pathname } = req.nextUrl;
 
-  // Upon successful sign-in redirect to /me
-  if (isAuthenticated && nextUrl.pathname === "/sign-in") {
-    return NextResponse.redirect(new URL("/me", nextUrl.origin));
+  // Redirect authenticated users away from sign-in page
+  if (isAuthenticated && pathname === "/sign-in") {
+    return NextResponse.redirect(new URL("/me", req.nextUrl.origin));
   }
 
-  // Protect /me and all paths under it - redirect to sign-in if not authenticated
-  if (
-    nextUrl.pathname.startsWith("/me") &&
-    !isAuthenticated
-  ) {
-    return NextResponse.redirect(new URL("/sign-in", nextUrl.origin));
-  }
-
-  // Prevent authenticated users from accessing sign-in page
-  if (nextUrl.pathname === "/sign-in" && isAuthenticated) {
-    return NextResponse.redirect(new URL("/me", nextUrl.origin));
+  // Protect /me/* routes — redirect unauthenticated users to sign-in
+  if (!isAuthenticated && pathname.startsWith("/me")) {
+    return NextResponse.redirect(new URL("/sign-in", req.nextUrl.origin));
   }
 
   return NextResponse.next();
-}
+});
 
 export const config = {
   matcher: [
