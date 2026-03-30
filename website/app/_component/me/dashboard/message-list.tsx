@@ -37,6 +37,7 @@ interface MessageListProps {
 }
 
 export default function MessageList({ messages, onDeleteSuccess }: MessageListProps) {
+  const [localMessages, setLocalMessages] = useState<Message[]>(messages)
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
   const [isMarkingRead, setIsMarkingRead] = useState(false)
@@ -55,9 +56,8 @@ export default function MessageList({ messages, onDeleteSuccess }: MessageListPr
     try {
       const response = await markMessageAsRead(id)
       if (response.success) {
-        // Update the message in the list
-        const updatedMessages = messages.map(msg => 
-          msg.id === id ? { ...msg, isRead: true } : msg
+        setLocalMessages((prev) =>
+          prev.map((msg) => (msg.id === id ? { ...msg, isRead: true } : msg))
         )
       }
     } catch (error) {
@@ -78,6 +78,7 @@ export default function MessageList({ messages, onDeleteSuccess }: MessageListPr
     setIsDeleting(true)
     try {
       await deleteMessage(messageToDelete)
+      setLocalMessages((prev) => prev.filter((m) => m.id !== messageToDelete))
       onDeleteSuccess(messageToDelete)
       if (selectedMessage?.id === messageToDelete) {
         setSelectedMessage(null)
@@ -104,8 +105,8 @@ export default function MessageList({ messages, onDeleteSuccess }: MessageListPr
           </TableRow>
         </TableHeader>
         <TableBody>
-          {messages.map((message) => (
-            <TableRow 
+          {localMessages.map((message) => (
+            <TableRow
               key={message.id}
               className={message.isRead ? '' : 'bg-wetrends-50'}
             >

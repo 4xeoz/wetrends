@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { getActorVouchers } from '@/actions/voucher';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -210,9 +210,6 @@ function VoucherView() {
     </div>
   );
 }
-
-// Wrap in Suspense for useSearchParams
-import { Suspense } from 'react';
 
 export default function VoucherPage() {
   return (

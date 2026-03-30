@@ -1,26 +1,24 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getContactMessages } from '@/actions/contact';
+import { getDashboardStats } from '@/actions/dashboard';
 import { DashboardContent } from '@/app/_component/me/dashboard/dashboard-content';
-import { Message } from '@/app/_component/me/dashboard/message-list';
 import { motion } from 'motion/react';
-import { Loader2 } from 'lucide-react';
 
 export default function AdminDashboardPage() {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [stats, setStats] = useState<Awaited<ReturnType<typeof getDashboardStats>>['stats'] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchMessages = async () => {
+  const fetchStats = async () => {
     setIsLoading(true);
     try {
-      const response = await getContactMessages();
-      if (response.success && response.messages) {
-        setMessages(response.messages);
+      const response = await getDashboardStats();
+      if (response.success && response.stats) {
+        setStats(response.stats);
         setError(null);
       } else {
-        setError(response.message || 'Failed to fetch messages');
+        setError(response.message || 'Failed to fetch dashboard stats');
       }
     } catch (err) {
       setError('An unexpected error occurred');
@@ -31,10 +29,10 @@ export default function AdminDashboardPage() {
   };
 
   useEffect(() => {
-    fetchMessages();
+    fetchStats();
   }, []);
 
-  if (isLoading && messages.length === 0) {
+  if (isLoading && !stats) {
     return (
       <div className="flex h-screen items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
         <motion.div
@@ -68,7 +66,7 @@ export default function AdminDashboardPage() {
           <h3 className="mb-2 text-xl font-bold text-gray-900">Something went wrong</h3>
           <p className="mb-6 text-gray-600">{error}</p>
           <button
-            onClick={fetchMessages}
+            onClick={fetchStats}
             className="rounded-full bg-[#C72C5B] px-6 py-2 font-medium text-white transition-all hover:bg-[#A3244A] hover:shadow-lg"
           >
             Try Again
@@ -78,5 +76,5 @@ export default function AdminDashboardPage() {
     );
   }
 
-  return <DashboardContent messages={messages} isLoading={isLoading} onRefresh={fetchMessages} />;
+  return <DashboardContent stats={stats!} isLoading={isLoading} onRefresh={fetchStats} />;
 }

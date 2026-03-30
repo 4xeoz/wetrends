@@ -366,3 +366,60 @@ export async function getVoucherTransactions(voucherId: string) {
     return { success: false, message: 'Failed to fetch transactions' };
   }
 }
+
+// Delete actor (admin only)
+export async function deleteActor(id: string) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { success: false, message: 'Unauthorized' };
+  }
+
+  try {
+    await prisma.actor.delete({ where: { id } });
+    revalidatePath('/me/vouchers/actors');
+    return { success: true };
+  } catch (error) {
+    console.error('Error deleting actor:', error);
+    return { success: false, message: 'Failed to delete actor' };
+  }
+}
+
+// Reset voucher client password (admin only)
+export async function resetVoucherPassword(voucherId: string, newPassword: string) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { success: false, message: 'Unauthorized' };
+  }
+
+  try {
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await prisma.voucher.update({
+      where: { id: voucherId },
+      data: { clientPassword: hashedPassword },
+    });
+    return { success: true };
+  } catch (error) {
+    console.error('Error resetting voucher password:', error);
+    return { success: false, message: 'Failed to reset password' };
+  }
+}
+
+// Update voucher status (admin only)
+export async function updateVoucherStatus(id: string, status: 'ACTIVE' | 'CANCELLED' | 'EXPIRED') {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { success: false, message: 'Unauthorized' };
+  }
+
+  try {
+    const voucher = await prisma.voucher.update({
+      where: { id },
+      data: { status },
+    });
+    revalidatePath('/me/vouchers');
+    return { success: true, voucher };
+  } catch (error) {
+    console.error('Error updating voucher status:', error);
+    return { success: false, message: 'Failed to update status' };
+  }
+}

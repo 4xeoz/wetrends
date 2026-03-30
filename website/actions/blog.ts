@@ -12,16 +12,12 @@ export async function getPublishedPosts(limit?: number) {
       include: {
         category: true,
         author: {
-          select: {
-            name: true,
-            image: true,
-          },
+          select: { name: true, image: true },
         },
       },
       orderBy: { publishedAt: 'desc' },
       take: limit,
     });
-
     return { success: true, posts };
   } catch (error) {
     console.error('Error fetching posts:', error);
@@ -36,15 +32,11 @@ export async function getAllPosts() {
       include: {
         category: true,
         author: {
-          select: {
-            name: true,
-            email: true,
-          },
+          select: { name: true, email: true },
         },
       },
       orderBy: { createdAt: 'desc' },
     });
-
     return { success: true, posts };
   } catch (error) {
     console.error('Error fetching posts:', error);
@@ -52,7 +44,32 @@ export async function getAllPosts() {
   }
 }
 
-// Get single post by slug
+// Get single post by ID (admin edit)
+export async function getPostById(id: string) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { success: false, message: 'Unauthorized' };
+  }
+
+  try {
+    const post = await prisma.blogPost.findUnique({
+      where: { id },
+      include: {
+        category: true,
+        author: {
+          select: { name: true, image: true },
+        },
+      },
+    });
+    if (!post) return { success: false, message: 'Post not found' };
+    return { success: true, post };
+  } catch (error) {
+    console.error('Error fetching post:', error);
+    return { success: false, message: 'Failed to fetch post' };
+  }
+}
+
+// Get single post by slug (public)
 export async function getPostBySlug(slug: string) {
   try {
     const post = await prisma.blogPost.findUnique({
@@ -60,19 +77,12 @@ export async function getPostBySlug(slug: string) {
       include: {
         category: true,
         author: {
-          select: {
-            name: true,
-            image: true,
-          },
+          select: { name: true, image: true },
         },
       },
     });
+    if (!post) return { success: false, message: 'Post not found' };
 
-    if (!post) {
-      return { success: false, message: 'Post not found' };
-    }
-
-    // Increment views
     await prisma.blogPost.update({
       where: { id: post.id },
       data: { views: { increment: 1 } },
@@ -96,15 +106,11 @@ export async function getPostsByCategory(categorySlug: string) {
       include: {
         category: true,
         author: {
-          select: {
-            name: true,
-            image: true,
-          },
+          select: { name: true, image: true },
         },
       },
       orderBy: { publishedAt: 'desc' },
     });
-
     return { success: true, posts };
   } catch (error) {
     console.error('Error fetching posts:', error);
@@ -122,7 +128,6 @@ export async function getCategories() {
         },
       },
     });
-
     return { success: true, categories };
   } catch (error) {
     console.error('Error fetching categories:', error);
@@ -159,7 +164,6 @@ export async function createPost(data: CreatePostData) {
         publishedAt: data.published ? new Date() : null,
       },
     });
-
     revalidatePath('/blogs');
     return { success: true, post };
   } catch (error) {
@@ -168,7 +172,7 @@ export async function createPost(data: CreatePostData) {
   }
 }
 
-// Update blog post
+// Update blog post — preserves publishedAt if post was already published
 interface UpdatePostData {
   id: string;
   title?: string;
@@ -192,16 +196,28 @@ export async function updatePost(data: UpdatePostData) {
   try {
     const { id, ...updateData } = data;
 
+    // Fetch current post to preserve publishedAt when re-publishing
+    const currentPost = await prisma.blogPost.findUnique({
+      where: { id },
+      select: { published: true, publishedAt: true, slug: true },
+    });
+    if (!currentPost) return { success: false, message: 'Post not found' };
+
+    let publishedAt = currentPost.publishedAt;
+    if (updateData.published === true && !currentPost.publishedAt) {
+      publishedAt = new Date();
+    } else if (updateData.published === false) {
+      publishedAt = null;
+    }
+
     const post = await prisma.blogPost.update({
       where: { id },
-      data: {
-        ...updateData,
-        publishedAt: updateData.published ? new Date() : null,
-      },
+      data: { ...updateData, publishedAt },
     });
 
     revalidatePath('/blogs');
-    revalidatePath(`/blogs/${post.slug}`);
+    revalidatePath(`/blogs/${currentPost.slug}`);
+    if (post.slug !== currentPost.slug) revalidatePath(`/blogs/${post.slug}`);
     return { success: true, post };
   } catch (error) {
     console.error('Error updating post:', error);
@@ -217,10 +233,7 @@ export async function deletePost(id: string) {
   }
 
   try {
-    await prisma.blogPost.delete({
-      where: { id },
-    });
-
+    await prisma.blogPost.delete({ where: { id } });
     revalidatePath('/blogs');
     return { success: true };
   } catch (error) {
@@ -240,10 +253,31 @@ export async function createCategory(name: string, slug: string, description?: s
     const category = await prisma.blogCategory.create({
       data: { name, slug, description },
     });
-
     return { success: true, category };
   } catch (error) {
     console.error('Error creating category:', error);
     return { success: false, message: 'Failed to create category' };
+  }
+}
+
+// Delete category — clears categoryId on posts first to avoid FK errors
+export async function deleteCategory(id: string) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { success: false, message: 'Unauthorized' };
+  }
+
+  try {
+    // Detach posts from this category before deleting
+    await prisma.blogPost.updateMany({
+      where: { categoryId: id },
+      data: { categoryId: null },
+    });
+    await prisma.blogCategory.delete({ where: { id } });
+    revalidatePath('/me/blog/categories');
+    return { success: true };
+  } catch (error) {
+    console.error('Error deleting category:', error);
+    return { success: false, message: 'Failed to delete category' };
   }
 }

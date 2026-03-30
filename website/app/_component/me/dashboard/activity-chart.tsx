@@ -17,7 +17,7 @@ export function ActivityChart({ data }: ActivityChartProps) {
   return (
     <div className="rounded-2xl bg-white p-6 shadow-sm">
       <h3 className="mb-6 text-lg font-bold text-gray-900">Weekly Activity</h3>
-      <div className="flex items-end justify-between gap-2">
+      <div className="flex items-end justify-between gap-2 h-32">
         {data.map((item, index) => (
           <div key={item.day} className="flex flex-1 flex-col items-center gap-2">
             <motion.div

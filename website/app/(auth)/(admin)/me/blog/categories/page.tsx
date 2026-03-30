@@ -1,13 +1,21 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getCategories, createCategory } from '@/actions/blog';
+import { getCategories, createCategory, deleteCategory } from '@/actions/blog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2, Plus, Folder } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Loader2, Plus, Folder, Trash2 } from 'lucide-react';
 import { motion } from 'motion/react';
 
 interface Category {
@@ -25,7 +33,11 @@ export default function CategoriesPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const [formData, setFormData] = useState({
     name: '',
     slug: '',
@@ -56,30 +68,50 @@ export default function CategoriesPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!formData.name) {
-      alert('Category name is required');
-      return;
-    }
+
+    if (!formData.name) return;
 
     setIsSubmitting(true);
-    
+
     try {
       const slug = formData.slug || generateSlug(formData.name);
-      
       const response = await createCategory(formData.name, slug, formData.description);
-      
+
       if (response.success) {
         setFormData({ name: '', slug: '', description: '' });
         fetchCategories();
       } else {
-        alert(response.message || 'Failed to create category');
+        setError(response.message || 'Failed to create category');
       }
-    } catch (error) {
-      console.error(error);
-      alert('An error occurred while creating the category');
+    } catch (err) {
+      console.error(err);
+      setError('An error occurred while creating the category');
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const confirmDelete = (category: Category) => {
+    setCategoryToDelete(category);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDelete = async () => {
+    if (!categoryToDelete) return;
+    setIsDeleting(true);
+    try {
+      const response = await deleteCategory(categoryToDelete.id);
+      if (response.success) {
+        setCategories((prev) => prev.filter((c) => c.id !== categoryToDelete.id));
+      } else {
+        setError(response.message || 'Failed to delete category');
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsDeleting(false);
+      setDeleteDialogOpen(false);
+      setCategoryToDelete(null);
     }
   };
 
@@ -109,6 +141,12 @@ export default function CategoriesPage() {
         <p className="mt-1 text-gray-600">Manage blog categories</p>
       </div>
 
+      {error && (
+        <div className="mb-4 rounded-lg bg-red-50 border border-red-200 p-4 text-red-700 text-sm">
+          {error}
+        </div>
+      )}
+
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader>
@@ -122,10 +160,12 @@ export default function CategoriesPage() {
                   id="name"
                   value={formData.name}
                   onChange={(e) => {
-                    setFormData({ ...formData, name: e.target.value });
-                    if (!formData.slug) {
-                      setFormData(prev => ({ ...prev, slug: generateSlug(e.target.value) }));
-                    }
+                    const name = e.target.value;
+                    setFormData((prev) => ({
+                      ...prev,
+                      name,
+                      slug: prev.slug ? prev.slug : generateSlug(name),
+                    }));
                   }}
                   placeholder="Category name"
                   className="mt-1"
@@ -159,7 +199,7 @@ export default function CategoriesPage() {
               <Button
                 type="submit"
                 className="bg-[#C72C5B] hover:bg-[#A3244A] w-full"
-                disabled={isSubmitting}
+                disabled={isSubmitting || !formData.name}
               >
                 {isSubmitting ? (
                   <>
@@ -204,10 +244,18 @@ export default function CategoriesPage() {
                         <p className="text-sm text-gray-600 mt-1">{category.description}</p>
                       )}
                     </div>
-                    <div className="text-right">
+                    <div className="flex items-center gap-2">
                       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-200 text-gray-800">
                         {category._count.posts} posts
                       </span>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => confirmDelete(category)}
+                        className="h-8 w-8 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </div>
                   </motion.div>
                 ))}
@@ -216,6 +264,42 @@ export default function CategoriesPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Delete Category</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete <strong>{categoryToDelete?.name}</strong>?
+              {categoryToDelete && categoryToDelete._count.posts > 0 && (
+                <span className="block mt-1 text-amber-600">
+                  {categoryToDelete._count.posts} post(s) will be uncategorized.
+                </span>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setDeleteDialogOpen(false)}
+              disabled={isDeleting}
+            >
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleDelete} disabled={isDeleting}>
+              {isDeleting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                'Delete'
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

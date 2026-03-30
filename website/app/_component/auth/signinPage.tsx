@@ -1,8 +1,8 @@
 "use client";
 
 import type React from "react";
-import { useState, useEffect, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useState, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "motion/react";
 import { Button } from "@/components/ui/button";
@@ -14,31 +14,12 @@ import { login } from "@/actions/auth";
 
 // Separate component that uses useSearchParams
 function SignInForm() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/me";
-  
+
   const [errors, setErrors] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  // Check authentication status
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const res = await fetch("/api/auth/session");
-        const session = await res.json();
-        if (session?.user) {
-          setIsAuthenticated(true);
-          router.push(callbackUrl);
-        }
-      } catch (error) {
-        console.error("Auth check failed:", error);
-      }
-    };
-    checkAuth();
-  }, [router, callbackUrl]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -46,35 +27,22 @@ function SignInForm() {
     setErrors(null);
 
     const formData = new FormData(e.currentTarget);
+    // Inject callbackUrl so the server action can use it if needed
+    formData.set('callbackUrl', callbackUrl);
 
     try {
       const result = await login(formData);
-      console.log("[Login Client] Result:", result);
-      
-      if (result && result.success) {
-        router.push(callbackUrl);
-        router.refresh();
-      } else {
-        setErrors("Invalid email or password");
+      // If result is returned, it means redirect did NOT happen — show error
+      if (result?.error) {
+        setErrors(result.error);
+        setIsPending(false);
       }
-    } catch (error) {
-      console.error("[Login Client] Error:", error);
+      // If no result (undefined), NEXT_REDIRECT was thrown and navigation is in progress
+      // Keep isPending=true so spinner shows during redirect
+    } catch {
       setErrors("An error occurred during sign in");
-    } finally {
       setIsPending(false);
     }
-  }
-
-  if (isAuthenticated) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-          className="w-8 h-8 border-2 border-[#C72C5B]/30 border-t-[#C72C5B] rounded-full"
-        />
-      </div>
-    );
   }
 
   return (

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { createVoucher, getAllActors, createActor } from '@/actions/voucher';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -20,13 +20,16 @@ interface Actor {
 
 export default function CreateVoucherPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const preselectedActor = searchParams.get('actor') || '';
+
   const [actors, setActors] = useState<Actor[]>([]);
   const [isLoadingActors, setIsLoadingActors] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showNewActorForm, setShowNewActorForm] = useState(false);
-  
+
   const [formData, setFormData] = useState({
-    actorId: '',
+    actorId: preselectedActor,
     totalAmount: '',
     clientPassword: '',
     description: '',

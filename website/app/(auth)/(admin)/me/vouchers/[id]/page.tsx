@@ -3,11 +3,21 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { getVoucherByCode, getVoucherTransactions } from '@/actions/voucher';
+import { getVoucherByCode, getVoucherTransactions, resetVoucherPassword, updateVoucherStatus } from '@/actions/voucher';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, ArrowLeft, User, Calendar, PoundSterling, Receipt, Copy, Check, ExternalLink, Eye, Lock, RefreshCw, Key } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Loader2, ArrowLeft, User, Calendar, PoundSterling, Receipt, Copy, Check, ExternalLink, Eye, Lock, RefreshCw, Key, XCircle, PlayCircle } from 'lucide-react';
 import { motion } from 'motion/react';
 import { format } from 'date-fns';
 import QRCode from 'react-qr-code';
@@ -42,7 +52,7 @@ interface Transaction {
 export default function VoucherDetailPage() {
   const params = useParams();
   const id = params.id as string;
-  
+
   const [voucher, setVoucher] = useState<Voucher | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -50,7 +60,17 @@ export default function VoucherDetailPage() {
   const [copied, setCopied] = useState(false);
   const [previewCopied, setPreviewCopied] = useState(false);
 
-  const actorLink = voucher && typeof window !== 'undefined' 
+  // Password reset dialog
+  const [resetDialogOpen, setResetDialogOpen] = useState(false);
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [isResetting, setIsResetting] = useState(false);
+  const [resetError, setResetError] = useState<string | null>(null);
+
+  // Status update
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+
+  const actorLink = voucher && typeof window !== 'undefined'
     ? `${window.location.origin}/voucher/view?code=${voucher.code}`
     : '';
 
@@ -77,12 +97,10 @@ export default function VoucherDetailPage() {
   const fetchVoucherData = async () => {
     setIsLoading(true);
     try {
-      // Note: This assumes the ID is the voucher code, or we need to adjust
       const voucherResponse = await getVoucherByCode(id);
       if (voucherResponse.success && voucherResponse.voucher) {
         setVoucher(voucherResponse.voucher as Voucher);
-        
-        // Fetch transactions
+
         const transResponse = await getVoucherTransactions(voucherResponse.voucher.id);
         if (transResponse.success) {
           setTransactions(transResponse.transactions as Transaction[]);
@@ -95,6 +113,54 @@ export default function VoucherDetailPage() {
       console.error(err);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleResetPassword = async () => {
+    setResetError(null);
+    if (!newPassword) {
+      setResetError('Password is required');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setResetError('Passwords do not match');
+      return;
+    }
+    if (newPassword.length < 6) {
+      setResetError('Password must be at least 6 characters');
+      return;
+    }
+
+    if (!voucher) return;
+    setIsResetting(true);
+    try {
+      const response = await resetVoucherPassword(voucher.id, newPassword);
+      if (response.success) {
+        setResetDialogOpen(false);
+        setNewPassword('');
+        setConfirmPassword('');
+      } else {
+        setResetError(response.message || 'Failed to reset password');
+      }
+    } catch {
+      setResetError('An error occurred');
+    } finally {
+      setIsResetting(false);
+    }
+  };
+
+  const handleStatusChange = async (status: 'ACTIVE' | 'CANCELLED' | 'EXPIRED') => {
+    if (!voucher) return;
+    setIsUpdatingStatus(true);
+    try {
+      const response = await updateVoucherStatus(voucher.id, status);
+      if (response.success && response.voucher) {
+        setVoucher({ ...voucher, status: response.voucher.status as Voucher['status'] });
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsUpdatingStatus(false);
     }
   };
 
@@ -156,9 +222,40 @@ export default function VoucherDetailPage() {
             <h1 className="text-3xl font-bold text-gray-900 font-mono">{voucher.code}</h1>
             <p className="mt-1 text-gray-600">Voucher Details</p>
           </div>
-          <Badge className={`${getStatusColor(voucher.status)} text-white px-4 py-1`}>
-            {voucher.status}
-          </Badge>
+          <div className="flex items-center gap-3">
+            <Badge className={`${getStatusColor(voucher.status)} text-white px-4 py-1`}>
+              {voucher.status}
+            </Badge>
+            {/* Status controls */}
+            {voucher.status !== 'EXHAUSTED' && (
+              <div className="flex gap-2">
+                {voucher.status !== 'ACTIVE' && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="border-green-300 text-green-700 hover:bg-green-50"
+                    disabled={isUpdatingStatus}
+                    onClick={() => handleStatusChange('ACTIVE')}
+                  >
+                    <PlayCircle className="h-4 w-4 mr-1" />
+                    Activate
+                  </Button>
+                )}
+                {voucher.status === 'ACTIVE' && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="border-orange-300 text-orange-700 hover:bg-orange-50"
+                    disabled={isUpdatingStatus}
+                    onClick={() => handleStatusChange('CANCELLED')}
+                  >
+                    <XCircle className="h-4 w-4 mr-1" />
+                    Cancel
+                  </Button>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -262,7 +359,7 @@ export default function VoucherDetailPage() {
             </CardContent>
           </Card>
 
-          {/* Password Info */}
+          {/* Password Reset */}
           <Card className="mt-6 border-amber-200 bg-amber-50/50">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base text-amber-900">
@@ -284,7 +381,7 @@ export default function VoucherDetailPage() {
                 variant="outline"
                 size="sm"
                 className="w-full border-amber-300 text-amber-700 hover:bg-amber-100"
-                onClick={() => alert('Password reset functionality coming soon!')}
+                onClick={() => setResetDialogOpen(true)}
               >
                 <RefreshCw className="h-4 w-4 mr-2" />
                 Reset Password
@@ -413,6 +510,75 @@ export default function VoucherDetailPage() {
           </CardContent>
         </Card>
       </motion.div>
+
+      {/* Reset Password Dialog */}
+      <Dialog open={resetDialogOpen} onOpenChange={(open) => {
+        setResetDialogOpen(open);
+        if (!open) {
+          setNewPassword('');
+          setConfirmPassword('');
+          setResetError(null);
+        }
+      }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Reset Access Password</DialogTitle>
+            <DialogDescription>
+              Set a new password for this voucher. Share it with the actor to allow access.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div>
+              <Label htmlFor="new-password">New Password</Label>
+              <Input
+                id="new-password"
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="Enter new password"
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label htmlFor="confirm-password">Confirm Password</Label>
+              <Input
+                id="confirm-password"
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Confirm new password"
+                className="mt-1"
+              />
+            </div>
+            {resetError && (
+              <p className="text-sm text-red-600">{resetError}</p>
+            )}
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setResetDialogOpen(false)}
+              disabled={isResetting}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleResetPassword}
+              disabled={isResetting}
+              className="bg-[#C72C5B] hover:bg-[#A3244A]"
+            >
+              {isResetting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Resetting...
+                </>
+              ) : (
+                'Reset Password'
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

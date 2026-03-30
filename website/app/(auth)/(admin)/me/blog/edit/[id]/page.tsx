@@ -1,0 +1,410 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useRouter, useParams } from 'next/navigation';
+import { updatePost, getPostById, getCategories, createCategory } from '@/actions/blog';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Loader2, Plus, X, ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
+
+interface Category {
+  id: string;
+  name: string;
+  slug: string;
+}
+
+export default function EditBlogPostPage() {
+  const router = useRouter();
+  const params = useParams();
+  const postId = params.id as string;
+
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [newCategoryName, setNewCategoryName] = useState('');
+  const [isAddingCategory, setIsAddingCategory] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const [formData, setFormData] = useState({
+    title: '',
+    slug: '',
+    excerpt: '',
+    content: '',
+    featuredImage: '',
+    categoryId: '',
+    metaTitle: '',
+    metaDescription: '',
+    keywords: [] as string[],
+    published: false,
+  });
+
+  const [keywordInput, setKeywordInput] = useState('');
+
+  useEffect(() => {
+    async function loadData() {
+      setIsLoading(true);
+      try {
+        const [postRes, categoriesRes] = await Promise.all([
+          getPostById(postId),
+          getCategories(),
+        ]);
+
+        if (!postRes.success || !postRes.post) {
+          setError(postRes.message || 'Post not found');
+          return;
+        }
+
+        const post = postRes.post;
+        setFormData({
+          title: post.title,
+          slug: post.slug,
+          excerpt: post.excerpt,
+          content: post.content,
+          featuredImage: post.featuredImage || '',
+          categoryId: post.categoryId || '',
+          metaTitle: post.metaTitle || '',
+          metaDescription: post.metaDescription || '',
+          keywords: post.keywords || [],
+          published: post.published,
+        });
+
+        if (categoriesRes.success && categoriesRes.categories) {
+          setCategories(categoriesRes.categories as Category[]);
+        }
+      } catch (err) {
+        setError('Failed to load post');
+        console.error(err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    loadData();
+  }, [postId]);
+
+  const handleAddCategory = async () => {
+    if (!newCategoryName.trim()) return;
+
+    setIsAddingCategory(true);
+    const slug = newCategoryName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+
+    try {
+      const response = await createCategory(newCategoryName, slug);
+      if (response.success && response.category) {
+        setCategories([...categories, response.category as Category]);
+        setFormData({ ...formData, categoryId: (response.category as Category).id });
+        setNewCategoryName('');
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsAddingCategory(false);
+    }
+  };
+
+  const handleAddKeyword = () => {
+    if (keywordInput.trim() && !formData.keywords.includes(keywordInput.trim())) {
+      setFormData({ ...formData, keywords: [...formData.keywords, keywordInput.trim()] });
+      setKeywordInput('');
+    }
+  };
+
+  const handleRemoveKeyword = (keyword: string) => {
+    setFormData({ ...formData, keywords: formData.keywords.filter((k) => k !== keyword) });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!formData.title || !formData.excerpt || !formData.content) {
+      setError('Please fill in all required fields');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      const response = await updatePost({
+        id: postId,
+        ...formData,
+        categoryId: formData.categoryId || undefined,
+      });
+
+      if (response.success) {
+        router.push('/me/blog');
+      } else {
+        setError(response.message || 'Failed to update post');
+      }
+    } catch (err) {
+      console.error(err);
+      setError('An error occurred while saving the post');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex h-[calc(100vh-4rem)] items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-[#C72C5B]" />
+      </div>
+    );
+  }
+
+  if (error && !formData.title) {
+    return (
+      <div className="container mx-auto p-6">
+        <Link href="/me/blog">
+          <Button variant="outline" className="mb-4">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Posts
+          </Button>
+        </Link>
+        <Card>
+          <CardContent className="pt-6 text-center">
+            <p className="text-red-600">{error}</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  return (
+    <div className="container mx-auto p-6 max-w-4xl">
+      <div className="mb-8">
+        <Link href="/me/blog">
+          <Button variant="outline" className="mb-4">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Posts
+          </Button>
+        </Link>
+        <h1 className="text-3xl font-bold text-gray-900">Edit Post</h1>
+        <p className="mt-1 text-gray-600">Update and republish your blog post</p>
+      </div>
+
+      {error && (
+        <div className="mb-6 rounded-lg bg-red-50 border border-red-200 p-4 text-red-700 text-sm">
+          {error}
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit}>
+        <div className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Basic Information</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="title">Title *</Label>
+                <Input
+                  id="title"
+                  value={formData.title}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  placeholder="Enter post title"
+                  className="mt-1"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="slug">Slug</Label>
+                <Input
+                  id="slug"
+                  value={formData.slug}
+                  onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                  placeholder="post-url-slug"
+                  className="mt-1"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="excerpt">Excerpt *</Label>
+                <Textarea
+                  id="excerpt"
+                  value={formData.excerpt}
+                  onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
+                  placeholder="Brief summary of the post"
+                  className="mt-1"
+                  rows={3}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="content">Content *</Label>
+                <Textarea
+                  id="content"
+                  value={formData.content}
+                  onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                  placeholder="Write your post content here..."
+                  className="mt-1 min-h-[300px]"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="featuredImage">Featured Image URL</Label>
+                <Input
+                  id="featuredImage"
+                  value={formData.featuredImage}
+                  onChange={(e) => setFormData({ ...formData, featuredImage: e.target.value })}
+                  placeholder="https://example.com/image.jpg"
+                  className="mt-1"
+                />
+              </div>
+
+              <div>
+                <Label>Category</Label>
+                <div className="flex gap-2 mt-1">
+                  <Select
+                    value={formData.categoryId}
+                    onValueChange={(value) => setFormData({ ...formData, categoryId: value })}
+                  >
+                    <SelectTrigger className="flex-1">
+                      <SelectValue placeholder="Select a category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categories.map((category) => (
+                        <SelectItem key={category.id} value={category.id}>
+                          {category.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex gap-2 mt-2">
+                  <Input
+                    value={newCategoryName}
+                    onChange={(e) => setNewCategoryName(e.target.value)}
+                    placeholder="New category name"
+                    className="flex-1"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleAddCategory}
+                    disabled={isAddingCategory || !newCategoryName.trim()}
+                  >
+                    {isAddingCategory ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Plus className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>SEO Settings</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="metaTitle">Meta Title</Label>
+                <Input
+                  id="metaTitle"
+                  value={formData.metaTitle}
+                  onChange={(e) => setFormData({ ...formData, metaTitle: e.target.value })}
+                  placeholder="SEO title"
+                  className="mt-1"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="metaDescription">Meta Description</Label>
+                <Textarea
+                  id="metaDescription"
+                  value={formData.metaDescription}
+                  onChange={(e) => setFormData({ ...formData, metaDescription: e.target.value })}
+                  placeholder="SEO description"
+                  className="mt-1"
+                  rows={2}
+                />
+              </div>
+
+              <div>
+                <Label>Keywords</Label>
+                <div className="flex gap-2 mt-1">
+                  <Input
+                    value={keywordInput}
+                    onChange={(e) => setKeywordInput(e.target.value)}
+                    placeholder="Add keyword"
+                    onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddKeyword())}
+                  />
+                  <Button type="button" variant="outline" onClick={handleAddKeyword}>
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {formData.keywords.map((keyword) => (
+                    <span
+                      key={keyword}
+                      className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 rounded text-sm"
+                    >
+                      {keyword}
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveKeyword(keyword)}
+                        className="text-gray-500 hover:text-red-500"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  id="published"
+                  checked={formData.published}
+                  onCheckedChange={(checked) =>
+                    setFormData({ ...formData, published: checked as boolean })
+                  }
+                />
+                <Label htmlFor="published" className="cursor-pointer">
+                  Published
+                </Label>
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="flex justify-end gap-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => router.push('/me/blog')}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              className="bg-[#C72C5B] hover:bg-[#A3244A]"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                'Save Changes'
+              )}
+            </Button>
+          </div>
+        </div>
+      </form>
+    </div>
+  );
+}

@@ -1,39 +1,42 @@
 'use client';
 
 import { motion } from 'motion/react';
-import { Mail, Users, Eye, TrendingUp, RefreshCw } from 'lucide-react';
+import { Mail, BookOpen, Ticket, Users, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { StatsCard } from './stats-card';
 import { ActivityChart } from './activity-chart';
 import { QuickActions } from './quick-actions';
-import { Message } from './message-list';
+import Link from 'next/link';
+
+interface DashboardStats {
+  messages: { total: number; unread: number };
+  blog: { total: number; published: number };
+  vouchers: {
+    total: number;
+    active: number;
+    totalValue: number;
+    totalSpent: number;
+    totalRemaining: number;
+  };
+  actors: { total: number };
+  activityData: { day: string; value: number }[];
+  recentMessages: {
+    id: string;
+    name: string;
+    email: string;
+    message: string;
+    isRead: boolean;
+    createdAt: Date;
+  }[];
+}
 
 interface DashboardContentProps {
-  messages: Message[];
+  stats: DashboardStats;
   isLoading: boolean;
   onRefresh: () => void;
 }
 
-export function DashboardContent({ messages, isLoading, onRefresh }: DashboardContentProps) {
-  // Calculate stats
-  const totalMessages = messages.length;
-  const unreadMessages = messages.filter((m) => !m.isRead).length;
-  const readMessages = messages.filter((m) => m.isRead).length;
-
-  // Mock activity data (in real app, calculate from actual message dates)
-  const activityData = [
-    { day: 'Mon', value: 3 },
-    { day: 'Tue', value: 5 },
-    { day: 'Wed', value: 2 },
-    { day: 'Thu', value: 8 },
-    { day: 'Fri', value: 6 },
-    { day: 'Sat', value: 4 },
-    { day: 'Sun', value: 3 },
-  ];
-
-  // Recent messages preview (last 3)
-  const recentMessages = messages.slice(0, 3);
-
+export function DashboardContent({ stats, isLoading, onRefresh }: DashboardContentProps) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6 lg:p-10">
       {/* Header */}
@@ -44,9 +47,7 @@ export function DashboardContent({ messages, isLoading, onRefresh }: DashboardCo
         className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
       >
         <div>
-          <h1 className="text-4xl font-bold text-gray-900">
-            Dashboard
-          </h1>
+          <h1 className="text-4xl font-bold text-gray-900">Dashboard</h1>
           <p className="mt-1 text-gray-600">Welcome back! Here&apos;s what&apos;s happening.</p>
         </div>
         <Button
@@ -63,43 +64,43 @@ export function DashboardContent({ messages, isLoading, onRefresh }: DashboardCo
       {/* Stats Grid */}
       <div className="mb-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         <StatsCard
-          title="Total Messages"
-          value={totalMessages}
-          description="All time messages"
+          title="Messages"
+          value={stats.messages.total}
+          description={`${stats.messages.unread} unread`}
           icon={Mail}
           color="pink"
-          trend="up"
-          trendValue="12%"
+          trend={stats.messages.unread > 0 ? 'up' : 'neutral'}
+          trendValue={stats.messages.unread > 0 ? `${stats.messages.unread} new` : 'all read'}
           delay={0}
         />
         <StatsCard
-          title="Unread"
-          value={unreadMessages}
-          description="Need attention"
-          icon={Mail}
-          color="purple"
-          trend={unreadMessages > 0 ? 'up' : 'neutral'}
-          trendValue={unreadMessages > 0 ? 'New' : '0'}
+          title="Blog Posts"
+          value={stats.blog.total}
+          description={`${stats.blog.published} published`}
+          icon={BookOpen}
+          color="blue"
+          trend="neutral"
+          trendValue={`${stats.blog.total - stats.blog.published} drafts`}
           delay={0.1}
         />
         <StatsCard
-          title="Read"
-          value={readMessages}
-          description="Processed messages"
-          icon={Eye}
-          color="blue"
-          trend="up"
-          trendValue="85%"
+          title="Vouchers"
+          value={stats.vouchers.total}
+          description={`${stats.vouchers.active} active`}
+          icon={Ticket}
+          color="purple"
+          trend="neutral"
+          trendValue={`£${stats.vouchers.totalRemaining.toFixed(0)} left`}
           delay={0.2}
         />
         <StatsCard
-          title="Visitors"
-          value="1.2K"
-          description="This month"
+          title="Actors"
+          value={stats.actors.total}
+          description="Total registered"
           icon={Users}
           color="green"
-          trend="up"
-          trendValue="23%"
+          trend="neutral"
+          trendValue=""
           delay={0.3}
         />
       </div>
@@ -108,7 +109,7 @@ export function DashboardContent({ messages, isLoading, onRefresh }: DashboardCo
       <div className="grid gap-8 lg:grid-cols-3">
         {/* Left Column - Activity & Actions */}
         <div className="space-y-8 lg:col-span-1">
-          <ActivityChart data={activityData} />
+          <ActivityChart data={stats.activityData} />
           <QuickActions />
         </div>
 
@@ -122,14 +123,16 @@ export function DashboardContent({ messages, isLoading, onRefresh }: DashboardCo
           <div className="rounded-2xl bg-white p-6 shadow-sm">
             <div className="mb-6 flex items-center justify-between">
               <h3 className="text-lg font-bold text-gray-900">Recent Messages</h3>
-              <Button variant="ghost" size="sm" className="text-[#C72C5B]">
-                View All
-              </Button>
+              <Link href="/me/messages">
+                <Button variant="ghost" size="sm" className="text-[#C72C5B]">
+                  View All
+                </Button>
+              </Link>
             </div>
 
-            {recentMessages.length > 0 ? (
+            {stats.recentMessages.length > 0 ? (
               <div className="space-y-4">
-                {recentMessages.map((message, index) => (
+                {stats.recentMessages.map((message, index) => (
                   <motion.div
                     key={message.id}
                     initial={{ opacity: 0, y: 10 }}
@@ -189,7 +192,7 @@ export function DashboardContent({ messages, isLoading, onRefresh }: DashboardCo
         transition={{ duration: 0.5, delay: 0.8 }}
         className="mt-10 text-center text-sm text-gray-400"
       >
-        <p>© 2024 WeTrends. All rights reserved.</p>
+        <p>© {new Date().getFullYear()} WeTrends. All rights reserved.</p>
       </motion.div>
     </div>
   );

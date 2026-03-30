@@ -1,66 +1,100 @@
 "use client"
 
-import { TypeIcon as type, LucideIcon } from 'lucide-react'
-
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { ChevronRight, LucideIcon } from "lucide-react"
 import {
-    SidebarGroup,
-    SidebarGroupLabel,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
-    SidebarMenuSub,
-    SidebarMenuSubButton,
-    SidebarMenuSubItem,
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible"
+import {
+  SidebarGroup,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
 
 export function NavMain({
-    items,
+  items,
 }: {
-    items: {
-        title: string
-        url: string
-        icon?: LucideIcon
-        isActive?: boolean
-        items?: {
-            title: string
-            url: string
-            isActive?: boolean
-        }[]
+  items: {
+    title: string
+    url: string
+    icon?: LucideIcon
+    items?: {
+      title: string
+      url: string
     }[]
+  }[]
 }) {
-    return (
-        <SidebarGroup>
-            <SidebarMenu>
-                {items.map((item) => (
-                    <SidebarMenuItem key={item.title}>
-                        <SidebarMenuButton 
-                            tooltip={item.title} 
-                            isActive={item.isActive}
-                            className="group"
+  const pathname = usePathname()
+
+  return (
+    <SidebarGroup>
+      <SidebarMenu>
+        {items.map((item) => {
+          const isActive =
+            pathname === item.url ||
+            (item.items?.some((sub) => pathname === sub.url) ?? false)
+
+          if (!item.items) {
+            // Direct navigation item
+            return (
+              <SidebarMenuItem key={item.title}>
+                <SidebarMenuButton
+                  asChild
+                  tooltip={item.title}
+                  isActive={isActive}
+                >
+                  <Link href={item.url}>
+                    {item.icon && <item.icon />}
+                    <span>{item.title}</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            )
+          }
+
+          // Collapsible item with sub-links
+          return (
+            <Collapsible
+              key={item.title}
+              asChild
+              defaultOpen={isActive}
+            >
+              <SidebarMenuItem>
+                <CollapsibleTrigger asChild>
+                  <SidebarMenuButton tooltip={item.title} isActive={isActive}>
+                    {item.icon && <item.icon />}
+                    <span>{item.title}</span>
+                    <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                  </SidebarMenuButton>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <SidebarMenuSub>
+                    {item.items.map((subItem) => (
+                      <SidebarMenuSubItem key={subItem.title}>
+                        <SidebarMenuSubButton
+                          asChild
+                          isActive={pathname === subItem.url}
                         >
-                            {item.icon && <item.icon className="text-sidebar-primary group-data-[active=true]:text-sidebar-primary-foreground" />}
-                            <span>{item.title}</span>
-                        </SidebarMenuButton>
-                        {item.items && (
-                            <SidebarMenuSub>
-                                {item.items.map((subItem) => (
-                                    <SidebarMenuSubItem key={subItem.title}>
-                                        <SidebarMenuSubButton 
-                                            asChild 
-                                            isActive={subItem.isActive}
-                                            className="hover:text-sidebar-primary data-[active=true]:bg-sidebar-primary data-[active=true]:text-sidebar-primary-foreground"
-                                        >
-                                            <a href={subItem.url}>
-                                                <span>{subItem.title}</span>
-                                            </a>
-                                        </SidebarMenuSubButton>
-                                    </SidebarMenuSubItem>
-                                ))}
-                            </SidebarMenuSub>
-                        )}
-                    </SidebarMenuItem>
-                ))}
-            </SidebarMenu>
-        </SidebarGroup>
-    )
+                          <Link href={subItem.url}>
+                            <span>{subItem.title}</span>
+                          </Link>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                    ))}
+                  </SidebarMenuSub>
+                </CollapsibleContent>
+              </SidebarMenuItem>
+            </Collapsible>
+          )
+        })}
+      </SidebarMenu>
+    </SidebarGroup>
+  )
 }

@@ -2,13 +2,22 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { getAllActors, createActor } from '@/actions/voucher';
+import { getAllActors, createActor, deleteActor } from '@/actions/voucher';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2, Plus, User, Mail, Phone, QrCode, Wallet } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Loader2, Plus, User, Mail, Phone, QrCode, Wallet, Trash2 } from 'lucide-react';
 import { motion } from 'motion/react';
 
 interface Actor {
@@ -30,7 +39,10 @@ export default function ActorsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [actorToDelete, setActorToDelete] = useState<Actor | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -55,7 +67,7 @@ export default function ActorsPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name || !formData.email) return;
-    
+
     setIsSubmitting(true);
     try {
       const response = await createActor(formData);
@@ -63,14 +75,33 @@ export default function ActorsPage() {
         setFormData({ name: '', email: '', phone: '', bio: '' });
         setShowForm(false);
         fetchActors();
-      } else {
-        alert(response.message || 'Failed to create actor');
       }
     } catch (error) {
       console.error(error);
-      alert('An error occurred');
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const confirmDelete = (actor: Actor) => {
+    setActorToDelete(actor);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDelete = async () => {
+    if (!actorToDelete) return;
+    setIsDeleting(true);
+    try {
+      const response = await deleteActor(actorToDelete.id);
+      if (response.success) {
+        setActors((prev) => prev.filter((a) => a.id !== actorToDelete.id));
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsDeleting(false);
+      setDeleteDialogOpen(false);
+      setActorToDelete(null);
     }
   };
 
@@ -174,13 +205,23 @@ export default function ActorsPage() {
                   <div className="w-12 h-12 rounded-full bg-[#C72C5B]/10 flex items-center justify-center">
                     <User className="h-6 w-6 text-[#C72C5B]" />
                   </div>
-                  <Badge variant="outline">
-                    {actor.vouchers.length} Vouchers
-                  </Badge>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline">
+                      {actor.vouchers.length} Vouchers
+                    </Badge>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => confirmDelete(actor)}
+                      className="h-8 w-8 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
-                
+
                 <h3 className="text-lg font-semibold mb-1">{actor.name}</h3>
-                
+
                 <div className="space-y-2 text-sm text-gray-600 mb-4">
                   <div className="flex items-center gap-2">
                     <Mail className="h-4 w-4" />
@@ -199,7 +240,7 @@ export default function ActorsPage() {
                     <p className="text-sm font-medium mb-2">Active Balance</p>
                     <p className="text-2xl font-bold text-green-600">
                       £{actor.vouchers
-                        .filter(v => v.status === 'ACTIVE')
+                        .filter((v) => v.status === 'ACTIVE')
                         .reduce((sum, v) => sum + v.remainingAmount, 0)
                         .toFixed(2)}
                     </p>
@@ -238,8 +279,38 @@ export default function ActorsPage() {
           </CardContent>
         </Card>
       )}
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Delete Actor</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete <strong>{actorToDelete?.name}</strong>? This action
+              cannot be undone. All associated vouchers will remain but will be unlinked.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setDeleteDialogOpen(false)}
+              disabled={isDeleting}
+            >
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleDelete} disabled={isDeleting}>
+              {isDeleting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                'Delete'
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
-
-import { Badge } from '@/components/ui/badge';
