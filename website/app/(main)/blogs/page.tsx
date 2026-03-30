@@ -25,8 +25,8 @@ export default async function BlogPage() {
     getCategories(),
   ]);
 
-  const posts = postsResult.success ? postsResult.posts : [];
-  const categories = categoriesResult.success ? categoriesResult.categories : [];
+  const posts = (postsResult.success ? postsResult.posts : []) ?? [];
+  const categories = (categoriesResult.success ? categoriesResult.categories : []) ?? [];
 
   return (
     <main className="min-h-screen bg-gray-50">
