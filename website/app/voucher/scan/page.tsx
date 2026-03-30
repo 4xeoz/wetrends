@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, QrCode, Lock, Check, X, ArrowLeft } from 'lucide-react';
+import { Loader2, QrCode, Lock, Check, X, ArrowLeft, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { format } from 'date-fns';
 
@@ -176,13 +176,13 @@ function ScanVoucherContent() {
                     className="font-mono"
                   />
                 </div>
-                <Button 
+                <Button
                   onClick={() => setStep('password')}
                   disabled={!code}
                   className="w-full bg-[#C72C5B] hover:bg-[#A3244A]"
                 >
                   Continue
-                  <ArrowLeft className="ml-2 h-4 w-4 rotate-180" />
+                  <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </CardContent>
             </Card>

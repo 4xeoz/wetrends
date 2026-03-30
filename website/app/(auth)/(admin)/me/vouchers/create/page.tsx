@@ -220,7 +220,7 @@ export default function CreateVoucherPage() {
                 <Label htmlFor="password">Client Access Password *</Label>
                 <Input
                   id="password"
-                  type="text"
+                  type="password"
                   value={formData.clientPassword}
                   onChange={(e) => setFormData({ ...formData, clientPassword: e.target.value })}
                   placeholder="Password for vendor to access voucher"

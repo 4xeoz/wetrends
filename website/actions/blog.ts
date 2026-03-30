@@ -1,6 +1,7 @@
 'use server';
 
 import { prisma } from '@/prisma/prisma';
+import { auth } from '@/lib/auth/auth';
 import { revalidatePath } from 'next/cache';
 
 // Get all published blog posts
@@ -20,7 +21,7 @@ export async function getPublishedPosts(limit?: number) {
       orderBy: { publishedAt: 'desc' },
       take: limit,
     });
-    
+
     return { success: true, posts };
   } catch (error) {
     console.error('Error fetching posts:', error);
@@ -43,7 +44,7 @@ export async function getAllPosts() {
       },
       orderBy: { createdAt: 'desc' },
     });
-    
+
     return { success: true, posts };
   } catch (error) {
     console.error('Error fetching posts:', error);
@@ -66,17 +67,17 @@ export async function getPostBySlug(slug: string) {
         },
       },
     });
-    
+
     if (!post) {
       return { success: false, message: 'Post not found' };
     }
-    
+
     // Increment views
     await prisma.blogPost.update({
       where: { id: post.id },
       data: { views: { increment: 1 } },
     });
-    
+
     return { success: true, post };
   } catch (error) {
     console.error('Error fetching post:', error);
@@ -103,7 +104,7 @@ export async function getPostsByCategory(categorySlug: string) {
       },
       orderBy: { publishedAt: 'desc' },
     });
-    
+
     return { success: true, posts };
   } catch (error) {
     console.error('Error fetching posts:', error);
@@ -121,7 +122,7 @@ export async function getCategories() {
         },
       },
     });
-    
+
     return { success: true, categories };
   } catch (error) {
     console.error('Error fetching categories:', error);
@@ -145,14 +146,20 @@ interface CreatePostData {
 }
 
 export async function createPost(data: CreatePostData) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { success: false, message: 'Unauthorized' };
+  }
+
   try {
     const post = await prisma.blogPost.create({
       data: {
         ...data,
+        authorId: session.user.id,
         publishedAt: data.published ? new Date() : null,
       },
     });
-    
+
     revalidatePath('/blogs');
     return { success: true, post };
   } catch (error) {
@@ -177,9 +184,14 @@ interface UpdatePostData {
 }
 
 export async function updatePost(data: UpdatePostData) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { success: false, message: 'Unauthorized' };
+  }
+
   try {
     const { id, ...updateData } = data;
-    
+
     const post = await prisma.blogPost.update({
       where: { id },
       data: {
@@ -187,7 +199,7 @@ export async function updatePost(data: UpdatePostData) {
         publishedAt: updateData.published ? new Date() : null,
       },
     });
-    
+
     revalidatePath('/blogs');
     revalidatePath(`/blogs/${post.slug}`);
     return { success: true, post };
@@ -199,11 +211,16 @@ export async function updatePost(data: UpdatePostData) {
 
 // Delete blog post
 export async function deletePost(id: string) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { success: false, message: 'Unauthorized' };
+  }
+
   try {
     await prisma.blogPost.delete({
       where: { id },
     });
-    
+
     revalidatePath('/blogs');
     return { success: true };
   } catch (error) {
@@ -214,11 +231,16 @@ export async function deletePost(id: string) {
 
 // Create category
 export async function createCategory(name: string, slug: string, description?: string) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { success: false, message: 'Unauthorized' };
+  }
+
   try {
     const category = await prisma.blogCategory.create({
       data: { name, slug, description },
     });
-    
+
     return { success: true, category };
   } catch (error) {
     console.error('Error creating category:', error);

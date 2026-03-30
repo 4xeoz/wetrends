@@ -1,6 +1,7 @@
 'use server';
 
 import { prisma } from '@/prisma/prisma';
+import { auth } from '@/lib/auth/auth';
 import bcrypt from 'bcryptjs';
 import { revalidatePath } from 'next/cache';
 
@@ -15,6 +16,11 @@ function generateVoucherCode(): string {
 // ========== ACTOR ACTIONS ==========
 
 export async function getAllActors() {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { success: false, message: 'Unauthorized' };
+  }
+
   try {
     const actors = await prisma.actor.findMany({
       include: {
@@ -38,6 +44,11 @@ export async function getAllActors() {
 }
 
 export async function getActorById(id: string) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { success: false, message: 'Unauthorized' };
+  }
+
   try {
     const actor = await prisma.actor.findUnique({
       where: { id },
@@ -66,6 +77,11 @@ export async function createActor(data: {
   bio?: string;
   image?: string;
 }) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { success: false, message: 'Unauthorized' };
+  }
+
   try {
     const actor = await prisma.actor.create({
       data
@@ -81,6 +97,11 @@ export async function createActor(data: {
 // ========== VOUCHER ACTIONS ==========
 
 export async function getAllVouchers() {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { success: false, message: 'Unauthorized' };
+  }
+
   try {
     const vouchers = await prisma.voucher.findMany({
       include: {
@@ -106,6 +127,11 @@ export async function getAllVouchers() {
 }
 
 export async function getVoucherByCode(code: string) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { success: false, message: 'Unauthorized' };
+  }
+
   try {
     const voucher = await prisma.voucher.findUnique({
       where: { code },
@@ -139,10 +165,15 @@ export async function createVoucher(data: {
   projectName?: string;
   expiresAt?: Date;
 }) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { success: false, message: 'Unauthorized' };
+  }
+
   try {
     const code = generateVoucherCode();
     const hashedPassword = await bcrypt.hash(data.clientPassword, 10);
-    
+
     const voucher = await prisma.voucher.create({
       data: {
         code,
@@ -163,7 +194,7 @@ export async function createVoucher(data: {
         }
       }
     });
-    
+
     revalidatePath('/me/vouchers');
     return { success: true, voucher };
   } catch (error) {
@@ -212,16 +243,16 @@ export async function verifyVoucherAccess(code: string, password: string) {
         }
       }
     });
-    
+
     if (!voucher) {
       return { success: false, message: 'Voucher not found' };
     }
-    
+
     const isValidPassword = await bcrypt.compare(password, voucher.clientPassword);
     if (!isValidPassword) {
       return { success: false, message: 'Invalid password' };
     }
-    
+
     // Return voucher without sensitive data
     return {
       success: true,
@@ -234,6 +265,8 @@ export async function verifyVoucherAccess(code: string, password: string) {
         status: voucher.status,
         projectName: voucher.projectName,
         description: voucher.description,
+        createdAt: voucher.createdAt,
+        expiresAt: voucher.expiresAt,
         actor: voucher.actor,
       }
     };
@@ -251,25 +284,29 @@ export async function addVoucherTransaction(data: {
   location?: string;
 }) {
   try {
+    if (!data.amount || data.amount <= 0) {
+      return { success: false, message: 'Amount must be greater than zero' };
+    }
+
     const voucher = await prisma.voucher.findUnique({
       where: { id: data.voucherId }
     });
-    
+
     if (!voucher) {
       return { success: false, message: 'Voucher not found' };
     }
-    
+
     if (voucher.status !== 'ACTIVE') {
       return { success: false, message: 'Voucher is not active' };
     }
-    
+
     if (data.amount > voucher.remainingAmount) {
       return { success: false, message: 'Amount exceeds remaining balance' };
     }
-    
+
     const newSpentAmount = voucher.spentAmount + data.amount;
     const newRemainingAmount = voucher.totalAmount - newSpentAmount;
-    
+
     // Create transaction
     const transaction = await prisma.voucherTransaction.create({
       data: {
@@ -279,7 +316,7 @@ export async function addVoucherTransaction(data: {
         location: data.location,
       }
     });
-    
+
     // Update voucher
     const updatedVoucher = await prisma.voucher.update({
       where: { id: data.voucherId },
@@ -289,7 +326,7 @@ export async function addVoucherTransaction(data: {
         status: newRemainingAmount <= 0 ? 'EXHAUSTED' : 'ACTIVE'
       }
     });
-    
+
     return { success: true, transaction, voucher: updatedVoucher };
   } catch (error) {
     console.error('Error adding transaction:', error);
@@ -299,6 +336,11 @@ export async function addVoucherTransaction(data: {
 
 // Delete voucher
 export async function deleteVoucher(id: string) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { success: false, message: 'Unauthorized' };
+  }
+
   try {
     await prisma.voucher.delete({
       where: { id }

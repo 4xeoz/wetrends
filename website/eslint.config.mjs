@@ -13,42 +13,33 @@ const eslintConfig = [
   ...compat.extends("next/core-web-vitals"),
   {
     rules: {
-      // TypeScript - Allow all
-      "@typescript-eslint/no-unused-vars": "off",
-      "@typescript-eslint/no-explicit-any": "off",
-      "@typescript-eslint/no-empty-interface": "off",
-      "@typescript-eslint/no-empty-function": "off",
-      "@typescript-eslint/no-var-requires": "off",
-      "@typescript-eslint/no-non-null-assertion": "off",
-      "@typescript-eslint/ban-ts-comment": "off",
-      "@typescript-eslint/no-unnecessary-type-constraint": "off",
-      "@typescript-eslint/no-redundant-type-constituents": "off",
-      
-      // React - Allow all
-      "react/no-unescaped-entities": "off",
-      "react-hooks/rules-of-hooks": "off",
-      "react-hooks/exhaustive-deps": "off",
-      "react/display-name": "off",
-      "react/prop-types": "off",
-      "react/jsx-key": "off",
-      "react/jsx-no-target-blank": "off",
-      
-      // Accessibility - Allow all
-      "jsx-a11y/alt-text": "off",
-      "jsx-a11y/anchor-is-valid": "off",
-      "jsx-a11y/click-events-have-key-events": "off",
-      "jsx-a11y/interactive-supports-focus": "off",
-      "jsx-a11y/no-static-element-interactions": "off",
-      "jsx-a11y/no-noninteractive-element-interactions": "off",
-      
-      // General - Allow all
-      "no-console": "off",
-      "no-debugger": "off",
+      // TypeScript - warn on common issues, allow any for gradual migration
+      "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
+      "@typescript-eslint/no-explicit-any": "warn",
+      "@typescript-eslint/no-empty-interface": "warn",
+      "@typescript-eslint/no-empty-function": "warn",
+      "@typescript-eslint/no-var-requires": "error",
+      "@typescript-eslint/no-non-null-assertion": "warn",
+      "@typescript-eslint/ban-ts-comment": "warn",
+
+      // React - enforce key rules
+      "react/no-unescaped-entities": "warn",
+      "react-hooks/rules-of-hooks": "error",
+      "react-hooks/exhaustive-deps": "warn",
+      "react/display-name": "warn",
+      "react/jsx-key": "error",
+      "react/jsx-no-target-blank": "error",
+
+      // Accessibility - enforce important rules
+      "jsx-a11y/alt-text": "warn",
+      "jsx-a11y/anchor-is-valid": "warn",
+
+      // General
+      "no-console": ["warn", { "allow": ["error"] }],
+      "no-debugger": "error",
       "no-unused-vars": "off",
-      "no-undef": "off",
-      "no-empty": "off",
-      "no-var": "off",
-      "prefer-const": "off",
+      "prefer-const": "warn",
+      "no-var": "error",
     },
   },
 ];
