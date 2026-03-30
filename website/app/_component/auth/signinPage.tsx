@@ -3,6 +3,7 @@
 import type React from "react";
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { motion, AnimatePresence } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -237,13 +238,13 @@ function SignInForm() {
         transition={{ delay: 0.7 }}
         className="text-center mt-6"
       >
-        <a
+        <Link
           href="/"
           className="text-slate-400 hover:text-slate-600 text-sm transition-colors inline-flex items-center gap-2"
         >
           <span>←</span>
           <span>Back to website</span>
-        </a>
+        </Link>
       </motion.div>
     </motion.div>
   );

@@ -11,7 +11,7 @@ interface Category {
   id: string;
   name: string;
   slug: string;
-  _count: { posts: number };
+  _count?: { posts: number };
 }
 
 interface Post {
@@ -70,7 +70,7 @@ export function BlogList({ posts, categories }: BlogListProps) {
                   : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
               }`}
             >
-              {category.name} ({category._count.posts})
+              {category.name} ({category._count?.posts ?? 0})
             </button>
           ))}
         </motion.div>
