@@ -22,7 +22,6 @@ const services = [
     description: 'Cinematic storytelling that captures attention and drives engagement across all platforms.',
     features: ['Brand Films', 'Social Content', 'Motion Graphics', 'Commercials'],
     color: '#C72C5B',
-    bgImage: 'from-rose-500/20 to-orange-500/20',
   },
   {
     number: '02',
@@ -31,7 +30,6 @@ const services = [
     description: 'Distinctive visual systems that make your brand impossible to ignore.',
     features: ['Logo Design', 'Visual Identity', 'Brand Guidelines', 'Packaging'],
     color: '#8B5CF6',
-    bgImage: 'from-violet-500/20 to-purple-500/20',
   },
   {
     number: '03',
@@ -40,7 +38,6 @@ const services = [
     description: 'High-converting digital experiences that turn visitors into loyal customers.',
     features: ['UI/UX Design', 'Development', 'E-commerce', 'Web Apps'],
     color: '#3B82F6',
-    bgImage: 'from-blue-500/20 to-cyan-500/20',
   },
   {
     number: '04',
@@ -49,7 +46,6 @@ const services = [
     description: 'Strategic content that builds communities and sparks meaningful conversations.',
     features: ['Content Strategy', 'Creative Direction', 'Community', 'Analytics'],
     color: '#10B981',
-    bgImage: 'from-emerald-500/20 to-teal-500/20',
   },
   {
     number: '05',
@@ -58,7 +54,6 @@ const services = [
     description: 'Dynamic motion design that brings your brand story to life.',
     features: ['2D Animation', 'Motion Graphics', 'Explainers', 'Micro-interactions'],
     color: '#F59E0B',
-    bgImage: 'from-amber-500/20 to-yellow-500/20',
   },
   {
     number: '06',
@@ -67,7 +62,6 @@ const services = [
     description: 'Data-driven narratives that position you as the authority in your space.',
     features: ['SEO Content', 'Copywriting', 'Editorial', 'Storytelling'],
     color: '#EC4899',
-    bgImage: 'from-pink-500/20 to-rose-500/20',
   },
 ];
 
@@ -92,8 +86,11 @@ function ServiceCard({ service, index }: { service: typeof services[0]; index: n
         transition={{ duration: 0.3 }}
         className="relative overflow-hidden rounded-3xl bg-gray-900 p-8 md:p-12"
       >
-        {/* Animated Background */}
-        <div className={`absolute inset-0 bg-gradient-to-br ${service.bgImage} opacity-0 transition-opacity duration-500 group-hover:opacity-100`} />
+        {/* Solid Color Hover Background */}
+        <div 
+          className="absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-10"
+          style={{ backgroundColor: service.color }}
+        />
         
         {/* Number */}
         <motion.span
@@ -184,24 +181,9 @@ export function Services() {
     <section 
       ref={containerRef}
       id="services" 
-      className="relative min-h-screen overflow-hidden bg-[#0a0a0a] py-24 md:py-32 flex items-center"
+      className="relative min-h-screen overflow-hidden bg-black py-24 md:py-32 flex items-center"
     >
-      {/* Background Elements */}
-      <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(199,44,91,0.15),transparent_50%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(139,92,246,0.1),transparent_50%)]" />
-      </div>
-
-      {/* Grid Pattern */}
-      <div 
-        className="absolute inset-0 opacity-[0.02]"
-        style={{
-          backgroundImage: `linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px)`,
-          backgroundSize: '60px 60px'
-        }}
-      />
-
-      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full">
         {/* Header */}
         <motion.div 
           style={{ y: headerY }}
@@ -231,7 +213,7 @@ export function Services() {
             <h2 className="mb-6 text-5xl font-bold text-white md:text-6xl lg:text-7xl">
               Services That
               <br />
-              <span className="bg-gradient-to-r from-[#C72C5B] via-purple-500 to-[#C72C5B] bg-clip-text text-transparent">
+              <span className="text-[#C72C5B]">
                 Drive Growth
               </span>
             </h2>

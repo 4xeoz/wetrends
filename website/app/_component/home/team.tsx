@@ -43,14 +43,7 @@ const team = [
 export function Team() {
   return (
     <section className="relative min-h-screen overflow-hidden bg-white py-20 md:py-32 flex items-center">
-      {/* Background pattern */}
-      <div className="absolute inset-0 opacity-[0.02]"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-        }}
-      />
-      
-      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full">
         {/* Header */}
         <div className="mb-16 text-center md:mb-20">
           <AnimatedContent
@@ -108,7 +101,7 @@ export function Team() {
                 className="group relative"
               >
                 {/* Image Container */}
-                <div className="relative mb-6 overflow-hidden rounded-2xl">
+                <div className="relative mb-6 overflow-hidden rounded-2xl bg-gray-100">
                   <motion.div
                     whileHover={{ scale: 1.05 }}
                     transition={{ duration: 0.4 }}
@@ -129,7 +122,7 @@ export function Team() {
                   <motion.div
                     initial={{ opacity: 0 }}
                     whileHover={{ opacity: 1 }}
-                    className="absolute inset-0 flex items-end justify-center bg-gradient-to-t from-black/70 via-black/20 to-transparent p-6"
+                    className="absolute inset-0 flex items-end justify-center bg-black/70 p-6"
                   >
                     <div className="flex gap-3">
                       <motion.a
@@ -178,7 +171,7 @@ export function Team() {
           ease="power3.out"
           className="mt-20 text-center"
         >
-          <div className="rounded-2xl bg-gradient-to-r from-gray-900 to-gray-800 p-8 md:p-12">
+          <div className="rounded-2xl bg-gray-900 p-8 md:p-12">
             <h3 className="mb-4 text-2xl font-bold text-white md:text-3xl">
               Want to Join Our Team?
             </h3>

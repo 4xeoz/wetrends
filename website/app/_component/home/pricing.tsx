@@ -1,18 +1,14 @@
 import React from 'react';
-import { Check, Star, Zap, ArrowUpRight } from 'lucide-react';
+import { Check, ArrowUpRight } from 'lucide-react';
 import { Badge } from '../../../components/ui/badge';
 import AnimatedContent from "@/components/ui/animated-content";
 
 /**
- * Pricing - Full height section with CSS gradients
+ * Pricing - Full height section with solid colors
  */
 const Pricing = () => {
     return (
-        <section className="relative min-h-screen text-black py-10 md:py-20 px-4 sm:px-6 lg:px-8 overflow-hidden flex items-center bg-gray-50">
-            {/* Subtle Background Pattern */}
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(199,44,91,0.03),transparent_50%)]" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(139,92,246,0.02),transparent_50%)]" />
-
+        <section className="relative min-h-screen text-black py-10 md:py-20 px-4 sm:px-6 lg:px-8 overflow-hidden flex items-center bg-gray-100">
             <div className="relative z-10 max-w-7xl mx-auto w-full">
                 {/* Content Container */}
                 <div>
@@ -123,10 +119,8 @@ const Pricing = () => {
                             threshold={0.1}
                             className="relative"
                         >
-                            {/* Creative Dark Metallic Background */}
-                            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" />
-                            <div className="absolute inset-0 rounded-2xl bg-[radial-gradient(circle_at_top_right,rgba(199,44,91,0.15),transparent_50%)]" />
-                            <div className="absolute inset-0 rounded-2xl opacity-30 bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.05)_50%,transparent_75%)]" />
+                            {/* Dark Background */}
+                            <div className="absolute inset-0 rounded-2xl bg-gray-900" />
                             
                             <div className="relative z-10 p-6 md:p-8 h-full flex flex-col text-white">
                                 {/* Header */}
@@ -135,7 +129,7 @@ const Pricing = () => {
                                         <h2 className="text-xl md:text-2xl font-bold mb-2">TrendOps™ Growth</h2>
                                         <p className="text-white/80 text-xs md:text-sm">We find the angles, script them, and ship the assets.</p>
                                     </div>
-                                    <div className="w-10 h-10 md:w-12 md:h-12 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center group hover:bg-wetrends/80 transition-colors duration-200 cursor-pointer flex-shrink-0">
+                                    <div className="w-10 h-10 md:w-12 md:h-12 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center group hover:bg-[#C72C5B] transition-colors duration-200 cursor-pointer flex-shrink-0">
                                         <ArrowUpRight className="w-5 h-5 md:w-6 md:h-6 text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200" />
                                     </div>
                                 </div>
@@ -147,10 +141,10 @@ const Pricing = () => {
                                 <div className="mb-4 md:mb-6">
                                     <div className="flex justify-between items-start mb-1">
                                         <div className="flex items-baseline gap-2">
-                                            <span className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-white to-white/80 bg-clip-text">£349</span>
+                                            <span className="text-3xl md:text-4xl font-bold text-white">£349</span>
                                             <span className="text-white/70 text-sm md:text-base">/mo</span>
                                         </div>
-                                        <Badge variant="secondary" className="bg-wetrends/20 text-white border border-wetrends/30 px-2 md:px-3 py-1 text-xs md:text-sm rounded-full backdrop-blur-sm">
+                                        <Badge variant="secondary" className="bg-[#C72C5B]/20 text-white border border-[#C72C5B]/30 px-2 md:px-3 py-1 text-xs md:text-sm rounded-full backdrop-blur-sm">
                                             Popular
                                         </Badge>
                                     </div>
@@ -163,34 +157,34 @@ const Pricing = () => {
                                 {/* Features */}
                                 <div className="space-y-3 md:space-y-4 flex-1">
                                     <div className="flex items-start gap-3">
-                                        <Check className="w-5 h-5 md:w-6 md:h-6 text-wetrends flex-shrink-0 mt-0.5" />
+                                        <Check className="w-5 h-5 md:w-6 md:h-6 text-[#C72C5B] flex-shrink-0 mt-0.5" />
                                         <span className="text-sm md:text-base">Weekly Trend Radar & competitor scan</span>
                                     </div>
                                     <div className="flex items-start gap-3">
-                                        <Check className="w-5 h-5 md:w-6 md:h-6 text-wetrends flex-shrink-0 mt-0.5" />
+                                        <Check className="w-5 h-5 md:w-6 md:h-6 text-[#C72C5B] flex-shrink-0 mt-0.5" />
                                         <span className="text-sm md:text-base">We draft scripts / storyboards for approval</span>
                                     </div>
                                     <div className="flex items-start gap-3">
-                                        <Check className="w-5 h-5 md:w-6 md:h-6 text-wetrends flex-shrink-0 mt-0.5" />
+                                        <Check className="w-5 h-5 md:w-6 md:h-6 text-[#C72C5B] flex-shrink-0 mt-0.5" />
                                         <span className="text-sm md:text-base">We design, edit & size for every channel</span>
                                     </div>
                                     <div className="flex items-start gap-3">
-                                        <Check className="w-5 h-5 md:w-6 md:h-6 text-wetrends flex-shrink-0 mt-0.5" />
+                                        <Check className="w-5 h-5 md:w-6 md:h-6 text-[#C72C5B] flex-shrink-0 mt-0.5" />
                                         <span className="text-sm md:text-base">48-h turnaround on 1 active request</span>
                                     </div>
                                     <div className="flex items-start gap-3">
-                                        <Check className="w-5 h-5 md:w-6 md:h-6 text-wetrends flex-shrink-0 mt-0.5" />
+                                        <Check className="w-5 h-5 md:w-6 md:h-6 text-[#C72C5B] flex-shrink-0 mt-0.5" />
                                         <span className="text-sm md:text-base">Monthly performance insight & tweaks</span>
                                     </div>
                                     <div className="flex items-start gap-3">
-                                        <Check className="w-5 h-5 md:w-6 md:h-6 text-wetrends flex-shrink-0 mt-0.5" />
+                                        <Check className="w-5 h-5 md:w-6 md:h-6 text-[#C72C5B] flex-shrink-0 mt-0.5" />
                                         <span className="text-sm md:text-base">Unlimited revisions until you&apos;re thrilled</span>
                                     </div>
                                 </div>
                             </div>
                         </AnimatedContent>
 
-                        {/* Card 3 - Enterprise - Gets the Gradient Background */}
+                        {/* Card 3 - Enterprise - Solid Color Background */}
                         <AnimatedContent
                             direction="vertical"
                             distance={100}
@@ -201,10 +195,8 @@ const Pricing = () => {
                             threshold={0.1}
                             className="relative"
                         >
-                            {/* Gradient Background */}
-                            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#C72C5B] via-purple-600 to-blue-600" />
-                            <div className="absolute inset-0 rounded-2xl bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.1),transparent_50%)]" />
-                            <div className="absolute inset-0 bg-black/10 rounded-2xl" />
+                            {/* Solid Color Background */}
+                            <div className="absolute inset-0 rounded-2xl bg-[#C72C5B]" />
                             
                             <div className="relative z-10 p-6 md:p-8 h-full flex flex-col text-white">
                                 {/* Header */}

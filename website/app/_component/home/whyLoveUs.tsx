@@ -4,24 +4,24 @@ import CTASection from "../../../components/ui/cta-section";
 import AnimatedContent from "@/components/ui/animated-content";
 
 /**
- * WhyLoveUs - Full height section with CSS gradient cards
+ * WhyLoveUs - Full height section with solid color cards
  */
 const WhyLoveUs = () => {
     const features = [
         {
             title: "Radar & Strategy",
             description: "We scan live culture data each week and agree on the winning idea in one call.",
-            gradient: "from-purple-600 to-pink-600",
+            color: "#8B5CF6",
         },
         {
             title: "Hands-Free Production",
             description: "We design, edit and format the approved concept into publish-ready creative.",
-            gradient: "from-blue-600 to-cyan-600",
+            color: "#3B82F6",
         },
         {
             title: "Launch & Optimize",
             description: "You publish, we monitor then refine next week's sprint for compounding growth.",
-            gradient: "from-emerald-600 to-teal-600",
+            color: "#10B981",
         },
     ];
 
@@ -107,7 +107,10 @@ const WhyLoveUs = () => {
                                     animateOpacity={true}
                                     threshold={0.1}
                                 >
-                                    <div className={`relative rounded-2xl overflow-hidden h-64 md:h-72 lg:h-80 bg-gradient-to-br ${feature.gradient}`}>
+                                    <div 
+                                        className="relative rounded-2xl overflow-hidden h-64 md:h-72 lg:h-80"
+                                        style={{ backgroundColor: feature.color }}
+                                    >
                                         <div className="relative z-10 p-5 md:p-6 lg:p-8 h-full flex flex-col justify-center items-center text-center text-white">
                                             <div className="flex justify-center mb-4 md:mb-6">
                                                 <Star className="w-10 h-10 md:w-12 md:h-12 fill-white" />

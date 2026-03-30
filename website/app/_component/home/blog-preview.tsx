@@ -14,7 +14,7 @@ const previewPosts = [
     category: 'Video Production',
     date: 'Dec 15, 2024',
     slug: '#',
-    gradient: 'from-purple-600 to-pink-600',
+    color: '#8B5CF6',
   },
   {
     id: '2',
@@ -23,7 +23,7 @@ const previewPosts = [
     category: 'Branding',
     date: 'Dec 10, 2024',
     slug: '#',
-    gradient: 'from-blue-600 to-cyan-600',
+    color: '#3B82F6',
   },
   {
     id: '3',
@@ -32,16 +32,13 @@ const previewPosts = [
     category: 'Social Media',
     date: 'Dec 5, 2024',
     slug: '#',
-    gradient: 'from-emerald-600 to-teal-600',
+    color: '#10B981',
   },
 ];
 
 export function BlogPreview() {
   return (
     <section className="relative min-h-screen overflow-hidden bg-white py-24 md:py-32 flex items-center">
-      {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-gray-50/50 to-white" />
-
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full">
         {/* Header */}
         <div className="mb-16 flex flex-col items-start justify-between gap-6 md:flex-row md:items-end">
@@ -117,15 +114,18 @@ export function BlogPreview() {
                 className="group"
               >
                 <Link href={post.slug}>
-                  {/* Gradient Card */}
-                  <div className={`relative mb-6 aspect-[4/3] overflow-hidden rounded-2xl bg-gradient-to-br ${post.gradient}`}>
+                  {/* Solid Color Card */}
+                  <div 
+                    className="relative mb-6 aspect-[4/3] overflow-hidden rounded-2xl"
+                    style={{ backgroundColor: post.color }}
+                  >
                     {/* Content */}
                     <div className="absolute inset-0 flex items-center justify-center">
                       <BookOpen className="w-16 h-16 text-white/30" />
                     </div>
                     
                     {/* Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                    <div className="absolute inset-0 bg-black/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                     
                     {/* Read More Button */}
                     <motion.div
@@ -178,10 +178,6 @@ export function BlogPreview() {
           className="mt-20"
         >
           <div className="relative overflow-hidden rounded-3xl bg-gray-900 p-8 md:p-12">
-            {/* Background */}
-            <div className="absolute inset-0 bg-gradient-to-r from-[#C72C5B]/20 to-purple-600/20" />
-            <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-[#C72C5B]/30 blur-3xl" />
-            
             <div className="relative flex flex-col items-center justify-between gap-6 md:flex-row">
               <div className="text-center md:text-left">
                 <h3 className="mb-2 text-2xl font-bold text-white md:text-3xl">

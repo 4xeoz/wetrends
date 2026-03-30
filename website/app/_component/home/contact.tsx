@@ -3,12 +3,12 @@ import ContactForm from './contact-form';
 import { Linkedin, Instagram, MapPin, Phone, Mail } from 'lucide-react';
 
 /**
- * Contact - Responsive section with contact form and local business info
+ * Contact - Full height section with solid background
  */
 const Contact = () => {
     return (
-        <section id="contact" className="min-h-screen bg-gradient-to-bl from-[#BC2A50] to-[#891735] text-white py-10 md:py-20 px-4 sm:px-6 lg:px-8 relative w-full flex items-center">
-            <div className="max-w-7xl mx-auto relative">
+        <section id="contact" className="min-h-screen bg-[#C72C5B] text-white py-10 md:py-20 px-4 sm:px-6 lg:px-8 relative w-full flex items-center">
+            <div className="max-w-7xl mx-auto relative w-full">
                 {/* Content Container */}
                 <div className="w-full">
                     <div className="mb-8 md:mb-20 relative">

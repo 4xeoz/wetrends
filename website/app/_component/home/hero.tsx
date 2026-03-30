@@ -5,40 +5,11 @@ import { ArrowDown } from "lucide-react";
 import { motion } from "motion/react";
 
 /**
- * Hero - Clean hero section with CSS gradient background, no images
+ * Hero - Clean hero section with solid background color
  */
 const Hero = () => {
     return (
-        <section className="relative min-h-screen w-full overflow-hidden bg-[#0a0a0a] flex items-center justify-center">
-            {/* CSS Gradient Background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-[#C72C5B]/30 via-[#0a0a0a] to-purple-900/20" />
-            
-            {/* Animated Gradient Orbs */}
-            <motion.div
-                animate={{
-                    scale: [1, 1.2, 1],
-                    opacity: [0.3, 0.5, 0.3],
-                }}
-                transition={{
-                    duration: 8,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                }}
-                className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#C72C5B]/20 rounded-full blur-[100px]"
-            />
-            <motion.div
-                animate={{
-                    scale: [1.2, 1, 1.2],
-                    opacity: [0.2, 0.4, 0.2],
-                }}
-                transition={{
-                    duration: 10,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                }}
-                className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-[100px]"
-            />
-
+        <section className="relative min-h-screen w-full overflow-hidden bg-[#C72C5B] flex items-center justify-center">
             {/* Content Container */}
             <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
                 <div className="text-center text-white">
@@ -62,7 +33,7 @@ const Hero = () => {
                         >
                             <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-white leading-tight mb-4">
                                 Your Brand&apos;s
-                                <span className="font-serif italic font-bold text-white"> Growth</span> Partner
+                                <span className="font-serif italic font-bold"> Growth</span> Partner
                             </h2>
                         </motion.div>
 

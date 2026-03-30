@@ -7,7 +7,7 @@ import { Badge } from '../../../components/ui/badge';
 import AnimatedContent from "@/components/ui/animated-content";
 
 /**
- * Showcase - Full height section with CSS gradient background
+ * Showcase - Full height section with solid background
  */
 const Showcase = () => {
     const [isPlaying, setIsPlaying] = useState(false);
@@ -73,7 +73,7 @@ const Showcase = () => {
             category: "Design",
             icon: Palette,
             videoSrc: "/videos/design-preview-wetrends.mp4",
-            gradient: "from-purple-600/80 to-pink-600/80",
+            color: "#8B5CF6",
         },
         {
             id: 2,
@@ -82,7 +82,7 @@ const Showcase = () => {
             category: "Video",
             icon: Video,
             videoSrc: "/videos/video-preview-wetrends.mp4",
-            gradient: "from-red-600/80 to-orange-600/80",
+            color: "#EF4444",
         },
         {
             id: 3,
@@ -91,7 +91,7 @@ const Showcase = () => {
             category: "Website",
             icon: Globe,
             videoSrc: "/videos/website-preview-wetrends.mp4",
-            gradient: "from-blue-600/80 to-cyan-600/80",
+            color: "#3B82F6",
         },
         {
             id: 4,
@@ -100,7 +100,7 @@ const Showcase = () => {
             category: "Social",
             icon: Users,
             videoSrc: "/videos/social-preview-wetrends.mp4",
-            gradient: "from-green-600/80 to-teal-600/80",
+            color: "#10B981",
         },
         {
             id: 5,
@@ -109,17 +109,12 @@ const Showcase = () => {
             category: "Animation",
             icon: Zap,
             videoSrc: "/videos/animations-preview-wetrends.mp4",
-            gradient: "from-indigo-600/80 to-purple-600/80",
+            color: "#F59E0B",
         },
     ];
 
     return (
         <section id="work" className="relative min-h-screen bg-gray-900 text-white py-10 md:py-20 px-4 sm:px-6 lg:px-8 overflow-hidden flex items-center">
-            {/* CSS Gradient Background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-slate-900 to-gray-800" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(199,44,91,0.1),transparent_50%)]" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(139,92,246,0.08),transparent_50%)]" />
-
             <div className="relative z-10 max-w-7xl mx-auto w-full">
                 {/* Content Container */}
                 <div>
@@ -169,7 +164,7 @@ const Showcase = () => {
                                     {/* First Testimonial - Dark */}
                                     <div className="bg-black rounded-2xl p-5 md:p-6 lg:p-8 max-w-lg">
                                         <div className="flex items-start gap-3 md:gap-4 mb-4">
-                                            <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-br from-[#C72C5B] to-purple-600 flex-shrink-0 flex items-center justify-center text-white font-bold">
+                                            <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-[#C72C5B] flex-shrink-0 flex items-center justify-center text-white font-bold">
                                                 D
                                             </div>
                                             <div>
@@ -187,7 +182,7 @@ const Showcase = () => {
                                     {/* Second Testimonial - Light */}
                                     <div className="bg-white rounded-2xl p-5 md:p-6 lg:p-8 max-w-lg">
                                         <div className="flex items-start gap-3 md:gap-4 mb-4">
-                                            <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex-shrink-0 flex items-center justify-center text-white font-bold">
+                                            <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-blue-500 flex-shrink-0 flex items-center justify-center text-white font-bold">
                                                 C
                                             </div>
                                             <div>
@@ -273,8 +268,11 @@ const Showcase = () => {
                                                     Your browser does not support the video tag.
                                                 </video>
 
-                                                {/* Gradient Overlay */}
-                                                <div className={`absolute inset-0 bg-gradient-to-t ${item.gradient} opacity-60`} />
+                                                {/* Solid Color Overlay */}
+                                                <div 
+                                                    className="absolute inset-0 opacity-60" 
+                                                    style={{ backgroundColor: item.color }}
+                                                />
 
                                                 {/* Content Overlay */}
                                                 <div className="absolute inset-0 p-6 flex flex-col justify-start text-white">
@@ -323,8 +321,11 @@ const Showcase = () => {
                                                     <source src={item.videoSrc} type="video/mp4" />
                                                 </video>
 
-                                                {/* Gradient Overlay */}
-                                                <div className={`absolute inset-0 bg-gradient-to-t ${item.gradient} opacity-60`} />
+                                                {/* Solid Color Overlay */}
+                                                <div 
+                                                    className="absolute inset-0 opacity-60" 
+                                                    style={{ backgroundColor: item.color }}
+                                                />
 
                                                 {/* Content Overlay */}
                                                 <div className="absolute inset-0 p-5 flex flex-col justify-start text-white">
