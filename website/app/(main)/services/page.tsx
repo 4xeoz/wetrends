@@ -63,8 +63,8 @@ const services = [
     features: ['UI/UX Design', 'Development', 'E-commerce', 'Web Apps', 'SEO Optimization', 'CMS Integration'],
     benefits: [
       'Average 3x increase in conversion rates',
-      'Mobile-first responsive design',
       'Lightning-fast performance (90+ PageSpeed)',
+      'Mobile-first responsive design',
       'Built with Next.js for scalability'
     ],
     color: '#3B82F6',
@@ -140,17 +140,17 @@ function ServiceCard({ service, index }: { service: typeof services[0]; index: n
         className="group relative h-full"
       >
         <Link href={`/services/${service.slug}/`}>
-          <div className="relative h-full overflow-hidden rounded-3xl bg-gray-900 p-8 md:p-10">
+          <div className="relative h-full overflow-hidden rounded-3xl border border-gray-200 bg-white p-8 md:p-10 shadow-sm transition-shadow hover:shadow-lg">
             {/* Background hover effect */}
             <motion.div 
-              className="absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-10"
+              className="absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-5"
               style={{ backgroundColor: service.color }}
             />
             
             {/* Large number background */}
             <span 
-              className="absolute right-6 top-6 text-8xl font-bold text-white/5 md:text-9xl"
-              style={{ WebkitTextStroke: `1px ${service.color}30` }}
+              className="absolute right-6 top-6 text-8xl font-bold text-gray-100 md:text-9xl"
+              style={{ WebkitTextStroke: `1px ${service.color}20` }}
             >
               {service.number}
             </span>
@@ -161,7 +161,7 @@ function ServiceCard({ service, index }: { service: typeof services[0]; index: n
                 <div className="flex items-center gap-4">
                   <div 
                     className="flex h-14 w-14 items-center justify-center rounded-2xl"
-                    style={{ backgroundColor: `${service.color}20` }}
+                    style={{ backgroundColor: `${service.color}15` }}
                   >
                     <Icon className="h-7 w-7" style={{ color: service.color }} />
                   </div>
@@ -169,7 +169,7 @@ function ServiceCard({ service, index }: { service: typeof services[0]; index: n
                     <span className="text-sm font-medium" style={{ color: service.color }}>
                       {service.number}
                     </span>
-                    <h3 className="text-xl font-bold text-white md:text-2xl">
+                    <h3 className="text-xl font-bold text-gray-900 md:text-2xl">
                       {service.title}
                     </h3>
                   </div>
@@ -177,14 +177,14 @@ function ServiceCard({ service, index }: { service: typeof services[0]; index: n
                 
                 <motion.div
                   whileHover={{ scale: 1.1, rotate: 45 }}
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 text-white/60 transition-colors group-hover:border-white/40 group-hover:text-white"
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 text-gray-400 transition-colors group-hover:border-gray-300 group-hover:text-gray-600"
                 >
                   <ArrowUpRight className="h-4 w-4" />
                 </motion.div>
               </div>
 
               {/* Description */}
-              <p className="mb-6 text-gray-400">
+              <p className="mb-6 text-gray-600">
                 {service.description}
               </p>
 
@@ -193,7 +193,7 @@ function ServiceCard({ service, index }: { service: typeof services[0]; index: n
                 {service.features.slice(0, 4).map((feature) => (
                   <span
                     key={feature}
-                    className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/70"
+                    className="rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs text-gray-600"
                   >
                     {feature}
                   </span>
@@ -201,10 +201,10 @@ function ServiceCard({ service, index }: { service: typeof services[0]; index: n
               </div>
 
               {/* Stats */}
-              <div className="flex items-center gap-2 border-t border-white/10 pt-6">
+              <div className="flex items-center gap-2 border-t border-gray-100 pt-6">
                 <TrendingUp className="h-4 w-4" style={{ color: service.color }} />
-                <span className="text-sm text-white/60">
-                  <strong className="text-white">{service.stats.value}</strong> {service.stats.label}
+                <span className="text-sm text-gray-500">
+                  <strong className="text-gray-900">{service.stats.value}</strong> {service.stats.label}
                 </span>
               </div>
             </div>
@@ -226,7 +226,7 @@ function ServiceCard({ service, index }: { service: typeof services[0]; index: n
 
 export default function ServicesPage() {
   return (
-    <main className="min-h-screen bg-black">
+    <main className="min-h-screen bg-white">
       {/* Hero Section */}
       <section className="relative overflow-hidden py-24 md:py-32">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -254,7 +254,7 @@ export default function ServicesPage() {
                 delay={0.1}
                 ease="power3.out"
               >
-                <h1 className="mb-6 text-5xl font-bold text-white md:text-6xl lg:text-7xl">
+                <h1 className="mb-6 text-5xl font-bold text-gray-900 md:text-6xl lg:text-7xl">
                   Services That
                   <br />
                   <span className="text-[#C72C5B]">Drive Growth</span>
@@ -268,7 +268,7 @@ export default function ServicesPage() {
                 delay={0.2}
                 ease="power3.out"
               >
-                <p className="mb-8 max-w-xl text-lg text-gray-400">
+                <p className="mb-8 max-w-xl text-lg text-gray-600">
                   From concept to execution, we deliver end-to-end creative solutions 
                   that transform brands and accelerate business success across Guildford, 
                   Surrey, and the entire UK.
@@ -285,11 +285,11 @@ export default function ServicesPage() {
                 <div className="flex flex-wrap items-center gap-6">
                   <div className="flex items-center gap-2">
                     <MapPin className="h-5 w-5 text-[#C72C5B]" />
-                    <span className="text-white/80">Guildford, Surrey</span>
+                    <span className="text-gray-700">Guildford, Surrey</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Clock className="h-5 w-5 text-[#C72C5B]" />
-                    <span className="text-white/80">2-Week Turnaround</span>
+                    <span className="text-gray-700">2-Week Turnaround</span>
                   </div>
                 </div>
               </AnimatedContent>
@@ -304,9 +304,9 @@ export default function ServicesPage() {
                 delay={0.2}
                 ease="power3.out"
               >
-                <div className="rounded-2xl bg-gray-900 p-6 text-center">
+                <div className="rounded-2xl border border-gray-200 bg-gray-50 p-6 text-center">
                   <div className="text-4xl font-bold text-[#C72C5B] md:text-5xl">6</div>
-                  <div className="mt-2 text-sm text-gray-400">Core Services</div>
+                  <div className="mt-2 text-sm text-gray-600">Core Services</div>
                 </div>
               </AnimatedContent>
               
@@ -317,9 +317,9 @@ export default function ServicesPage() {
                 delay={0.3}
                 ease="power3.out"
               >
-                <div className="rounded-2xl bg-gray-900 p-6 text-center">
+                <div className="rounded-2xl border border-gray-200 bg-gray-50 p-6 text-center">
                   <div className="text-4xl font-bold text-[#C72C5B] md:text-5xl">200+</div>
-                  <div className="mt-2 text-sm text-gray-400">Projects Delivered</div>
+                  <div className="mt-2 text-sm text-gray-600">Projects Delivered</div>
                 </div>
               </AnimatedContent>
               
@@ -330,9 +330,9 @@ export default function ServicesPage() {
                 delay={0.4}
                 ease="power3.out"
               >
-                <div className="rounded-2xl bg-gray-900 p-6 text-center">
+                <div className="rounded-2xl border border-gray-200 bg-gray-50 p-6 text-center">
                   <div className="text-4xl font-bold text-[#C72C5B] md:text-5xl">97%</div>
-                  <div className="mt-2 text-sm text-gray-400">Client Retention</div>
+                  <div className="mt-2 text-sm text-gray-600">Client Retention</div>
                 </div>
               </AnimatedContent>
               
@@ -343,9 +343,9 @@ export default function ServicesPage() {
                 delay={0.5}
                 ease="power3.out"
               >
-                <div className="rounded-2xl bg-gray-900 p-6 text-center">
+                <div className="rounded-2xl border border-gray-200 bg-gray-50 p-6 text-center">
                   <div className="text-4xl font-bold text-[#C72C5B] md:text-5xl">5★</div>
-                  <div className="mt-2 text-sm text-gray-400">Average Rating</div>
+                  <div className="mt-2 text-sm text-gray-600">Average Rating</div>
                 </div>
               </AnimatedContent>
             </div>
@@ -354,7 +354,7 @@ export default function ServicesPage() {
       </section>
 
       {/* Services Grid */}
-      <section className="py-24 md:py-32">
+      <section className="py-24 md:py-32 bg-gray-50">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <AnimatedContent
             direction="vertical"
@@ -363,10 +363,10 @@ export default function ServicesPage() {
             ease="power3.out"
             className="mb-16 text-center"
           >
-            <h2 className="mb-4 text-3xl font-bold text-white md:text-4xl">
+            <h2 className="mb-4 text-3xl font-bold text-gray-900 md:text-4xl">
               Explore Our <span className="text-[#C72C5B]">Expertise</span>
             </h2>
-            <p className="mx-auto max-w-2xl text-gray-400">
+            <p className="mx-auto max-w-2xl text-gray-600">
               Click on any service to learn more about how we can help your business grow.
             </p>
           </AnimatedContent>
@@ -380,7 +380,7 @@ export default function ServicesPage() {
       </section>
 
       {/* Why Choose Us */}
-      <section className="py-24 md:py-32 bg-gray-900/50">
+      <section className="py-24 md:py-32">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid gap-12 lg:grid-cols-2">
             <div>
@@ -390,7 +390,7 @@ export default function ServicesPage() {
                 duration={1}
                 ease="power3.out"
               >
-                <h2 className="mb-6 text-4xl font-bold text-white md:text-5xl">
+                <h2 className="mb-6 text-4xl font-bold text-gray-900 md:text-5xl">
                   Why Guildford
                   <br />
                   <span className="text-[#C72C5B]">Chooses Us</span>
@@ -404,7 +404,7 @@ export default function ServicesPage() {
                 delay={0.1}
                 ease="power3.out"
               >
-                <p className="text-lg text-gray-400">
+                <p className="text-lg text-gray-600">
                   We&apos;re not just another agency. We&apos;re your local creative partner 
                   with national reach, combining Guildford&apos;s creative energy with 
                   big-agency expertise.
@@ -429,9 +429,9 @@ export default function ServicesPage() {
                   delay={0.1 * index}
                   ease="power3.out"
                 >
-                  <div className="flex items-center gap-4 rounded-xl bg-black/50 p-4">
+                  <div className="flex items-center gap-4 rounded-xl border border-gray-200 bg-white p-4">
                     <CheckCircle2 className="h-6 w-6 flex-shrink-0 text-[#C72C5B]" />
-                    <span className="text-white">{item}</span>
+                    <span className="text-gray-900">{item}</span>
                   </div>
                 </AnimatedContent>
               ))}
@@ -441,7 +441,7 @@ export default function ServicesPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 md:py-32">
+      <section className="py-24 md:py-32 bg-[#C72C5B]">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
           <AnimatedContent
             direction="vertical"
@@ -452,14 +452,14 @@ export default function ServicesPage() {
             <h2 className="mb-6 text-4xl font-bold text-white md:text-5xl">
               Ready to Start Your Project?
             </h2>
-            <p className="mb-8 text-lg text-gray-400">
+            <p className="mb-8 text-lg text-white/80">
               Let&apos;s discuss how our services can help you achieve your business goals.
             </p>
             <motion.a
               href="/#contact"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="inline-flex items-center gap-3 rounded-full bg-[#C72C5B] px-8 py-4 text-lg font-bold text-white shadow-lg shadow-[#C72C5B]/25 transition-all hover:bg-[#A3244A]"
+              className="inline-flex items-center gap-3 rounded-full bg-white px-8 py-4 text-lg font-bold text-[#C72C5B] shadow-lg transition-all hover:bg-gray-100"
             >
               Get a Free Consultation
               <ArrowUpRight className="h-5 w-5" />

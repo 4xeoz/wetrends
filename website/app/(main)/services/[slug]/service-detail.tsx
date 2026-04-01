@@ -184,13 +184,13 @@ export default function ServiceDetail({ slug }: { slug: string }) {
   const Icon = service.icon;
 
   return (
-    <main className="min-h-screen bg-black">
+    <main className="min-h-screen bg-white">
       {/* Back Navigation */}
-      <div className="absolute left-0 right-0 top-0 z-50">
+      <div className="">
         <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
           <Link 
             href="/services/"
-            className="inline-flex items-center gap-2 text-white/60 transition-colors hover:text-white"
+            className="inline-flex items-center gap-2 text-gray-500 transition-colors hover:text-gray-900"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to Services
@@ -199,7 +199,7 @@ export default function ServiceDetail({ slug }: { slug: string }) {
       </div>
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden pt-32 pb-24 md:pt-40 md:pb-32">
+      <section className="relative flex min-h-[calc(100svh-72px)] items-center overflow-hidden py-12 md:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
             {/* Left - Content */}
@@ -212,7 +212,7 @@ export default function ServiceDetail({ slug }: { slug: string }) {
               >
                 <div 
                   className="mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-2"
-                  style={{ borderColor: `${service.color}40`, backgroundColor: `${service.color}10` }}
+                  style={{ borderColor: `${service.color}30`, backgroundColor: `${service.color}10` }}
                 >
                   <Icon className="h-4 w-4" style={{ color: service.color }} />
                   <span className="text-sm font-medium" style={{ color: service.color }}>
@@ -228,7 +228,7 @@ export default function ServiceDetail({ slug }: { slug: string }) {
                 delay={0.1}
                 ease="power3.out"
               >
-                <h1 className="mb-6 text-4xl font-bold text-white md:text-5xl lg:text-6xl">
+                <h1 className="mb-6 text-4xl font-bold text-gray-900 md:text-5xl lg:text-6xl">
                   {service.headline.split(' ').slice(0, -2).join(' ')}
                   <br />
                   <span style={{ color: service.color }}>
@@ -244,7 +244,7 @@ export default function ServiceDetail({ slug }: { slug: string }) {
                 delay={0.2}
                 ease="power3.out"
               >
-                <p className="mb-8 max-w-xl text-lg text-gray-400">
+                <p className="mb-8 max-w-xl text-lg text-gray-600">
                   {service.description}
                 </p>
               </AnimatedContent>
@@ -268,7 +268,7 @@ export default function ServiceDetail({ slug }: { slug: string }) {
                     <ArrowUpRight className="h-4 w-4" />
                   </motion.a>
                   
-                  <div className="flex items-center gap-2 rounded-full border border-white/20 px-4 py-3 text-white/80">
+                  <div className="flex items-center gap-2 rounded-full border border-gray-200 px-4 py-3 text-gray-600">
                     <MapPin className="h-4 w-4" style={{ color: service.color }} />
                     <span className="text-sm">Guildford, Surrey</span>
                   </div>
@@ -284,26 +284,26 @@ export default function ServiceDetail({ slug }: { slug: string }) {
               delay={0.3}
               ease="power3.out"
             >
-              <div className="rounded-3xl bg-gray-900 p-8 md:p-12">
+              <div className="rounded-3xl border border-gray-200 bg-gray-50 p-8 md:p-12">
                 <div className="mb-8 text-center">
                   <div className="text-6xl font-bold md:text-7xl" style={{ color: service.color }}>
                     {service.stats.value}
                   </div>
-                  <div className="mt-2 text-gray-400">{service.stats.label}</div>
+                  <div className="mt-2 text-gray-600">{service.stats.label}</div>
                 </div>
                 
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
-                    <Clock className="h-5 w-5 text-gray-500" />
-                    <span className="text-white">2-Week Average Turnaround</span>
+                    <Clock className="h-5 w-5 text-gray-400" />
+                    <span className="text-gray-900">2-Week Average Turnaround</span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <CheckCircle2 className="h-5 w-5 text-gray-500" />
-                    <span className="text-white">100% Satisfaction Guarantee</span>
+                    <CheckCircle2 className="h-5 w-5 text-gray-400" />
+                    <span className="text-gray-900">100% Satisfaction Guarantee</span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <Star className="h-5 w-5 text-gray-500" />
-                    <span className="text-white">5-Star Average Rating</span>
+                    <Star className="h-5 w-5 text-gray-400" />
+                    <span className="text-gray-900">5-Star Average Rating</span>
                   </div>
                 </div>
               </div>
@@ -313,7 +313,7 @@ export default function ServiceDetail({ slug }: { slug: string }) {
       </section>
 
       {/* Features Section */}
-      <section className="py-24 md:py-32 bg-gray-900/30">
+      <section className="py-24 md:py-32 bg-gray-50">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <AnimatedContent
             direction="vertical"
@@ -322,10 +322,10 @@ export default function ServiceDetail({ slug }: { slug: string }) {
             ease="power3.out"
             className="mb-12"
           >
-            <h2 className="mb-4 text-3xl font-bold text-white md:text-4xl">
+            <h2 className="mb-4 text-3xl font-bold text-gray-900 md:text-4xl">
               What We <span style={{ color: service.color }}>Offer</span>
             </h2>
-            <p className="max-w-2xl text-gray-400">
+            <p className="max-w-2xl text-gray-600">
               Comprehensive {service.title.toLowerCase()} services tailored to your specific needs.
             </p>
           </AnimatedContent>
@@ -342,15 +342,15 @@ export default function ServiceDetail({ slug }: { slug: string }) {
               >
                 <motion.div
                   whileHover={{ scale: 1.02 }}
-                  className="flex items-center gap-3 rounded-xl bg-gray-900 p-4"
+                  className="flex items-center gap-3 rounded-xl border border-gray-200 bg-white p-4"
                 >
                   <div 
                     className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg"
-                    style={{ backgroundColor: `${service.color}20` }}
+                    style={{ backgroundColor: `${service.color}15` }}
                   >
                     <Sparkles className="h-4 w-4" style={{ color: service.color }} />
                   </div>
-                  <span className="font-medium text-white">{feature}</span>
+                  <span className="font-medium text-gray-900">{feature}</span>
                 </motion.div>
               </AnimatedContent>
             ))}
@@ -368,10 +368,10 @@ export default function ServiceDetail({ slug }: { slug: string }) {
             ease="power3.out"
             className="mb-16 text-center"
           >
-            <h2 className="mb-4 text-3xl font-bold text-white md:text-4xl">
+            <h2 className="mb-4 text-3xl font-bold text-gray-900 md:text-4xl">
               Our <span style={{ color: service.color }}>Process</span>
             </h2>
-            <p className="mx-auto max-w-2xl text-gray-400">
+            <p className="mx-auto max-w-2xl text-gray-600">
               A proven four-step approach that delivers exceptional results every time.
             </p>
           </AnimatedContent>
@@ -386,19 +386,18 @@ export default function ServiceDetail({ slug }: { slug: string }) {
                 delay={0.1 * index}
                 ease="power3.out"
               >
-                <div className="relative h-full rounded-2xl bg-gray-900 p-6">
+                <div className="relative h-full rounded-2xl border border-gray-200 bg-white p-6">
                   <div 
-                    className="mb-4 text-5xl font-bold opacity-20"
-                    style={{ color: service.color }}
+                    className="mb-4 text-5xl font-bold text-gray-100"
                   >
                     {step.step}
                   </div>
-                  <h3 className="mb-2 text-xl font-bold text-white">{step.title}</h3>
-                  <p className="text-sm text-gray-400">{step.description}</p>
+                  <h3 className="mb-2 text-xl font-bold text-gray-900">{step.title}</h3>
+                  <p className="text-sm text-gray-600">{step.description}</p>
                   
                   {index < 3 && (
-                    <div className="absolute -right-3 top-1/2 hidden h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full bg-gray-800 lg:flex">
-                      <ArrowUpRight className="h-3 w-3 text-gray-500" />
+                    <div className="absolute -right-3 top-1/2 hidden h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full bg-gray-100 lg:flex">
+                      <ArrowUpRight className="h-3 w-3 text-gray-400" />
                     </div>
                   )}
                 </div>
@@ -409,7 +408,7 @@ export default function ServiceDetail({ slug }: { slug: string }) {
       </section>
 
       {/* Benefits Section */}
-      <section className="py-24 md:py-32 bg-gray-900/30">
+      <section className="py-24 md:py-32 bg-gray-50">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid gap-12 lg:grid-cols-2">
             <div>
@@ -419,7 +418,7 @@ export default function ServiceDetail({ slug }: { slug: string }) {
                 duration={1}
                 ease="power3.out"
               >
-                <h2 className="mb-6 text-4xl font-bold text-white md:text-5xl">
+                <h2 className="mb-6 text-4xl font-bold text-gray-900 md:text-5xl">
                   Results That
                   <br />
                   <span style={{ color: service.color }}>Speak Volumes</span>
@@ -433,7 +432,7 @@ export default function ServiceDetail({ slug }: { slug: string }) {
                 delay={0.1}
                 ease="power3.out"
               >
-                <p className="text-lg text-gray-400">
+                <p className="text-lg text-gray-600">
                   Our {service.title.toLowerCase()} services deliver measurable business impact. 
                   Here&apos;s what you can expect when you work with us.
                 </p>
@@ -452,17 +451,17 @@ export default function ServiceDetail({ slug }: { slug: string }) {
                 >
                   <motion.div 
                     whileHover={{ x: 8 }}
-                    className="flex gap-4 rounded-2xl bg-gray-900 p-6"
+                    className="flex gap-4 rounded-2xl border border-gray-200 bg-white p-6"
                   >
                     <div 
                       className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl"
-                      style={{ backgroundColor: `${service.color}20` }}
+                      style={{ backgroundColor: `${service.color}15` }}
                     >
                       <TrendingUp className="h-6 w-6" style={{ color: service.color }} />
                     </div>
                     <div>
-                      <h3 className="mb-1 text-lg font-bold text-white">{benefit.title}</h3>
-                      <p className="text-gray-400">{benefit.description}</p>
+                      <h3 className="mb-1 text-lg font-bold text-gray-900">{benefit.title}</h3>
+                      <p className="text-gray-600">{benefit.description}</p>
                     </div>
                   </motion.div>
                 </AnimatedContent>
@@ -475,7 +474,7 @@ export default function ServiceDetail({ slug }: { slug: string }) {
       {/* Local Focus Section */}
       <section className="py-24 md:py-32">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="rounded-3xl bg-gray-900 p-8 md:p-12 lg:p-16">
+          <div className="rounded-3xl border border-gray-200 bg-gray-50 p-8 md:p-12 lg:p-16">
             <div className="grid gap-8 lg:grid-cols-2 lg:items-center">
               <div>
                 <AnimatedContent
@@ -486,14 +485,14 @@ export default function ServiceDetail({ slug }: { slug: string }) {
                 >
                   <div className="mb-4 inline-flex items-center gap-2">
                     <MapPin className="h-5 w-5" style={{ color: service.color }} />
-                    <span className="text-sm font-medium text-white/60">Local Service</span>
+                    <span className="text-sm font-medium text-gray-500">Local Service</span>
                   </div>
-                  <h2 className="mb-4 text-3xl font-bold text-white md:text-4xl">
+                  <h2 className="mb-4 text-3xl font-bold text-gray-900 md:text-4xl">
                     Proudly Serving
                     <br />
                     <span style={{ color: service.color }}>Guildford & Surrey</span>
                   </h2>
-                  <p className="text-gray-400">
+                  <p className="text-gray-600">
                     {service.localFocus}
                   </p>
                 </AnimatedContent>
@@ -510,7 +509,7 @@ export default function ServiceDetail({ slug }: { slug: string }) {
                   {['Guildford', 'Woking', 'Farnham', 'Dorking', 'Reigate', 'Cobham', 'Esher', 'Leatherhead'].map((town) => (
                     <span 
                       key={town}
-                      className="rounded-full border border-white/10 px-4 py-2 text-sm text-white/80"
+                      className="rounded-full border border-gray-200 bg-white px-4 py-2 text-sm text-gray-700"
                     >
                       {town}
                     </span>
@@ -523,7 +522,7 @@ export default function ServiceDetail({ slug }: { slug: string }) {
       </section>
 
       {/* Testimonial Section */}
-      <section className="py-24 md:py-32 bg-gray-900/30">
+      <section className="py-24 md:py-32 bg-gray-50">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
           <AnimatedContent
             direction="vertical"
@@ -533,17 +532,17 @@ export default function ServiceDetail({ slug }: { slug: string }) {
           >
             <div 
               className="mx-auto mb-8 flex h-16 w-16 items-center justify-center rounded-2xl"
-              style={{ backgroundColor: `${service.color}20` }}
+              style={{ backgroundColor: `${service.color}15` }}
             >
               <span className="text-3xl" style={{ color: service.color }}>"</span>
             </div>
             
-            <blockquote className="mb-8 text-2xl font-medium text-white md:text-3xl">
+            <blockquote className="mb-8 text-2xl font-medium text-gray-900 md:text-3xl">
               {service.testimonial.quote}
             </blockquote>
             
             <div>
-              <div className="font-semibold text-white">{service.testimonial.author}</div>
+              <div className="font-semibold text-gray-900">{service.testimonial.author}</div>
               <div className="text-sm" style={{ color: service.color }}>{service.testimonial.role}</div>
             </div>
           </AnimatedContent>
@@ -551,7 +550,7 @@ export default function ServiceDetail({ slug }: { slug: string }) {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 md:py-32">
+      <section className="py-24 md:py-32" style={{ backgroundColor: service.color }}>
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
           <AnimatedContent
             direction="vertical"
@@ -562,7 +561,7 @@ export default function ServiceDetail({ slug }: { slug: string }) {
             <h2 className="mb-6 text-4xl font-bold text-white md:text-5xl">
               Ready to Get Started?
             </h2>
-            <p className="mb-8 text-lg text-gray-400">
+            <p className="mb-8 text-lg text-white/80">
               Let&apos;s discuss your {service.title.toLowerCase()} project. 
               Free consultation for Guildford & Surrey businesses.
             </p>
@@ -570,8 +569,8 @@ export default function ServiceDetail({ slug }: { slug: string }) {
               href="/#contact"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="inline-flex items-center gap-3 rounded-full px-8 py-4 text-lg font-bold text-white shadow-lg transition-all"
-              style={{ backgroundColor: service.color, boxShadow: `0 10px 40px ${service.color}40` }}
+              className="inline-flex items-center gap-3 rounded-full bg-white px-8 py-4 text-lg font-bold shadow-lg transition-all hover:bg-gray-100"
+              style={{ color: service.color }}
             >
               Start Your Project
               <ArrowUpRight className="h-5 w-5" />

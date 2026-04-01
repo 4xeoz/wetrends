@@ -22,7 +22,7 @@ const Hero = () => {
     ];
 
     return (
-        <section className="relative min-h-screen w-full overflow-hidden bg-[#C72C5B]">
+        <section className="relative -mt-[72px] min-h-screen w-full overflow-hidden bg-[#C72C5B] pt-[72px]">
             {/* Decorative geometric shapes - solid colors only */}
             <div className="absolute inset-0 overflow-hidden">
                 {/* Top right circle */}
@@ -60,7 +60,7 @@ const Hero = () => {
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.3 }}
-                    className="border-b border-white/10 px-4 py-4 sm:px-6 lg:px-8"
+                    className="border-b border-white/10 px-4 py-4 sm:px-6 lg:px-8 "
                 >
                     <div className="mx-auto flex max-w-7xl items-center justify-between">
                         <div className="flex items-center gap-2 text-white/80">
