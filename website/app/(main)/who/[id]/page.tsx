@@ -23,12 +23,32 @@ export async function generateMetadata({ params }: Props) {
   if (!member) {
     return {
       title: 'Team Member Not Found | WeTrends',
+      robots: { index: false },
     };
   }
   
   return {
-    title: `${member.name} - ${member.role} | WeTrends`,
+    title: `${member.name} - ${member.role} | WeTrends Team`,
     description: member.bio,
+    alternates: {
+      canonical: `https://wetrends.co.uk/who/${member.id}/`,
+    },
+    openGraph: {
+      title: `${member.name} - ${member.role} | WeTrends`,
+      description: member.bio,
+      url: `https://wetrends.co.uk/who/${member.id}/`,
+      type: 'profile',
+      locale: 'en_GB',
+      siteName: 'WeTrends',
+      images: member.image ? [
+        {
+          url: member.image,
+          width: 800,
+          height: 1000,
+          alt: `${member.name} - ${member.role} at WeTrends`,
+        }
+      ] : undefined,
+    },
   };
 }
 

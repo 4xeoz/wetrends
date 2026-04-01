@@ -31,10 +31,10 @@ const Hero = () => {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.8, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
                         >
-                            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-white leading-tight mb-4">
+                            <p className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-white leading-tight mb-4">
                                 Your Brand&apos;s
                                 <span className="font-serif italic font-bold"> Growth</span> Partner
-                            </h2>
+                            </p>
                         </motion.div>
 
                         {/* Location Tag */}
@@ -69,6 +69,7 @@ const Hero = () => {
                                 <Link
                                     href="#contact"
                                     className="flex items-center justify-center bg-white text-[#C72C5B] w-12 h-12 md:w-16 md:h-16 rounded-full font-semibold hover:bg-white/90 transition-colors duration-200 shadow-lg custom-bounce"
+                                    aria-label="Scroll to contact section"
                                 >
                                     <ArrowDown color="#C72C5B" className="w-5 h-5 md:w-6 md:h-6" />
                                 </Link>

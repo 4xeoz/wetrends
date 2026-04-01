@@ -1,5 +1,5 @@
-import type { Metadata } from "next"; 
-import { Geist, Geist_Mono } from "next/font/google"; 
+import type { Metadata, Viewport } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { SessionProvider } from "next-auth/react";
 import { SmoothScrollProvider } from "@/components/providers/smooth-scroll";
@@ -46,7 +46,17 @@ export const metadata: Metadata = {
   authors: [{ name: "WeTrends" }],
   creator: "WeTrends",
   publisher: "WeTrends",
-  robots: "index, follow",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
   alternates: {
     canonical: "https://wetrends.co.uk",
   },
@@ -73,8 +83,16 @@ export const metadata: Metadata = {
     images: ["/images/og-image.png"],
   },
   verification: {
-    google: "your-google-verification-code", // Add your Google Search Console code here
+    google: "your-google-verification-code", // TODO: Add your Google Search Console code here
   },
+  metadataBase: new URL('https://wetrends.co.uk'),
+};
+
+export const viewport: Viewport = {
+  themeColor: "#C72C5B",
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
 };
 
 // Local Business Schema
@@ -84,50 +102,26 @@ const localBusinessSchema = {
   "name": "WeTrends",
   "description": "Creative digital agency in Guildford, Surrey specialising in video production, social media management, web design, branding and content creation.",
   "url": "https://wetrends.co.uk",
-  "telephone": "+44-XXX-XXXX-XXXX", // Add your phone number
   "email": "wetrends.uk@gmail.com",
   "address": {
     "@type": "PostalAddress",
-    "streetAddress": "Guildford Business Park", // Update with actual address
     "addressLocality": "Guildford",
     "addressRegion": "Surrey",
-    "postalCode": "GU2 8XG", // Update with actual postcode
     "addressCountry": "GB"
   },
   "geo": {
     "@type": "GeoCoordinates",
-    "latitude": "51.2362", // Guildford coordinates
+    "latitude": "51.2362",
     "longitude": "-0.5704"
   },
   "areaServed": [
-    {
-      "@type": "City",
-      "name": "Guildford"
-    },
-    {
-      "@type": "City",
-      "name": "Woking"
-    },
-    {
-      "@type": "City",
-      "name": "Farnham"
-    },
-    {
-      "@type": "City",
-      "name": "Dorking"
-    },
-    {
-      "@type": "City",
-      "name": "Reigate"
-    },
-    {
-      "@type": "AdministrativeArea",
-      "name": "Surrey"
-    },
-    {
-      "@type": "Country",
-      "name": "United Kingdom"
-    }
+    { "@type": "City", "name": "Guildford" },
+    { "@type": "City", "name": "Woking" },
+    { "@type": "City", "name": "Farnham" },
+    { "@type": "City", "name": "Dorking" },
+    { "@type": "City", "name": "Reigate" },
+    { "@type": "AdministrativeArea", "name": "Surrey" },
+    { "@type": "Country", "name": "United Kingdom" }
   ],
   "serviceType": [
     "Video Production",
@@ -140,9 +134,7 @@ const localBusinessSchema = {
     "Digital Marketing"
   ],
   "priceRange": "££",
-  "openingHours": [
-    "Mo-Fr 09:00-18:00"
-  ],
+  "openingHours": ["Mo-Fr 09:00-18:00"],
   "sameAs": [
     "https://www.instagram.com/wetrends.uk",
     "https://www.linkedin.com/company/wetrends-uk"
@@ -153,13 +145,16 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en-GB">
       <head>
-        {/* Performance optimizations */}
+        {/* Preconnect to external domains for performance */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
         
         {/* Preload critical assets */}
         <link rel="preload" href="/images/logo-transparent.svg" as="image" type="image/svg+xml" />
+        
+        {/* Apple Touch Icon */}
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
         
         {/* Schema markup */}
         <script
@@ -172,12 +167,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <meta name="geo.placename" content="Guildford" />
         <meta name="geo.position" content="51.2362;-0.5704" />
         <meta name="ICBM" content="51.2362, -0.5704" />
-        
-        {/* Theme color */}
-        <meta name="theme-color" content="#C72C5B" />
-        
-        {/* Performance hints */}
-        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <LoadingScreen>
