@@ -1,117 +1,39 @@
-"use client"
+'use client';
 
-import type * as React from "react"
-import { FileText, LayoutDashboard, Command, Settings2, MessageSquare, Users, Ticket, ScanLine } from "lucide-react"
-import { NavMain } from "./nav-main"
-import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from "@/components/ui/sidebar"
-import { useEffect, useState } from "react"
-import { NavUser } from "./nav-user"
-import { getSession } from "next-auth/react"
+import { useEffect, useState } from 'react';
+import { getSession } from 'next-auth/react';
+import { AdminSidebar } from './admin-sidebar';
 
-const data = {
-  navMain: [
-    {
-      title: "Dashboard",
-      url: "/me/dashboard",
-      icon: LayoutDashboard,
-      isActive: true,
-    },
-    {
-      title: "Blog",
-      url: "/me/blog",
-      icon: FileText,
-      items: [
-        {
-          title: "All Posts",
-          url: "/me/blog",
-        },
-        {
-          title: "Create Post",
-          url: "/me/blog/create",
-        },
-        {
-          title: "Categories",
-          url: "/me/blog/categories",
-        },
-      ],
-    },
-    {
-      title: "Vouchers",
-      url: "/me/vouchers",
-      icon: Ticket,
-      items: [
-        {
-          title: "All Vouchers",
-          url: "/me/vouchers",
-        },
-        {
-          title: "Create Voucher",
-          url: "/me/vouchers/create",
-        },
-        {
-          title: "Actors",
-          url: "/me/vouchers/actors",
-        },
-        {
-          title: "Scan Voucher",
-          url: "/voucher/scan",
-        },
-      ],
-    },
-    {
-      title: "Messages",
-      url: "/me/messages",
-      icon: MessageSquare,
-    },
-    {
-      title: "Settings",
-      url: "/me/settings",
-      icon: Settings2,
-    },
-  ],
-}
-
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const [user, setUser] = useState<{ id: string; name: string; email: string; image: string } | null>(null)
+export function AppSidebar() {
+  const [user, setUser] = useState<{
+    id: string;
+    name: string;
+    email: string;
+    image?: string;
+  } | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function fetchUserData() {
       try {
-        const session = await getSession()
-        setUser({
-          id: session?.user?.id as string,
-          name: session?.user?.name as string,
-          email: session?.user?.email as string,
-          image: session?.user?.image as string,
-        })
+        const session = await getSession();
+        if (session?.user) {
+          setUser({
+            id: session.user.id as string,
+            name: session.user.name as string,
+            email: session.user.email as string,
+            image: session.user.image as string,
+          });
+        }
       } catch (error) {
-        console.error("Failed to fetch user data:", error)
-        setUser(null)
+        console.error('[Sidebar] Failed to fetch user:', error);
+      } finally {
+        setIsLoading(false);
       }
     }
 
-    fetchUserData()
-  }, [])
+    fetchUserData();
+  }, []);
 
-  return (
-    <Sidebar collapsible="icon" {...props} className="border-r border-sidebar-border">
-      <SidebarHeader className="border-b border-sidebar-border">
-      <div className="flex items-center gap-2 px-4 py-3 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground">
-            <Command className="h-4 w-4" />
-          </div>
-          <h1 className="text-lg font-semibold text-sidebar-foreground group-data-[collapsible=icon]:hidden">
-            WeTrends Admin
-          </h1>
-        </div>
-      </SidebarHeader>
-      <SidebarContent>
-        <NavMain items={data.navMain} />
-      </SidebarContent>
-      <SidebarFooter className="border-t border-sidebar-border">
-        {user && <NavUser user={user} />}
-      </SidebarFooter>
-      <SidebarRail />
-    </Sidebar>
-  )
+  return <AdminSidebar user={user} />;
 }
