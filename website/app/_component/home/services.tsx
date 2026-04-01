@@ -13,6 +13,7 @@ import {
   Sparkles
 } from 'lucide-react';
 import AnimatedContent from '@/components/ui/animated-content';
+import Link from 'next/link';
 
 const services = [
   {
@@ -72,8 +73,10 @@ function ServiceCard({ service, index }: { service: typeof services[0]; index: n
     offset: ["start end", "end start"]
   });
   
-  const y = useTransform(scrollYProgress, [0, 1], [100, -100]);
+  const y = useTransform(scrollYProgress, [0, 1], [50, -50]);
   const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
+  
+  const slug = service.title.toLowerCase().replace(' ', '-');
 
   return (
     <motion.div
@@ -81,10 +84,11 @@ function ServiceCard({ service, index }: { service: typeof services[0]; index: n
       style={{ y, opacity }}
       className="group relative"
     >
+      <Link href={`/services/${slug}/`}>
       <motion.div
         whileHover={{ scale: 1.02 }}
         transition={{ duration: 0.3 }}
-        className="relative overflow-hidden rounded-3xl bg-gray-900 p-8 md:p-12"
+        className="relative overflow-hidden rounded-3xl bg-gray-900 p-8 md:p-12 cursor-pointer"
       >
         {/* Solid Color Hover Background */}
         <div 
@@ -164,6 +168,7 @@ function ServiceCard({ service, index }: { service: typeof services[0]; index: n
           transition={{ duration: 0.8, delay: 0.2 }}
         />
       </motion.div>
+      </Link>
     </motion.div>
   );
 }
