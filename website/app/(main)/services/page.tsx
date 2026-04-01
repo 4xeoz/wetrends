@@ -228,7 +228,12 @@ export default function ServicesPage() {
   return (
     <main className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="relative overflow-hidden py-24 md:py-32">
+      <section className="relative overflow-hidden py-24 md:py-32 bg-white">
+        {/* Decorative background */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute -right-32 top-0 h-96 w-96 rounded-full bg-[#C72C5B]/8 blur-3xl" />
+          <div className="absolute left-0 bottom-0 h-64 w-64 rounded-full bg-[#8B5CF6]/8 blur-3xl" />
+        </div>
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
             {/* Left - Content */}
@@ -297,57 +302,30 @@ export default function ServicesPage() {
 
             {/* Right - Stats */}
             <div className="grid grid-cols-2 gap-4">
-              <AnimatedContent
-                direction="vertical"
-                distance={60}
-                duration={1}
-                delay={0.2}
-                ease="power3.out"
-              >
-                <div className="rounded-2xl border border-gray-200 bg-gray-50 p-6 text-center">
-                  <div className="text-4xl font-bold text-[#C72C5B] md:text-5xl">6</div>
-                  <div className="mt-2 text-sm text-gray-600">Core Services</div>
-                </div>
-              </AnimatedContent>
-              
-              <AnimatedContent
-                direction="vertical"
-                distance={60}
-                duration={1}
-                delay={0.3}
-                ease="power3.out"
-              >
-                <div className="rounded-2xl border border-gray-200 bg-gray-50 p-6 text-center">
-                  <div className="text-4xl font-bold text-[#C72C5B] md:text-5xl">200+</div>
-                  <div className="mt-2 text-sm text-gray-600">Projects Delivered</div>
-                </div>
-              </AnimatedContent>
-              
-              <AnimatedContent
-                direction="vertical"
-                distance={60}
-                duration={1}
-                delay={0.4}
-                ease="power3.out"
-              >
-                <div className="rounded-2xl border border-gray-200 bg-gray-50 p-6 text-center">
-                  <div className="text-4xl font-bold text-[#C72C5B] md:text-5xl">97%</div>
-                  <div className="mt-2 text-sm text-gray-600">Client Retention</div>
-                </div>
-              </AnimatedContent>
-              
-              <AnimatedContent
-                direction="vertical"
-                distance={60}
-                duration={1}
-                delay={0.5}
-                ease="power3.out"
-              >
-                <div className="rounded-2xl border border-gray-200 bg-gray-50 p-6 text-center">
-                  <div className="text-4xl font-bold text-[#C72C5B] md:text-5xl">5★</div>
-                  <div className="mt-2 text-sm text-gray-600">Average Rating</div>
-                </div>
-              </AnimatedContent>
+              {[
+                { value: '6', label: 'Core Services' },
+                { value: '200+', label: 'Projects Delivered' },
+                { value: '97%', label: 'Client Retention' },
+                { value: '5★', label: 'Average Rating' },
+              ].map((stat, i) => (
+                <AnimatedContent
+                  key={stat.label}
+                  direction="vertical"
+                  distance={60}
+                  duration={1}
+                  delay={0.2 + i * 0.1}
+                  ease="power3.out"
+                >
+                  <motion.div
+                    whileHover={{ y: -4 }}
+                    transition={{ duration: 0.2 }}
+                    className="rounded-2xl border border-gray-200 bg-white p-6 text-center shadow-sm"
+                  >
+                    <div className="text-4xl font-bold text-[#C72C5B] md:text-5xl">{stat.value}</div>
+                    <div className="mt-2 text-sm text-gray-600">{stat.label}</div>
+                  </motion.div>
+                </AnimatedContent>
+              ))}
             </div>
           </div>
         </div>
