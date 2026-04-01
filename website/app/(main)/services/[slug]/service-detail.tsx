@@ -199,7 +199,15 @@ export default function ServiceDetail({ slug }: { slug: string }) {
       </div>
 
       {/* Hero Section */}
-      <section className="relative flex min-h-[calc(100svh-72px)] items-center overflow-hidden py-12 md:py-24">
+      <section
+        className="relative flex min-h-[calc(100svh-72px)] items-center overflow-hidden py-12 md:py-24"
+        style={{ background: `linear-gradient(135deg, white 60%, ${service.color}08 100%)` }}
+      >
+        {/* Decorative accent */}
+        <div
+          className="absolute right-0 top-0 h-full w-1 opacity-60"
+          style={{ backgroundColor: service.color }}
+        />
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
             {/* Left - Content */}
@@ -284,25 +292,28 @@ export default function ServiceDetail({ slug }: { slug: string }) {
               delay={0.3}
               ease="power3.out"
             >
-              <div className="rounded-3xl border border-gray-200 bg-gray-50 p-8 md:p-12">
-                <div className="mb-8 text-center">
+              <div className="rounded-3xl border border-gray-200 bg-white p-8 md:p-12 shadow-sm">
+                <div
+                  className="mb-8 rounded-2xl p-6 text-center"
+                  style={{ backgroundColor: `${service.color}10` }}
+                >
                   <div className="text-6xl font-bold md:text-7xl" style={{ color: service.color }}>
                     {service.stats.value}
                   </div>
-                  <div className="mt-2 text-gray-600">{service.stats.label}</div>
+                  <div className="mt-2 font-medium text-gray-700">{service.stats.label}</div>
                 </div>
-                
+
                 <div className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <Clock className="h-5 w-5 text-gray-400" />
+                  <div className="flex items-center gap-3 rounded-xl border border-gray-100 bg-gray-50 p-3">
+                    <Clock className="h-5 w-5 flex-shrink-0" style={{ color: service.color }} />
                     <span className="text-gray-900">2-Week Average Turnaround</span>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <CheckCircle2 className="h-5 w-5 text-gray-400" />
+                  <div className="flex items-center gap-3 rounded-xl border border-gray-100 bg-gray-50 p-3">
+                    <CheckCircle2 className="h-5 w-5 flex-shrink-0" style={{ color: service.color }} />
                     <span className="text-gray-900">100% Satisfaction Guarantee</span>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <Star className="h-5 w-5 text-gray-400" />
+                  <div className="flex items-center gap-3 rounded-xl border border-gray-100 bg-gray-50 p-3">
+                    <Star className="h-5 w-5 flex-shrink-0" style={{ color: service.color }} />
                     <span className="text-gray-900">5-Star Average Rating</span>
                   </div>
                 </div>
@@ -387,8 +398,9 @@ export default function ServiceDetail({ slug }: { slug: string }) {
                 ease="power3.out"
               >
                 <div className="relative h-full rounded-2xl border border-gray-200 bg-white p-6">
-                  <div 
-                    className="mb-4 text-5xl font-bold text-gray-100"
+                  <div
+                    className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl text-sm font-bold text-white"
+                    style={{ backgroundColor: service.color }}
                   >
                     {step.step}
                   </div>
