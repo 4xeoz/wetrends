@@ -5,6 +5,7 @@ import SubHero from '../_component/home/subHero';
 import WhyLoveUs from '../_component/home/whyLoveUs';
 import { Services } from '../_component/home/services';
 import Showcase from '../_component/home/showcase';
+import { CaseStudies } from '../_component/home/case-studies';
 import Pricing from '../_component/home/pricing';
 import { Team } from '../_component/home/team';
 import { BlogPreview } from '../_component/home/blog-preview';
@@ -34,6 +35,7 @@ export default function Home() {
       <WhyLoveUs/>
       <Services />
       <Showcase/>
+      <CaseStudies />
       <Pricing/>
       <Team />
       <BlogPreview />

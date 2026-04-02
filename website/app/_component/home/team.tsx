@@ -27,7 +27,7 @@ export function Team() {
     <section
       ref={containerRef}
       id="team"
-      className="relative overflow-hidden bg-white py-24 md:py-32"
+      className="relative overflow-hidden bg-white py-32 md:py-40"
     >
       {/* Background Pattern */}
       <motion.div

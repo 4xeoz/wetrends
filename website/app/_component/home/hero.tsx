@@ -97,11 +97,11 @@ const Hero = () => {
                                 </motion.div>
 
                                 {/* Main Title */}
-                                <motion.h1 
+                                <motion.h1
                                     initial={{ opacity: 0, y: 40 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ duration: 0.8, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                                    className="mb-6 text-4xl font-bold leading-tight text-white sm:text-5xl md:text-6xl lg:text-7xl"
+                                    className="mb-6 text-5xl font-bold leading-none text-white sm:text-6xl md:text-7xl lg:text-8xl"
                                 >
                                     Your Brand&apos;s
                                     <br />
@@ -109,7 +109,7 @@ const Hero = () => {
                                         Growth Partner
                                     </span>
                                     <br />
-                                    <span className="text-2xl font-normal sm:text-3xl md:text-4xl lg:text-5xl">
+                                    <span className="text-2xl font-normal sm:text-3xl md:text-4xl lg:text-4xl opacity-80">
                                         in Guildford & Surrey
                                     </span>
                                 </motion.h1>

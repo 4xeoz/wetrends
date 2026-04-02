@@ -186,7 +186,7 @@ export function Services() {
     <section
       ref={containerRef}
       id="services"
-      className="relative min-h-screen overflow-hidden bg-gray-50 py-24 md:py-32 flex items-center"
+      className="relative min-h-screen overflow-hidden bg-gray-50 py-32 md:py-40 flex items-center"
     >
       {/* Subtle decorative background */}
       <div className="absolute inset-0 pointer-events-none">
