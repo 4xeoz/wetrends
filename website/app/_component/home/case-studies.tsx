@@ -14,7 +14,7 @@ const caseStudies = [
     metricLabel: 'Increase in online enquiries',
     description:
       'Rebuilt their digital presence with a conversion-first approach. The new site outranked 3 competitors and became their top lead source within 60 days.',
-    href: '/services/web-design/',
+    href: '/case-studies/surrey-wellness/',
     accent: true,
   },
   {
@@ -25,7 +25,7 @@ const caseStudies = [
     metricLabel: 'Followers in 6 months',
     description:
       'Built a content strategy rooted in local culture. Community engagement drove a 4.2× ROI on social spend and turned followers into regulars.',
-    href: '/services/social-media/',
+    href: '/case-studies/guildford-cafe-co/',
     accent: false,
   },
   {
@@ -36,14 +36,14 @@ const caseStudies = [
     metricLabel: 'Boost in content shares',
     description:
       'Created a brand film that became the centrepiece of their £2M funding pitch. Viewed 250,000 times in the first week across all channels.',
-    href: '/services/video-production/',
+    href: '/case-studies/techstart-uk/',
     accent: true,
   },
 ];
 
 export function CaseStudies() {
   return (
-    <section className="bg-white py-32 md:py-40">
+    <section id="case-studies" className="bg-white py-32 md:py-40">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-24 grid gap-12 lg:grid-cols-2 lg:items-end">

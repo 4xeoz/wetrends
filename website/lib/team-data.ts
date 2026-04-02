@@ -17,7 +17,7 @@ export const teamMembers: TeamMember[] = [
     id: 'eyad-cherifi',
     name: 'Eyad Cherifi',
     role: 'Founder & Creative Director',
-    image: '/images/iyad_cherifi.webp',
+    image: '/images/eyad_cherifi.webp',
     bio: 'Visionary leader with a passion for storytelling and brand building. 10+ years in creative industry.',
     fullBio: `Eyad Cherifi is the visionary founder and creative director of WeTrends. With over a decade of experience in the creative industry, Eyad has helped hundreds of brands find their unique voice and connect with their audiences through compelling storytelling.
 
@@ -77,6 +77,28 @@ James studied at Central Saint Martins and has previously worked at Pentagram an
       'Central Saint Martins Graduate',
       'Former designer at Pentagram',
       'Featured in Communication Arts'
+    ]
+  },
+  {
+    id: 'meriam',
+    name: 'Meriam',
+    role: 'Creative Producer',
+    image: '/images/meriam.webp',
+    bio: 'Creative producer who bridges strategy and execution, ensuring every project ships on time and above expectations.',
+    fullBio: `Meriam is WeTrends' Creative Producer, the engine behind how ideas become reality. With a background in creative project management and brand consultancy, she keeps every production running smoothly from brief to delivery.
+
+Her strength lies in translating ambitious creative visions into tight, executable plans without ever sacrificing quality. Clients consistently cite her communication and organisation as transformative for their experience working with the agency.
+
+Meriam is passionate about building processes that empower creatives to do their best work — and about building brands that genuinely connect with people.`,
+    linkedin: 'https://linkedin.com/in/meriam',
+    twitter: 'https://twitter.com/meriam',
+    email: 'meriam@wetrends.co.uk',
+    skills: ['Project Management', 'Creative Production', 'Client Relations', 'Brand Strategy', 'Workflow Design'],
+    achievements: [
+      'Managed 80+ brand projects end-to-end',
+      'Reduced average project delivery time by 30%',
+      'Built WeTrends production workflow from scratch',
+      'Certified Project Management Professional (PMP)'
     ]
   },
   {
