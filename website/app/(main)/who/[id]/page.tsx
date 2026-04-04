@@ -60,7 +60,7 @@ export default async function TeamMemberPage({ params }: Props) {
   }
 
   return (
-    <main className="min-h-screen bg-white text-[#0F0F0F]">
+    <main className="min-h-[100svh] bg-white text-[#0F0F0F]">
       {/* Hero Section */}
       <section className="relative pt-[72px]">
         <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">

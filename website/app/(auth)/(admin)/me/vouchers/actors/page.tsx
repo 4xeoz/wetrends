@@ -80,7 +80,7 @@ export default function ActorsPage() {
 
   if (isLoading) {
     return (
-      <div className="flex h-[calc(100vh-4rem)] items-center justify-center">
+      <div className="flex h-[calc(100svh-4rem)] items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-[#C72C5B]" />
       </div>
     );

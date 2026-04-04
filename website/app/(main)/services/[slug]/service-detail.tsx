@@ -184,7 +184,7 @@ export default function ServiceDetail({ slug }: { slug: string }) {
   const Icon = service.icon;
 
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-[100svh] bg-white">
       {/* Back Navigation */}
       <div className="">
         <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">

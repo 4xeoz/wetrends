@@ -1,272 +1,171 @@
 import React from 'react';
 import { Check, ArrowUpRight } from 'lucide-react';
-import { Badge } from '../../../components/ui/badge';
+import Link from 'next/link';
 import AnimatedContent from "@/components/ui/animated-content";
 
-/**
- * Pricing - Full height section with solid colors
- */
-const Pricing = () => {
-    return (
-        <section className="relative min-h-screen text-black py-20 md:py-32 px-4 sm:px-6 lg:px-8 overflow-hidden flex items-center bg-white">
-            <div className="relative z-10 max-w-7xl mx-auto w-full">
-                {/* Content Container */}
-                <div>
-                    <AnimatedContent
-                        direction="vertical"
-                        distance={80}
-                        duration={1.2}
-                        ease="power3.out"
-                        animateOpacity={true}
-                        threshold={0.1}
-                        className="mb-6 md:mb-10"
-                    >
-                        <h2 className="text-4xl md:text-5xl lg:text-7xl xl:text-8xl font-bold leading-none mb-2">Results</h2>
-                        <h3 className="text-4xl md:text-5xl lg:text-7xl xl:text-8xl font-serif italic font-bold leading-none">Come First</h3>
-                    </AnimatedContent>
+const plans = [
+  {
+    name: 'TrendOps™ Core',
+    price: '£749',
+    period: '/mo',
+    description: 'Give us the plan—get the polished assets.',
+    features: [
+      'You supply strategy, scripts, rough footage',
+      'We edit, design & format for every channel',
+      '48-h turnaround on one active request',
+      'Unlimited revisions until you\'re happy',
+    ],
+    theme: 'light',
+  },
+  {
+    name: 'TrendOps™ Growth',
+    price: '£939',
+    period: '/mo',
+    description: 'We find the angles, script them, and ship the assets.',
+    features: [
+      'Weekly Trend Radar & competitor scan',
+      'We draft scripts / storyboards for approval',
+      'We design, edit & size for every channel',
+      '48-h turnaround on 1 active request',
+      'Monthly performance insight & tweaks',
+      'Unlimited revisions until you\'re thrilled',
+    ],
+    theme: 'dark',
+    popular: true,
+  },
+  {
+    name: 'TrendOps™ Enterprise',
+    price: 'Custom',
+    period: '',
+    description: 'Bespoke creative partnership for scaling brands.',
+    features: [
+      'Everything in Growth, plus:',
+      'Dedicated creative team',
+      'Unlimited active requests',
+      'Same-day priority turnaround',
+      'Weekly strategy calls',
+      'Full brand system & guidelines',
+    ],
+    theme: 'accent',
+  },
+];
 
-                    {/* Description - Full Width */}
-                    <AnimatedContent
-                        direction="vertical"
-                        distance={60}
-                        duration={1.2}
-                        delay={0.1}
-                        ease="power3.out"
-                        animateOpacity={true}
-                        threshold={0.1}
-                        className="mb-8 md:mb-12"
-                    >
-                        <p className="text-base md:text-lg lg:text-xl leading-relaxed max-w-3xl">
-                            Results come first. Pick the partnership level that matches your workload and move the metrics, not just make pretty files.
-                        </p>
-                    </AnimatedContent>
+export default function Pricing() {
+  return (
+    <section className="relative overflow-hidden bg-white py-20 md:py-28">
+      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <AnimatedContent
+          direction="vertical"
+          distance={60}
+          duration={1}
+          ease="power3.out"
+          className="mb-12 md:mb-16"
+        >
+          <span className="mb-4 block text-sm font-bold uppercase tracking-widest text-[#C72C5B]">
+            Partnerships
+          </span>
+          <h2 className="text-4xl font-bold leading-none text-[#0F0F0F] md:text-5xl lg:text-6xl xl:text-7xl">
+            Results Come
+            <br />
+            <span className="font-serif italic text-[#C72C5B]">First</span>
+          </h2>
+        </AnimatedContent>
 
-                    {/* 3 Pricing Cards Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 h-full max-w-7xl mx-auto">
+        <AnimatedContent
+          direction="vertical"
+          distance={40}
+          duration={1}
+          delay={0.1}
+          ease="power3.out"
+          className="mb-10 md:mb-14"
+        >
+          <p className="max-w-2xl text-lg leading-relaxed text-gray-600">
+            Pick the partnership level that matches your workload and move the metrics, not just make pretty files.
+          </p>
+        </AnimatedContent>
 
-                        {/* Card 1 - Core */}
-                        <AnimatedContent
-                            direction="vertical"
-                            distance={100}
-                            duration={1.2}
-                            delay={0.2}
-                            ease="power3.out"
-                            animateOpacity={true}
-                            threshold={0.2}
-                        >
-                            <div className="relative z-10 p-6 md:p-8 h-full flex flex-col border-2 border-gray-300 rounded-2xl bg-white">
-                                {/* Header */}
-                                <div className="flex justify-between items-start mb-6 md:mb-8">
-                                    <div>
-                                        <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">TrendOps™ Core</h2>
-                                        <p className="text-gray-600 text-xs md:text-sm">Give us the plan—get the polished assets.</p>
-                                    </div>
-                                    <div className="w-10 h-10 md:w-12 md:h-12 bg-gray-300 rounded-full flex items-center justify-center group hover:bg-gray-400 transition-colors duration-200 cursor-pointer flex-shrink-0">
-                                        <ArrowUpRight className="w-5 h-5 md:w-6 md:h-6 text-gray-700 group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200" />
-                                    </div>
-                                </div>
+        {/* Pricing Grid */}
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
+          {plans.map((plan, index) => {
+            const isLight = plan.theme === 'light';
+            const isDark = plan.theme === 'dark';
+            const isAccent = plan.theme === 'accent';
 
-                                {/* Divider */}
-                                <div className="border-t border-gray-300 mb-4 md:mb-6"></div>
+            return (
+              <AnimatedContent
+                key={plan.name}
+                direction="vertical"
+                distance={50}
+                duration={0.8}
+                delay={0.15 * index}
+                ease="power3.out"
+              >
+                <div
+                  className={`group relative flex h-full flex-col overflow-hidden rounded-3xl border p-6 transition-all duration-300 md:p-8 ${
+                    isLight
+                      ? 'border-gray-200 bg-white hover:border-[#C72C5B]'
+                      : isDark
+                      ? 'border-gray-800 bg-[#0F0F0F] text-white hover:border-gray-600'
+                      : 'border-[#C72C5B] bg-[#C72C5B] text-white hover:bg-[#b5284d]'
+                  }`}
+                >
+                  {/* Popular badge */}
+                  {plan.popular && (
+                    <span className="absolute right-6 top-6 rounded-full bg-[#C72C5B] px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white">
+                      Most Popular
+                    </span>
+                  )}
 
-                                {/* Pricing */}
-                                <div className="mb-4 md:mb-6">
-                                    <div className="flex justify-between items-start mb-1">
-                                        <div className="flex items-baseline gap-2">
-                                            <span className="text-3xl md:text-4xl font-bold text-gray-900">£249</span>
-                                            <span className="text-gray-600 text-sm md:text-base">/mo</span>
-                                        </div>
-                                        <Badge variant="secondary" className="bg-gray-200 text-gray-700 px-2 md:px-3 py-1 text-xs md:text-sm rounded-full">
-                                            Starter
-                                        </Badge>
-                                    </div>
-                                    <span className="text-gray-400 line-through text-base md:text-lg">£750</span>
-                                </div>
+                  {/* Header */}
+                  <div className="mb-6">
+                    <h3 className="text-xl font-bold md:text-2xl">{plan.name}</h3>
+                    <p className={`mt-1 text-sm ${isDark ? 'text-gray-400' : isAccent ? 'text-white/80' : 'text-gray-500'}`}>
+                      {plan.description}
+                    </p>
+                  </div>
 
-                                {/* Divider */}
-                                <div className="border-t border-gray-300 mb-4 md:mb-6"></div>
+                  {/* Price */}
+                  <div className="mb-6 flex items-baseline gap-1">
+                    <span className="text-4xl font-bold tracking-tight md:text-5xl">{plan.price}</span>
+                    {plan.period && <span className={`text-lg ${isDark ? 'text-gray-400' : isAccent ? 'text-white/70' : 'text-gray-500'}`}>{plan.period}</span>}
+                  </div>
 
-                                {/* Features */}
-                                <div className="space-y-3 md:space-y-4 flex-1">
-                                    <div className="flex items-start gap-3">
-                                        <Check className="w-5 h-5 md:w-6 md:h-6 text-wetrends flex-shrink-0 mt-0.5" />
-                                        <span className="text-gray-700 text-sm md:text-base">You supply strategy, scripts, rough footage</span>
-                                    </div>
-                                    <div className="flex items-start gap-3">
-                                        <Check className="w-5 h-5 md:w-6 md:h-6 text-wetrends flex-shrink-0 mt-0.5" />
-                                        <span className="text-gray-700 text-sm md:text-base">We edit, design & format for every channel</span>
-                                    </div>
-                                    <div className="flex items-start gap-3">
-                                        <Check className="w-5 h-5 md:w-6 md:h-6 text-wetrends flex-shrink-0 mt-0.5" />
-                                        <span className="text-gray-700 text-sm md:text-base">48-h turnaround on one active request</span>
-                                    </div>
-                                    <div className="flex items-start gap-3">
-                                        <Check className="w-5 h-5 md:w-6 md:h-6 text-wetrends flex-shrink-0 mt-0.5" />
-                                        <span className="text-gray-700 text-sm md:text-base">Unlimited revisions until you&apos;re happy</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </AnimatedContent>
+                  {/* CTA */}
+                  <Link
+                    href="/#contact"
+                    className={`mb-8 inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-bold transition-all md:text-base ${
+                      isLight
+                        ? 'bg-[#0F0F0F] text-white hover:bg-[#C72C5B]'
+                        : isDark
+                        ? 'bg-white text-[#0F0F0F] hover:bg-[#C72C5B] hover:text-white'
+                        : 'bg-white text-[#C72C5B] hover:bg-[#0F0F0F] hover:text-white'
+                    }`}
+                  >
+                    {plan.price === 'Custom' ? 'Contact Us' : 'Get Started'}
+                    <ArrowUpRight className="h-4 w-4 transition-transform group-hover:rotate-45" />
+                  </Link>
 
-                        {/* Card 2 - Growth */}
-                        <AnimatedContent
-                            direction="vertical"
-                            distance={100}
-                            duration={1.2}
-                            delay={0.3}
-                            ease="power3.out"
-                            animateOpacity={true}
-                            threshold={0.1}
-                            className="relative"
-                        >
-                            {/* Dark Background */}
-                            <div className="absolute inset-0 rounded-2xl bg-gray-900" />
-                            
-                            <div className="relative z-10 p-6 md:p-8 h-full flex flex-col text-white">
-                                {/* Header */}
-                                <div className="flex justify-between items-start mb-6 md:mb-8">
-                                    <div>
-                                        <h2 className="text-xl md:text-2xl font-bold mb-2">TrendOps™ Growth</h2>
-                                        <p className="text-white/80 text-xs md:text-sm">We find the angles, script them, and ship the assets.</p>
-                                    </div>
-                                    <div className="w-10 h-10 md:w-12 md:h-12 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center group hover:bg-[#C72C5B] transition-colors duration-200 cursor-pointer flex-shrink-0">
-                                        <ArrowUpRight className="w-5 h-5 md:w-6 md:h-6 text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200" />
-                                    </div>
-                                </div>
+                  {/* Divider */}
+                  <div className={`mb-6 h-px ${isLight ? 'bg-gray-100' : isDark ? 'bg-white/10' : 'bg-white/20'}`} />
 
-                                {/* Divider */}
-                                <div className="border-t border-white/20 mb-4 md:mb-6"></div>
-
-                                {/* Pricing */}
-                                <div className="mb-4 md:mb-6">
-                                    <div className="flex justify-between items-start mb-1">
-                                        <div className="flex items-baseline gap-2">
-                                            <span className="text-3xl md:text-4xl font-bold text-white">£349</span>
-                                            <span className="text-white/70 text-sm md:text-base">/mo</span>
-                                        </div>
-                                        <Badge variant="secondary" className="bg-[#C72C5B]/20 text-white border border-[#C72C5B]/30 px-2 md:px-3 py-1 text-xs md:text-sm rounded-full backdrop-blur-sm">
-                                            Popular
-                                        </Badge>
-                                    </div>
-                                    <span className="text-white/50 line-through text-base md:text-lg">£1059</span>
-                                </div>
-
-                                {/* Divider */}
-                                <div className="border-t border-white/20 mb-4 md:mb-6"></div>
-
-                                {/* Features */}
-                                <div className="space-y-3 md:space-y-4 flex-1">
-                                    <div className="flex items-start gap-3">
-                                        <Check className="w-5 h-5 md:w-6 md:h-6 text-[#C72C5B] flex-shrink-0 mt-0.5" />
-                                        <span className="text-sm md:text-base">Weekly Trend Radar & competitor scan</span>
-                                    </div>
-                                    <div className="flex items-start gap-3">
-                                        <Check className="w-5 h-5 md:w-6 md:h-6 text-[#C72C5B] flex-shrink-0 mt-0.5" />
-                                        <span className="text-sm md:text-base">We draft scripts / storyboards for approval</span>
-                                    </div>
-                                    <div className="flex items-start gap-3">
-                                        <Check className="w-5 h-5 md:w-6 md:h-6 text-[#C72C5B] flex-shrink-0 mt-0.5" />
-                                        <span className="text-sm md:text-base">We design, edit & size for every channel</span>
-                                    </div>
-                                    <div className="flex items-start gap-3">
-                                        <Check className="w-5 h-5 md:w-6 md:h-6 text-[#C72C5B] flex-shrink-0 mt-0.5" />
-                                        <span className="text-sm md:text-base">48-h turnaround on 1 active request</span>
-                                    </div>
-                                    <div className="flex items-start gap-3">
-                                        <Check className="w-5 h-5 md:w-6 md:h-6 text-[#C72C5B] flex-shrink-0 mt-0.5" />
-                                        <span className="text-sm md:text-base">Monthly performance insight & tweaks</span>
-                                    </div>
-                                    <div className="flex items-start gap-3">
-                                        <Check className="w-5 h-5 md:w-6 md:h-6 text-[#C72C5B] flex-shrink-0 mt-0.5" />
-                                        <span className="text-sm md:text-base">Unlimited revisions until you&apos;re thrilled</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </AnimatedContent>
-
-                        {/* Card 3 - Enterprise - Solid Color Background */}
-                        <AnimatedContent
-                            direction="vertical"
-                            distance={100}
-                            duration={1.2}
-                            delay={0.4}
-                            ease="power3.out"
-                            animateOpacity={true}
-                            threshold={0.1}
-                            className="relative"
-                        >
-                            {/* Solid Color Background */}
-                            <div className="absolute inset-0 rounded-2xl bg-[#C72C5B]" />
-                            
-                            <div className="relative z-10 p-6 md:p-8 h-full flex flex-col text-white">
-                                {/* Header */}
-                                <div className="flex justify-between items-start mb-6 md:mb-8">
-                                    <div>
-                                        <h2 className="text-xl md:text-2xl font-bold mb-2">TrendOps™ Enterprise</h2>
-                                        <p className="text-white/90 text-xs md:text-sm">Bespoke creative partnership for scaling brands.</p>
-                                    </div>
-                                    <div className="w-10 h-10 md:w-12 md:h-12 bg-white/30 backdrop-blur-sm rounded-full flex items-center justify-center group hover:bg-white/50 transition-colors duration-200 cursor-pointer flex-shrink-0">
-                                        <ArrowUpRight className="w-5 h-5 md:w-6 md:h-6 text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200" />
-                                    </div>
-                                </div>
-
-                                {/* Divider */}
-                                <div className="border-t border-white/30 mb-4 md:mb-6"></div>
-
-                                {/* Contact Us CTA instead of Pricing */}
-                                <div className="mb-4 md:mb-6">
-                                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                                        <a 
-                                            href="#contact" 
-                                            className="group inline-flex items-center gap-2 md:gap-3 bg-white text-[#C72C5B] px-4 md:px-6 py-2.5 md:py-3 rounded-full font-semibold hover:bg-white/90 transition-all duration-200 hover:scale-105 text-sm md:text-base"
-                                        >
-                                            Contact Us
-                                            <ArrowUpRight className="w-4 h-4 md:w-5 md:h-5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200" />
-                                        </a>
-                                        <Badge variant="secondary" className="bg-white/20 text-white border border-white/30 px-2 md:px-3 py-1 text-xs md:text-sm rounded-full backdrop-blur-sm">
-                                            Enterprise
-                                        </Badge>
-                                    </div>
-                                    <p className="text-white/70 text-xs md:text-sm mt-3">Custom pricing tailored to your needs</p>
-                                </div>
-
-                                {/* Divider */}
-                                <div className="border-t border-white/30 mb-4 md:mb-6"></div>
-
-                                {/* Features */}
-                                <div className="space-y-3 md:space-y-4 flex-1">
-                                    <div className="flex items-start gap-3">
-                                        <Check className="w-5 h-5 md:w-6 md:h-6 text-white flex-shrink-0 mt-0.5" />
-                                        <span className="text-sm md:text-base"><strong>Everything in Growth, plus:</strong></span>
-                                    </div>
-                                    <div className="flex items-start gap-3">
-                                        <Check className="w-5 h-5 md:w-6 md:h-6 text-white flex-shrink-0 mt-0.5" />
-                                        <span className="text-sm md:text-base">Dedicated creative team</span>
-                                    </div>
-                                    <div className="flex items-start gap-3">
-                                        <Check className="w-5 h-5 md:w-6 md:h-6 text-white flex-shrink-0 mt-0.5" />
-                                        <span className="text-sm md:text-base">Unlimited active requests</span>
-                                    </div>
-                                    <div className="flex items-start gap-3">
-                                        <Check className="w-5 h-5 md:w-6 md:h-6 text-white flex-shrink-0 mt-0.5" />
-                                        <span className="text-sm md:text-base">Same-day priority turnaround</span>
-                                    </div>
-                                    <div className="flex items-start gap-3">
-                                        <Check className="w-5 h-5 md:w-6 md:h-6 text-white flex-shrink-0 mt-0.5" />
-                                        <span className="text-sm md:text-base">Weekly strategy calls</span>
-                                    </div>
-                                    <div className="flex items-start gap-3">
-                                        <Check className="w-5 h-5 md:w-6 md:h-6 text-white flex-shrink-0 mt-0.5" />
-                                        <span className="text-sm md:text-base">Full brand system & guidelines</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </AnimatedContent>
-                    </div>
+                  {/* Features */}
+                  <ul className="flex-1 space-y-4">
+                    {plan.features.map((feature) => (
+                      <li key={feature} className="flex items-start gap-3">
+                        <Check className={`mt-0.5 h-5 w-5 flex-shrink-0 ${isAccent ? 'text-white' : 'text-[#C72C5B]'}`} />
+                        <span className={`text-sm leading-relaxed ${isDark ? 'text-gray-300' : isAccent ? 'text-white/90' : 'text-gray-600'}`}>
+                          {feature}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-            </div>
-        </section>
-    );
-};
-
-export default Pricing;
+              </AnimatedContent>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}

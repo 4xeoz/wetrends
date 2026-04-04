@@ -146,28 +146,6 @@ Rebecca has written for major UK lifestyle publications and brings that editoria
     ]
   },
   {
-    id: 'lamy',
-    name: 'Lamy',
-    role: 'Motion Designer',
-    image: '/images/lamy.png',
-    bio: 'Bringing static designs to life through bold animation and kinetic typography.',
-    fullBio: `Lamy is the motion mastermind behind WeTrends' most dynamic campaigns. With a background in graphic design and 6 years specialising in animation, he transforms flat concepts into moving experiences that stop thumbs.
-
-His work spans explainer videos, social motion assets, animated UI elements, and kinetic brand systems. Lamy lives at the intersection of design and code, often building custom animation tools to push creative boundaries.
-
-He studied Visual Effects at Bournemouth University and has previously worked with BBC Creative and Channel 4's in-house motion team.`,
-    linkedin: 'https://linkedin.com/in/lamy',
-    twitter: 'https://twitter.com/lamy',
-    email: 'lamy@wetrends.co.uk',
-    skills: ['Motion Design', 'After Effects', 'Cinema 4D', 'Kinetic Type', 'Lottie Animation'],
-    achievements: [
-      'Bournemouth University Graduate',
-      'Created viral motion content for 3 UK brands',
-      'Former Motion Designer at BBC Creative',
-      'Adobe Certified Expert'
-    ]
-  },
-  {
     id: 'jullia',
     name: 'Jullia',
     role: 'Account Director',

@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { ArrowRight, Calendar, ArrowUpRight, BookOpen } from 'lucide-react';
 import AnimatedContent from '@/components/ui/animated-content';
 
-// Static blog data for preview (will show even before database has posts)
 const previewPosts = [
   {
     id: '1',
@@ -38,43 +37,43 @@ const previewPosts = [
 
 export function BlogPreview() {
   return (
-    <section className="relative min-h-screen overflow-hidden bg-white py-32 md:py-40 flex items-center">
+    <section className="relative overflow-hidden bg-white py-12 sm:py-16 md:py-24 lg:py-28">
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full">
         {/* Header */}
-        <div className="mb-16 flex flex-col items-start justify-between gap-6 md:flex-row md:items-end">
+        <div className="mb-8 flex flex-col items-start justify-between gap-4 sm:mb-10 md:mb-14 md:flex-row md:items-end">
           <div>
             <AnimatedContent
               direction="vertical"
-              distance={60}
+              distance={40}
               duration={1}
               ease="power3.out"
             >
-              <span className="mb-4 inline-block rounded-full bg-[#C72C5B]/10 px-4 py-1.5 text-sm font-medium text-[#C72C5B]">
+              <span className="mb-2 inline-block rounded-full bg-[#C72C5B]/10 px-3 py-1 text-xs font-medium text-[#C72C5B] sm:mb-3 sm:px-4 sm:py-1.5 sm:text-sm">
                 From The Blog
               </span>
             </AnimatedContent>
             
             <AnimatedContent
               direction="vertical"
-              distance={80}
+              distance={60}
               duration={1.2}
               delay={0.1}
               ease="power3.out"
             >
-              <h2 className="text-5xl font-bold leading-none text-[#0F0F0F] md:text-6xl lg:text-7xl">
+              <h2 className="text-3xl font-bold leading-none text-[#0F0F0F] sm:text-4xl md:text-5xl lg:text-6xl">
                 Latest
-                <span className="ml-3 font-serif italic text-[#C72C5B]">Insights</span>
+                <span className="ml-2 font-serif italic text-[#C72C5B] sm:ml-3">Insights</span>
               </h2>
             </AnimatedContent>
             
             <AnimatedContent
               direction="vertical"
-              distance={60}
+              distance={40}
               duration={1.2}
               delay={0.2}
               ease="power3.out"
             >
-              <p className="mt-4 max-w-lg text-lg text-gray-600">
+              <p className="mt-2 max-w-lg text-sm text-gray-600 sm:mt-3 sm:text-base md:mt-4 md:text-lg">
                 Expert tips, industry trends, and creative inspiration from our team.
               </p>
             </AnimatedContent>
@@ -82,66 +81,62 @@ export function BlogPreview() {
 
           <AnimatedContent
             direction="vertical"
-            distance={60}
+            distance={40}
             duration={1}
             delay={0.3}
             ease="power3.out"
           >
             <Link
               href="/blogs"
-              className="group inline-flex items-center gap-2 rounded-full border-2 border-gray-900 px-6 py-3 font-semibold text-gray-900 transition-all hover:bg-gray-900 hover:text-white"
+              className="group inline-flex items-center gap-2 rounded-full border-2 border-gray-900 px-4 py-2 text-sm font-semibold text-gray-900 transition-all hover:bg-gray-900 hover:text-white sm:px-6 sm:py-3"
             >
-              View All Articles
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              View All
+              <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1 sm:h-4 sm:w-4" />
             </Link>
           </AnimatedContent>
         </div>
 
         {/* Blog Grid */}
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
           {previewPosts.map((post, index) => (
             <AnimatedContent
               key={post.id}
               direction="vertical"
-              distance={100}
-              duration={1}
+              distance={50}
+              duration={0.8}
               delay={0.1 * index}
               ease="power3.out"
             >
               <motion.article
-                whileHover={{ y: -10 }}
-                transition={{ duration: 0.3 }}
+                whileHover={{ y: -6 }}
+                transition={{ duration: 0.25 }}
                 className="group"
               >
                 <Link href={post.slug}>
                   {/* Solid Color Card */}
                   <div 
-                    className="relative mb-6 aspect-[4/3] overflow-hidden rounded-2xl"
+                    className="relative mb-3 aspect-[16/10] overflow-hidden rounded-xl sm:mb-4 sm:aspect-[4/3] sm:rounded-2xl"
                     style={{ backgroundColor: post.color }}
                   >
                     {/* Content */}
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <BookOpen className="w-16 h-16 text-white/30" />
+                      <BookOpen className="w-10 h-10 text-white/30 sm:w-12 sm:h-12 md:w-16 md:h-16" />
                     </div>
                     
                     {/* Overlay */}
                     <div className="absolute inset-0 bg-black/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                     
                     {/* Read More Button */}
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      whileHover={{ opacity: 1, y: 0 }}
-                      className="absolute bottom-4 left-4 right-4"
-                    >
-                      <span className="flex items-center justify-center gap-2 rounded-full bg-white py-3 text-sm font-semibold text-gray-900 opacity-0 transition-opacity group-hover:opacity-100">
+                    <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-4">
+                      <span className="flex items-center justify-center gap-1 rounded-full bg-white py-2 text-xs font-semibold text-gray-900 opacity-0 transition-opacity group-hover:opacity-100 sm:gap-2 sm:py-3 sm:text-sm">
                         Read Article
-                        <ArrowUpRight className="h-4 w-4" />
+                        <ArrowUpRight className="h-3 w-3 sm:h-4 sm:w-4" />
                       </span>
-                    </motion.div>
+                    </div>
 
                     {/* Category Badge */}
-                    <div className="absolute left-4 top-4">
-                      <span className="rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-gray-900 backdrop-blur-sm">
+                    <div className="absolute left-3 top-3 sm:left-4 sm:top-4">
+                      <span className="rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-semibold text-gray-900 backdrop-blur-sm sm:px-3 sm:py-1 sm:text-xs">
                         {post.category}
                       </span>
                     </div>
@@ -149,16 +144,16 @@ export function BlogPreview() {
 
                   {/* Content */}
                   <div>
-                    <div className="mb-3 flex items-center gap-2 text-sm text-gray-500">
-                      <Calendar className="h-4 w-4" />
+                    <div className="mb-1 flex items-center gap-1.5 text-xs text-gray-500 sm:mb-2 sm:gap-2 sm:text-sm">
+                      <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
                       {post.date}
                     </div>
                     
-                    <h3 className="mb-3 text-xl font-bold text-gray-900 transition-colors group-hover:text-[#C72C5B]">
+                    <h3 className="mb-1 text-base font-bold text-gray-900 transition-colors group-hover:text-[#C72C5B] sm:mb-2 sm:text-lg md:text-xl">
                       {post.title}
                     </h3>
                     
-                    <p className="line-clamp-2 text-gray-600">
+                    <p className="line-clamp-2 text-xs text-gray-600 sm:text-sm">
                       {post.excerpt}
                     </p>
                   </div>
@@ -171,33 +166,33 @@ export function BlogPreview() {
         {/* Newsletter CTA */}
         <AnimatedContent
           direction="vertical"
-          distance={60}
+          distance={40}
           duration={1}
           delay={0.5}
           ease="power3.out"
-          className="mt-20"
+          className="mt-10 sm:mt-14 md:mt-16"
         >
-          <div className="relative overflow-hidden rounded-3xl bg-[#0F0F0F] p-8 md:p-12">
-            <div className="relative flex flex-col items-center justify-between gap-6 md:flex-row">
+          <div className="relative overflow-hidden rounded-2xl bg-[#0F0F0F] p-5 sm:rounded-3xl sm:p-8 md:p-12">
+            <div className="relative flex flex-col items-center justify-between gap-4 sm:gap-6 md:flex-row">
               <div className="text-center md:text-left">
-                <h3 className="mb-2 text-2xl font-bold text-white md:text-3xl">
+                <h3 className="mb-1 text-lg font-bold text-white sm:mb-2 sm:text-xl md:text-2xl lg:text-3xl">
                   Stay in the Loop
                 </h3>
-                <p className="text-gray-300">
+                <p className="text-xs text-gray-300 sm:text-sm md:text-base">
                   Get the latest insights delivered straight to your inbox.
                 </p>
               </div>
               
-              <div className="flex w-full flex-col gap-3 sm:flex-row md:w-auto">
+              <div className="flex w-full flex-col gap-2 sm:flex-row sm:gap-3 md:w-auto">
                 <input
                   type="email"
                   placeholder="Enter your email"
-                  className="rounded-full bg-white/10 px-6 py-3 text-white placeholder-gray-400 outline-none ring-2 ring-transparent transition-all focus:ring-[#C72C5B] md:w-64"
+                  className="rounded-full bg-white/10 px-4 py-2.5 text-sm text-white placeholder-gray-400 outline-none ring-2 ring-transparent transition-all focus:ring-[#C72C5B] sm:px-6 sm:py-3 md:w-64"
                 />
                 <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="rounded-full bg-white px-8 py-3 font-semibold text-gray-900 transition-colors hover:bg-gray-100"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-gray-900 transition-colors hover:bg-gray-100 sm:px-8 sm:py-3"
                 >
                   Subscribe
                 </motion.button>

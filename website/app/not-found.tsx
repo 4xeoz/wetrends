@@ -19,7 +19,7 @@ export default function NotFound() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-[100svh]">
       <main className="flex-1 flex items-center justify-center py-12 md:py-24 lg:py-32 bg-gradient-to-b from-[#C72C5B]/5 to-white">
         <div className="container px-4 md:px-6">
           <div className="flex flex-col items-center text-center space-y-8">

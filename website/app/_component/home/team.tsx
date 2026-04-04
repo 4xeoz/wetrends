@@ -183,15 +183,13 @@ export function Team() {
                 We&apos;re always scouting for fearless creatives.
               </p>
             </div>
-            <motion.a
+            <Link
               href="/#contact"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="inline-flex items-center gap-2 rounded-full bg-[#C72C5B] px-8 py-4 font-bold text-white transition-colors hover:bg-[#A3244A]"
+              className="group inline-flex items-center gap-2 rounded-full bg-[#C72C5B] px-8 py-4 font-bold text-white transition-all hover:bg-[#A3244A]"
             >
               Join the Squad
-              <ArrowUpRight className="h-5 w-5" />
-            </motion.a>
+              <ArrowUpRight className="h-5 w-5 transition-transform group-hover:rotate-45" />
+            </Link>
           </div>
         </AnimatedContent>
       </div>

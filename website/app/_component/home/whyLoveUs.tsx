@@ -26,7 +26,7 @@ const WhyLoveUs = () => {
     ];
 
     return (
-        <section className="relative min-h-screen bg-white py-20 md:py-32 px-4 sm:px-6 lg:px-8 overflow-hidden flex items-center">
+        <section className="relative bg-white py-20 md:py-32 px-4 sm:px-6 lg:px-8 overflow-hidden">
             <div className="max-w-7xl mx-auto w-full">
                 {/* Header */}
                 <AnimatedContent

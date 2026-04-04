@@ -93,7 +93,7 @@ export default function MessagesPage() {
 
   if (isLoading) {
     return (
-      <div className="flex h-[calc(100vh-4rem)] items-center justify-center">
+      <div className="flex h-[calc(100svh-4rem)] items-center justify-center">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -108,7 +108,7 @@ export default function MessagesPage() {
 
   if (error) {
     return (
-      <div className="flex h-[calc(100vh-4rem)] items-center justify-center p-6">
+      <div className="flex h-[calc(100svh-4rem)] items-center justify-center p-6">
         <Card className="max-w-md">
           <CardContent className="pt-6 text-center">
             <p className="text-red-600 mb-4">{error}</p>
@@ -123,7 +123,7 @@ export default function MessagesPage() {
   }
 
   return (
-    <div className="container mx-auto p-6 h-[calc(100vh-4rem)]">
+    <div className="container mx-auto p-6 h-[calc(100svh-4rem)]">
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Messages</h1>

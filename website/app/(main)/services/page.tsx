@@ -226,7 +226,7 @@ function ServiceCard({ service, index }: { service: typeof services[0]; index: n
 
 export default function ServicesPage() {
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-[100svh] bg-white">
       {/* Hero Section */}
       <section className="relative overflow-hidden py-24 md:py-32 bg-white">
         {/* Decorative background */}

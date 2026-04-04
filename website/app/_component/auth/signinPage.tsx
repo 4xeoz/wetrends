@@ -272,7 +272,7 @@ function SignInFormSkeleton() {
 
 export default function SignInPage() {
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-slate-100 p-6">
+    <div className="min-h-[100svh] w-full flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-slate-100 p-6">
       {/* Background Decorations */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-[#C72C5B]/5 rounded-full blur-3xl" />

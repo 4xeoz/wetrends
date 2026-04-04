@@ -33,7 +33,7 @@ interface BlogPostContentProps {
 
 export function BlogPostContent({ post }: BlogPostContentProps) {
   return (
-    <article className="min-h-screen bg-white">
+    <article className="min-h-[100svh] bg-white">
       {/* Navigation */}
       <div className="border-b border-gray-100">
         <div className="mx-auto max-w-4xl px-4 py-4 sm:px-6 lg:px-8">
