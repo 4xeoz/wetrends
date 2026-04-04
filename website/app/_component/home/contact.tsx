@@ -7,7 +7,7 @@ import { Linkedin, Instagram, MapPin, Phone, Mail } from 'lucide-react';
  */
 const Contact = () => {
     return (
-        <section id="contact" className="min-h-screen bg-[#C72C5B] text-white py-10 md:py-20 px-4 sm:px-6 lg:px-8 relative w-full flex items-center">
+        <section id="contact" className="bg-[#C72C5B] text-white py-16 md:py-20 px-4 sm:px-6 lg:px-8 relative w-full">
             <div className="max-w-7xl mx-auto relative w-full">
                 {/* Content Container */}
                 <div className="w-full">

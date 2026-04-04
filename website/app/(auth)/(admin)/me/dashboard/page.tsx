@@ -36,7 +36,7 @@ export default function AdminDashboardPage() {
 
   if (isLoading && messages.length === 0) {
     return (
-      <div className="flex h-screen items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+      <div className="flex h-[100svh] items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -54,7 +54,7 @@ export default function AdminDashboardPage() {
 
   if (error) {
     return (
-      <div className="flex h-screen items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 p-6">
+      <div className="flex h-[100svh] items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 p-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

@@ -71,7 +71,7 @@ function VoucherView() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="min-h-[100svh] bg-black flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-[#C72C5B]" />
       </div>
     );
@@ -79,7 +79,7 @@ function VoucherView() {
 
   if (error || vouchers.length === 0) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center p-6">
+      <div className="min-h-[100svh] bg-black flex items-center justify-center p-6">
         <Card className="max-w-md w-full">
           <CardContent className="pt-6 text-center">
             <p className="text-gray-600">{error || 'No vouchers found'}</p>
@@ -90,7 +90,7 @@ function VoucherView() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-[100svh] bg-black text-white">
       {/* Header */}
       <div className="bg-[#C72C5B] py-8 px-6">
         <div className="max-w-md mx-auto text-center">
@@ -217,7 +217,7 @@ import { Suspense } from 'react';
 export default function VoucherPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="min-h-[100svh] bg-black flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-[#C72C5B]" />
       </div>
     }>

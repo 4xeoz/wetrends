@@ -112,7 +112,7 @@ function VoucherViewContent() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
+    <div className="min-h-[100svh] bg-gradient-to-br from-slate-50 via-white to-slate-100">
       {/* Header */}
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
@@ -514,7 +514,7 @@ export default function VoucherViewPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 flex items-center justify-center">
+        <div className="min-h-[100svh] bg-gradient-to-br from-slate-50 via-white to-slate-100 flex items-center justify-center">
           <div className="text-center">
             <Loader2 className="h-10 w-10 animate-spin text-[#C72C5B] mx-auto mb-4" />
             <p className="text-slate-500">Loading...</p>

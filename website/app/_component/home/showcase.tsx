@@ -114,7 +114,7 @@ const Showcase = () => {
     ];
 
     return (
-        <section id="work" className="relative min-h-screen bg-[#0F0F0F] text-white py-20 md:py-32 px-4 sm:px-6 lg:px-8 overflow-hidden flex items-center">
+        <section id="work" className="relative bg-[#0F0F0F] text-white py-20 md:py-28 px-4 sm:px-6 lg:px-8 overflow-hidden">
             <div className="relative z-10 max-w-7xl mx-auto w-full">
                 {/* Content Container */}
                 <div>

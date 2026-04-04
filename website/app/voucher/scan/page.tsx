@@ -401,7 +401,7 @@ function ScanVoucherContent() {
 export default function ScanVoucherPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-[100svh] flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-[#C72C5B]" />
       </div>
     }>

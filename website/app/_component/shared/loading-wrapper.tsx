@@ -102,7 +102,7 @@ export const SpinnerLoader: React.FC<{ size?: number; className?: string }> = ({
  * {isLoading ? <PageLoader /> : <PageContent />}
  */
 export const PageLoader: React.FC = () => (
-  <div className="flex items-center justify-center min-h-screen">
+  <div className="flex items-center justify-center min-h-[100svh]">
     <div className="text-center">
       {/* Large spinner for page-level loading */}
       <Loader2 className="h-12 w-12 animate-spin mx-auto mb-4" />

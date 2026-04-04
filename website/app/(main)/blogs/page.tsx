@@ -29,7 +29,7 @@ export default async function BlogPage() {
   const categories = (categoriesResult.success ? categoriesResult.categories : []) ?? [];
 
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main className="min-h-[100svh] bg-gray-50">
       <BlogHero />
       <BlogList posts={posts} categories={categories} />
     </main>

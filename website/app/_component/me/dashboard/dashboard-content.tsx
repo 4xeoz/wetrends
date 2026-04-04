@@ -35,7 +35,7 @@ export function DashboardContent({ messages, isLoading, onRefresh }: DashboardCo
   const recentMessages = messages.slice(0, 3);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6 lg:p-10">
+    <div className="min-h-[100svh] bg-gradient-to-br from-gray-50 to-gray-100 p-6 lg:p-10">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}

@@ -40,7 +40,7 @@ export default Wrapper
  * Adds minimum height to fill the screen
  */
 export const PageWrapper: React.FC<WrapperProps> = ({ children, className }) => (
-  <Wrapper className={cn('min-h-screen py-8', className)}>
+  <Wrapper className={cn('min-h-[100svh] py-8', className)}>
     {children}
   </Wrapper>
 )
