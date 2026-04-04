@@ -8,7 +8,7 @@ import AnimatedContent from "@/components/ui/animated-content";
  */
 const Pricing = () => {
     return (
-        <section className="relative min-h-screen text-black py-10 md:py-20 px-4 sm:px-6 lg:px-8 overflow-hidden flex items-center bg-gray-100">
+        <section className="relative min-h-screen text-black py-20 md:py-32 px-4 sm:px-6 lg:px-8 overflow-hidden flex items-center bg-white">
             <div className="relative z-10 max-w-7xl mx-auto w-full">
                 {/* Content Container */}
                 <div>
@@ -21,8 +21,8 @@ const Pricing = () => {
                         threshold={0.1}
                         className="mb-6 md:mb-10"
                     >
-                        <h2 className="text-3xl md:text-4xl lg:text-6xl font-bold mb-2">Results</h2>
-                        <h3 className="text-3xl md:text-4xl lg:text-6xl font-serif italic font-bold">Come First</h3>
+                        <h2 className="text-4xl md:text-5xl lg:text-7xl xl:text-8xl font-bold leading-none mb-2">Results</h2>
+                        <h3 className="text-4xl md:text-5xl lg:text-7xl xl:text-8xl font-serif italic font-bold leading-none">Come First</h3>
                     </AnimatedContent>
 
                     {/* Description - Full Width */}

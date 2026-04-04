@@ -11,22 +11,22 @@ const WhyLoveUs = () => {
         {
             title: "Radar & Strategy",
             description: "We scan live culture data each week and agree on the winning idea in one call.",
-            color: "#8B5CF6",
+            color: "#0F0F0F",
         },
         {
             title: "Hands-Free Production",
             description: "We design, edit and format the approved concept into publish-ready creative.",
-            color: "#3B82F6",
+            color: "#C72C5B",
         },
         {
             title: "Launch & Optimize",
             description: "You publish, we monitor then refine next week's sprint for compounding growth.",
-            color: "#10B981",
+            color: "#0F0F0F",
         },
     ];
 
     return (
-        <section className="relative min-h-screen bg-white text-white py-10 md:py-20 px-4 sm:px-6 lg:px-8 overflow-hidden flex items-center">
+        <section className="relative min-h-screen bg-white py-20 md:py-32 px-4 sm:px-6 lg:px-8 overflow-hidden flex items-center">
             <div className="max-w-7xl mx-auto w-full">
                 {/* Header */}
                 <AnimatedContent
@@ -36,9 +36,9 @@ const WhyLoveUs = () => {
                     ease="power3.out"
                     threshold={0.1}
                 >
-                    <div className="text-wetrends text-3xl md:text-4xl lg:text-6xl space-y-2 md:space-y-5 mb-6 md:mb-10">
-                        <h1 className="font-bold">Why Founders </h1>
-                        <h1 className="font-serif italic font-bold">Love Us</h1>
+                    <div className="text-wetrends text-4xl md:text-5xl lg:text-7xl xl:text-8xl leading-none space-y-2 md:space-y-4 mb-6 md:mb-10">
+                        <h2 className="font-bold text-[#0F0F0F]">Why Founders</h2>
+                        <h2 className="font-serif italic font-bold">Love Us</h2>
                     </div>
                 </AnimatedContent>
                 

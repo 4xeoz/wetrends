@@ -6,7 +6,7 @@ import AnimatedContent from "@/components/ui/animated-content";
  */
 const SubHero = () => {
     return (
-        <section className="relative min-h-screen bg-black text-white py-10 md:py-20 px-4 sm:px-6 lg:px-8 overflow-hidden flex items-center">
+        <section className="relative min-h-screen bg-[#0F0F0F] text-white py-20 md:py-32 px-4 sm:px-6 lg:px-8 overflow-hidden flex items-center">
             <div className="relative z-10 max-w-7xl mx-auto w-full">
                 {/* Mobile Layout - Stacked Cards */}
                 <div className="md:hidden flex flex-col gap-6">
@@ -48,7 +48,7 @@ const SubHero = () => {
                         animateOpacity={true}
                         threshold={0.1}
                     >
-                        <div className="bg-gray-900 text-white rounded-2xl p-5 shadow-lg border border-gray-800">
+                        <div className="bg-black text-white rounded-2xl p-5 shadow-lg border border-gray-800">
                             <p className="text-lg leading-relaxed italic font-bold">
                                 &ldquo;We embed like co-founders, treat every win as our own, safeguard your brand&apos;s identity, and drive
                                 long-term growth not a one-off gig.&rdquo;
@@ -99,7 +99,7 @@ const SubHero = () => {
                         threshold={0.1}
                         className="absolute bottom-0 left-0 lg:bottom-16 lg:left-8 xl:left-16"
                     >
-                        <div className="bg-gray-900 text-white rounded-2xl p-6 py-10 shadow-lg max-w-sm transform -rotate-1 border border-gray-800">
+                        <div className="bg-black text-white rounded-2xl p-6 py-10 shadow-lg max-w-sm transform -rotate-1 border border-gray-800">
                             <p className="text-2xl leading-relaxed italic font-bold">
                                 &ldquo;We embed like co-founders, treat every win as our own, safeguard your brand&apos;s identity, and drive
                                 long-term growth not a one-off gig.&rdquo;

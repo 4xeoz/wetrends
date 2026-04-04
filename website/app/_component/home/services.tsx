@@ -186,7 +186,7 @@ export function Services() {
     <section
       ref={containerRef}
       id="services"
-      className="relative min-h-screen overflow-hidden bg-gray-50 py-24 md:py-32 flex items-center"
+      className="relative min-h-screen overflow-hidden bg-gray-50 py-32 md:py-40 flex items-center"
     >
       {/* Subtle decorative background */}
       <div className="absolute inset-0 pointer-events-none">
@@ -221,10 +221,10 @@ export function Services() {
             delay={0.1}
             ease="power3.out"
           >
-            <h2 className="mb-6 text-5xl font-bold text-gray-900 md:text-6xl lg:text-7xl">
+            <h2 className="mb-6 text-5xl font-bold leading-none text-[#0F0F0F] md:text-6xl lg:text-7xl xl:text-8xl">
               Services That
               <br />
-              <span className="text-[#C72C5B]">
+              <span className="font-serif italic text-[#C72C5B]">
                 Drive Growth
               </span>
             </h2>

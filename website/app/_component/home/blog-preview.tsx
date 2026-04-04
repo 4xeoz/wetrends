@@ -14,7 +14,7 @@ const previewPosts = [
     category: 'Video Production',
     date: 'Dec 15, 2024',
     slug: '#',
-    color: '#8B5CF6',
+    color: '#0F0F0F',
   },
   {
     id: '2',
@@ -23,7 +23,7 @@ const previewPosts = [
     category: 'Branding',
     date: 'Dec 10, 2024',
     slug: '#',
-    color: '#3B82F6',
+    color: '#C72C5B',
   },
   {
     id: '3',
@@ -32,13 +32,13 @@ const previewPosts = [
     category: 'Social Media',
     date: 'Dec 5, 2024',
     slug: '#',
-    color: '#10B981',
+    color: '#0F0F0F',
   },
 ];
 
 export function BlogPreview() {
   return (
-    <section className="relative min-h-screen overflow-hidden bg-white py-24 md:py-32 flex items-center">
+    <section className="relative min-h-screen overflow-hidden bg-white py-32 md:py-40 flex items-center">
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full">
         {/* Header */}
         <div className="mb-16 flex flex-col items-start justify-between gap-6 md:flex-row md:items-end">
@@ -61,9 +61,9 @@ export function BlogPreview() {
               delay={0.1}
               ease="power3.out"
             >
-              <h2 className="text-4xl font-bold text-gray-900 md:text-5xl">
+              <h2 className="text-5xl font-bold leading-none text-[#0F0F0F] md:text-6xl lg:text-7xl">
                 Latest
-                <span className="ml-2 font-serif italic text-[#C72C5B]">Insights</span>
+                <span className="ml-3 font-serif italic text-[#C72C5B]">Insights</span>
               </h2>
             </AnimatedContent>
             
@@ -177,7 +177,7 @@ export function BlogPreview() {
           ease="power3.out"
           className="mt-20"
         >
-          <div className="relative overflow-hidden rounded-3xl bg-gray-900 p-8 md:p-12">
+          <div className="relative overflow-hidden rounded-3xl bg-[#0F0F0F] p-8 md:p-12">
             <div className="relative flex flex-col items-center justify-between gap-6 md:flex-row">
               <div className="text-center md:text-left">
                 <h3 className="mb-2 text-2xl font-bold text-white md:text-3xl">
