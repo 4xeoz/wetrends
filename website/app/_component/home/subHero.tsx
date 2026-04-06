@@ -18,7 +18,7 @@ const SubHero = () => {
 
   return (
     <section id="subhero" ref={containerRef} className="relative z-20 h-[100svh]">
-      <div className="sticky top-0 flex h-[100svh] items-center justify-center overflow-hidden bg-white px-3 sm:px-4 md:px-6">
+      <div className="sticky top-0 flex h-[100svh] items-center justify-center overflow-hidden bg-white">
         <motion.div
           style={{ width, height, borderRadius, opacity: cardOpacity }}
           className="relative overflow-hidden bg-[#0F0F0F] text-white will-change-[width,height,border-radius]"

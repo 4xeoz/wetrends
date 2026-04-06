@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
 import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -18,27 +19,39 @@ const navLinks = [
 ];
 
 export function Navigation() {
+  const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  
+  // Check if we're on the home page
+  const isHomePage = pathname === '/';
 
   useEffect(() => {
+    // Only track scroll on home page
+    if (!isHomePage) return;
+    
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 100);
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [isHomePage]);
+
+  // Determine if navbar should be light (white bg, black text)
+  // Home page: light only when scrolled
+  // Other pages: always light
+  const isLight = !isHomePage || isScrolled;
 
   return (
     <>
       <motion.header
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6, delay: 2.3 }} // After loading screen
+        transition={{ duration: 0.6, delay: isHomePage ? 2.5 : 0.3 }}
         className={`fixed left-0 right-0 top-0 z-50 transition-all duration-300 ${
-          isScrolled
-            ? 'bg-white/90 shadow-lg backdrop-blur-md'
+          isLight
+            ? 'bg-white shadow-lg backdrop-blur-md'
             : 'bg-transparent'
         }`}
       >
@@ -51,12 +64,12 @@ export function Navigation() {
               width={40}
               height={40}
               className={`h-8 w-auto transition-all ${
-                isScrolled ? 'brightness-0' : 'brightness-0 invert'
+                isLight ? 'brightness-0' : 'brightness-0 invert'
               }`}
             />
             <span
               className={`text-xl font-bold transition-colors ${
-                isScrolled ? 'text-gray-900' : 'text-white'
+                isLight ? 'text-gray-900' : 'text-white'
               }`}
             >
               WETRENDS
@@ -70,7 +83,7 @@ export function Navigation() {
                 key={link.href}
                 href={link.href}
                 className={`relative text-sm font-medium transition-colors hover:text-[#C72C5B] ${
-                  isScrolled ? 'text-gray-700' : 'text-white/90'
+                  isLight ? 'text-gray-700' : 'text-white/90'
                 }`}
               >
                 {link.label}
@@ -88,7 +101,7 @@ export function Navigation() {
             <Link href="/#contact">
               <Button
                 className={`rounded-full px-6 transition-all ${
-                  isScrolled
+                  isLight
                     ? 'bg-[#C72C5B] text-white hover:bg-[#A3244A]'
                     : 'bg-white text-[#C72C5B] hover:bg-white/90'
                 }`}
@@ -102,7 +115,7 @@ export function Navigation() {
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             className={`rounded-lg p-2 lg:hidden ${
-              isScrolled ? 'text-gray-900' : 'text-white'
+              isLight ? 'text-gray-900' : 'text-white'
             }`}
           >
             {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
