@@ -2,7 +2,8 @@
 
 import { useRef } from 'react';
 import { motion, useInView } from 'motion/react';
-import { Linkedin, Instagram, MapPin, Phone, Mail, ArrowUpRight } from 'lucide-react';
+import Image from 'next/image';
+import { Linkedin, Instagram, MapPin, Mail, ArrowUpRight } from 'lucide-react';
 import ContactForm from './contact-form';
 import Link from 'next/link';
 
@@ -12,12 +13,6 @@ const contactInfo = [
     label: 'Email',
     value: 'wetrends.uk@gmail.com',
     href: 'mailto:wetrends.uk@gmail.com',
-  },
-  {
-    icon: Phone,
-    label: 'Phone',
-    value: '+44 (0) 1483 XXX XXX',
-    href: 'tel:+441483000000',
   },
   {
     icon: MapPin,
@@ -113,7 +108,7 @@ export default function Contact() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.5, delay: 0.6 }}
+              transition={{ duration: 0.5, delay: 0.5 }}
               className="pt-4"
             >
               <p className="text-xs text-white/50 uppercase tracking-wider mb-4">Follow Us</p>
@@ -137,7 +132,7 @@ export default function Contact() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.5, delay: 0.7 }}
+              transition={{ duration: 0.5, delay: 0.6 }}
               className="pt-4 border-t border-white/10"
             >
               <p className="text-xs text-white/50 uppercase tracking-wider mb-3">Areas We Serve</p>
@@ -147,7 +142,7 @@ export default function Contact() {
             </motion.div>
           </motion.div>
 
-          {/* Right: Contact Form */}
+          {/* Right: Progressive Contact Form */}
           <motion.div
             initial={{ opacity: 0, x: 40 }}
             animate={isInView ? { opacity: 1, x: 0 } : {}}

@@ -5,204 +5,293 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { Send, CheckCircle } from "lucide-react"
+import { Send, CheckCircle, ArrowRight, ArrowLeft, User, Mail, MessageSquare, Briefcase } from "lucide-react"
 import { submitContactForm } from "@/actions/contact"
 
+const steps = [
+  { id: 1, title: "What's your name?", icon: User, field: "name" },
+  { id: 2, title: "What's your email?", icon: Mail, field: "email" },
+  { id: 3, title: "What service do you need?", icon: Briefcase, field: "service" },
+  { id: 4, title: "Tell us about your project", icon: MessageSquare, field: "message" },
+]
+
+const services = [
+  "Video Production",
+  "Brand Identity", 
+  "Web Design",
+  "Social Media",
+  "Animation",
+  "Content Strategy",
+  "Other"
+]
+
 export default function ContactForm() {
-  // Form state with single object
-  const [formState, setFormState] = useState({
+  const [currentStep, setCurrentStep] = useState(1)
+  const [formData, setFormData] = useState({
     name: "",
     email: "",
+    service: "",
     message: "",
   })
-
-  type FormErrors = {
-    name?: string
-    email?: string
-    message?: string
-  }
-
-  const [errors, setErrors] = useState<FormErrors>({})
+  const [errors, setErrors] = useState<Record<string, string>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
 
-  // Simple handler for all inputs
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     const { name, value } = e.target
-
-    // Update form and clear errors in one step
-    setFormState((prev) => ({ ...prev, [name]: value }))
-    if (errors) {
-      setErrors((prev) => ({ ...prev, [name]: undefined }))
-    }
+    setFormData((prev) => ({ ...prev, [name]: value }))
+    setErrors((prev) => ({ ...prev, [name]: "" }))
   }
 
-  // Basic form validation
-  function validateForm() {
-    const newErrors: FormErrors = {}
-
-    // Check required fields
-    if (!formState.name.trim()) newErrors.name = "Name is required"
-
-    // Email validation with simple regex
-    if (!formState.email.trim()) {
-      newErrors.email = "Email is required"
-    } else if (!/\S+@\S+\.\S+/.test(formState.email)) {
-      newErrors.email = "Email is invalid"
-    }
-
-    if (!formState.message.trim()) newErrors.message = "Message is required"
-
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0 // Returns true if no errors
+  function handleServiceSelect(service: string) {
+    setFormData((prev) => ({ ...prev, service }))
+    setErrors((prev) => ({ ...prev, service: "" }))
   }
 
-  // Form submission handler
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-
-    if (validateForm()) {
-      setIsSubmitting(true)
-
-      try {
-        // Call the server action
-        const result = await submitContactForm(formState)
-
-        if (result.success) {
-          // Handle success
-          setIsSubmitting(false)
-          setIsSubmitted(true)
-          setFormState({ name: "", email: "", message: "" })
-
-          // Reset success message after 5 seconds
-          setTimeout(() => setIsSubmitted(false), 5000)
-        } else {
-          // Handle validation errors from server
-          setIsSubmitting(false)
-
-          if ("errors" in result) {
-            setErrors(result.errors as FormErrors)
-          }
-        }
-      } catch (error) {
-        console.error("Error submitting form:", error)
-        setIsSubmitting(false)
+  function validateStep(step: number) {
+    const newErrors: Record<string, string> = {}
+    
+    if (step === 1 && !formData.name.trim()) {
+      newErrors.name = "Please enter your name"
+    }
+    if (step === 2) {
+      if (!formData.email.trim()) {
+        newErrors.email = "Please enter your email"
+      } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+        newErrors.email = "Please enter a valid email"
       }
     }
+    if (step === 3 && !formData.service) {
+      newErrors.service = "Please select a service"
+    }
+    if (step === 4 && !formData.message.trim()) {
+      newErrors.message = "Please tell us about your project"
+    }
+
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
+  function nextStep() {
+    if (validateStep(currentStep)) {
+      setCurrentStep((prev) => Math.min(prev + 1, steps.length))
+    }
+  }
+
+  function prevStep() {
+    setCurrentStep((prev) => Math.max(prev - 1, 1))
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    
+    if (!validateStep(currentStep)) return
+
+    setIsSubmitting(true)
+
+    try {
+      const result = await submitContactForm(formData)
+
+      if (result.success) {
+        setIsSubmitting(false)
+        setIsSubmitted(true)
+        setFormData({ name: "", email: "", service: "", message: "" })
+        setCurrentStep(1)
+        setTimeout(() => setIsSubmitted(false), 5000)
+      } else {
+        setIsSubmitting(false)
+        if ("errors" in result) {
+          setErrors(result.errors as Record<string, string>)
+        }
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error)
+      setIsSubmitting(false)
+    }
+  }
+
+  const currentStepData = steps[currentStep - 1]
+  const IconComponent = currentStepData.icon
+
+  if (isSubmitted) {
+    return (
+      <div className="text-center py-10">
+        <motion.div 
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          className="inline-flex items-center justify-center w-20 h-20 bg-[#C72C5B] rounded-full mb-6"
+        >
+          <CheckCircle className="h-10 w-10 text-white" />
+        </motion.div>
+        <h3 className="text-3xl font-bold mb-3 text-white">Message Sent!</h3>
+        <p className="text-lg text-white/70">Thank you for reaching out. We&apos;ll get back to you within 24 hours.</p>
+      </div>
+    )
   }
 
   return (
-    <section
-      className="w-full"
-    >
-      <div className="w-full">
-        {/* Form Container */}
-        <div>
-          <div className="w-full py-4">
-            {/* Success Message */}
-            {isSubmitted ? (
-              <div className="text-center py-6 md:py-10">
-                <div className="inline-flex items-center justify-center w-16 h-16 md:w-20 md:h-20 bg-white/20 rounded-full mb-4 md:mb-6">
-                  <CheckCircle className="h-8 w-8 md:h-10 md:w-10 text-white" />
-                </div>
-                <h3 className="text-2xl md:text-3xl font-bold mb-3 md:mb-4 text-white">Message Sent!</h3>
-                <p className="text-base md:text-xl text-white/80">Thank you for reaching out. We'll get back to you shortly.</p>
+    <div className="w-full">
+      {/* Progress Bar */}
+      <div className="mb-8">
+        <div className="flex items-center justify-between mb-4">
+          {steps.map((step, index) => (
+            <div key={step.id} className="flex items-center">
+              <div 
+                className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300 ${
+                  currentStep >= step.id 
+                    ? "bg-[#C72C5B] text-white" 
+                    : "bg-white/10 text-white/40"
+                }`}
+              >
+                {currentStep > step.id ? (
+                  <CheckCircle className="h-5 w-5" />
+                ) : (
+                  step.id
+                )}
               </div>
-            ) : (
-              /* Contact Form */
-              <form onSubmit={handleSubmit} className="w-full">
-                <div className="space-y-4 md:space-y-8">
-                  {/* Name Field */}
-                  <div>
-                    <Input
-                      id="name"
-                      name="name"
-                      value={formState.name}
-                      onChange={handleChange}
-                      className={`${
-                        errors.name ? "border-red-400" : "border-white/30"
-                      } bg-white/10 text-white text-base md:text-lg h-12 md:h-14 placeholder:text-white/50`}
-                      placeholder="Your name"
-                    />
-                    {errors.name && <p className="text-red-200 text-xs md:text-sm mt-2">{errors.name}</p>}
-                  </div>
-
-                  {/* Email Field */}
-                  <div>
-                    <Input
-                      id="email"
-                      name="email"
-                      type="email"
-                      value={formState.email}
-                      onChange={handleChange}
-                      className={`${
-                        errors.email ? "border-red-400" : "border-white/30"
-                      } bg-white/10 text-white text-base md:text-lg h-12 md:h-14 placeholder:text-white/50`}
-                      placeholder="your.email@example.com"
-                    />
-                    {errors.email && <p className="text-red-200 text-xs md:text-sm mt-2">{errors.email}</p>}
-                  </div>
-
-                  {/* Message Field */}
-                  <div>
-                    <Textarea
-                      id="message"
-                      name="message"
-                      value={formState.message}
-                      onChange={handleChange}
-                      className={`${
-                        errors.message ? "border-red-400" : "border-white/30"
-                      } bg-white/10 text-white text-base md:text-lg min-h-[120px] md:min-h-[180px] placeholder:text-white/50`}
-                      placeholder="How can we help you?"
-                    />
-                    {errors.message && <p className="text-red-200 text-xs md:text-sm mt-2">{errors.message}</p>}
-                  </div>
-
-                  {/* Submit Button */}
-                  <div>
-                    <Button
-                      type="submit"
-                      className="w-full bg-white hover:bg-white/90 text-black py-5 md:py-7 text-sm font-medium rounded-full"
-                      disabled={isSubmitting}
-                    >
-                      {isSubmitting ? (
-                        <span className="flex items-center justify-center">
-                          <svg
-                            className="animate-spin -ml-1 mr-3 h-5 w-5 text-wetrends"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                          >
-                            <circle
-                              className="opacity-25"
-                              cx="12"
-                              cy="12"
-                              r="10"
-                              stroke="currentColor"
-                              strokeWidth="4"
-                            ></circle>
-                            <path
-                              className="opacity-75"
-                              fill="currentColor"
-                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                            ></path>
-                          </svg>
-                          Sending...
-                        </span>
-                      ) : (
-                        <span className="flex items-center justify-center">
-                          Send 
-                          <Send className="ml-2 h-4 w-4" />
-                        </span>
-                      )}
-                    </Button>
-                  </div>
-                </div>
-              </form>
-            )}
-          </div>
+              {index < steps.length - 1 && (
+                <div 
+                  className={`w-12 md:w-20 h-1 mx-2 transition-all duration-300 ${
+                    currentStep > step.id ? "bg-[#C72C5B]" : "bg-white/10"
+                  }`}
+                />
+              )}
+            </div>
+          ))}
         </div>
+        <p className="text-white/50 text-sm">Step {currentStep} of {steps.length}</p>
       </div>
-    </section>
+
+      {/* Form Content */}
+      <form onSubmit={currentStep === steps.length ? handleSubmit : (e) => e.preventDefault()}>
+        <div className="mb-8">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#C72C5B]">
+              <IconComponent className="h-6 w-6 text-white" />
+            </div>
+            <h3 className="text-xl md:text-2xl font-bold text-white">{currentStepData.title}</h3>
+          </div>
+
+          {/* Step 1: Name */}
+          {currentStep === 1 && (
+            <div>
+              <Input
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                className={`${errors.name ? "border-red-400" : "border-white/20"} bg-white/5 text-white text-lg h-14 placeholder:text-white/40`}
+                placeholder="John Smith"
+                autoFocus
+              />
+              {errors.name && <p className="text-red-400 text-sm mt-2">{errors.name}</p>}
+            </div>
+          )}
+
+          {/* Step 2: Email */}
+          {currentStep === 2 && (
+            <div>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+                className={`${errors.email ? "border-red-400" : "border-white/20"} bg-white/5 text-white text-lg h-14 placeholder:text-white/40`}
+                placeholder="john@example.com"
+                autoFocus
+              />
+              {errors.email && <p className="text-red-400 text-sm mt-2">{errors.email}</p>}
+            </div>
+          )}
+
+          {/* Step 3: Service */}
+          {currentStep === 3 && (
+            <div>
+              <div className="grid grid-cols-2 gap-3">
+                {services.map((service) => (
+                  <button
+                    key={service}
+                    type="button"
+                    onClick={() => handleServiceSelect(service)}
+                    className={`p-4 rounded-xl border text-left transition-all duration-300 ${
+                      formData.service === service
+                        ? "border-[#C72C5B] bg-[#C72C5B]/20 text-white"
+                        : "border-white/20 text-white/70 hover:border-white/40"
+                    }`}
+                  >
+                    <span className="text-sm font-medium">{service}</span>
+                  </button>
+                ))}
+              </div>
+              {errors.service && <p className="text-red-400 text-sm mt-3">{errors.service}</p>}
+            </div>
+          )}
+
+          {/* Step 4: Message */}
+          {currentStep === 4 && (
+            <div>
+              <Textarea
+                id="message"
+                name="message"
+                value={formData.message}
+                onChange={handleChange}
+                className={`${errors.message ? "border-red-400" : "border-white/20"} bg-white/5 text-white text-lg min-h-[150px] placeholder:text-white/40`}
+                placeholder="Tell us about your project, goals, and timeline..."
+                autoFocus
+              />
+              {errors.message && <p className="text-red-400 text-sm mt-2">{errors.message}</p>}
+            </div>
+          )}
+        </div>
+
+        {/* Navigation Buttons */}
+        <div className="flex gap-3">
+          {currentStep > 1 && (
+            <Button
+              type="button"
+              onClick={prevStep}
+              variant="outline"
+              className="px-6 py-6 border-white/20 text-white hover:bg-white/10"
+            >
+              <ArrowLeft className="h-5 w-5 mr-2" />
+              Back
+            </Button>
+          )}
+          
+          {currentStep < steps.length ? (
+            <Button
+              type="button"
+              onClick={nextStep}
+              className="flex-1 bg-[#C72C5B] hover:bg-[#A3244A] text-white py-6 text-base font-bold"
+            >
+              Continue
+              <ArrowRight className="h-5 w-5 ml-2" />
+            </Button>
+          ) : (
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="flex-1 bg-white hover:bg-white/90 text-[#0F0F0F] py-6 text-base font-bold"
+            >
+              {isSubmitting ? (
+                <span className="flex items-center justify-center">
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                  </svg>
+                  Sending...
+                </span>
+              ) : (
+                <>
+                  Send Message
+                  <Send className="ml-2 h-5 w-5" />
+                </>
+              )}
+            </Button>
+          )}
+        </div>
+      </form>
+    </div>
   )
 }
