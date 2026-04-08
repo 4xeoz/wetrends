@@ -131,23 +131,7 @@ const Hero = () => {
               </Link>
             </motion.div>
 
-            <motion.div
-              initial={{ scale: 0, y: 40 }}
-              animate={{ scale: 1, y: 0 }}
-              transition={{ 
-                type: "spring",
-                stiffness: 300,
-                damping: 20,
-                delay: baseDelay + 0.95 
-              }}
-            >
-              <Link
-                href="/services/"
-                className="inline-flex items-center gap-2 rounded-full border-2 border-white/30 px-5 py-3 text-sm font-semibold text-white transition-all hover:border-white hover:bg-white/10 sm:px-6 sm:py-3.5 sm:text-base md:px-8"
-              >
-                Explore Services
-              </Link>
-            </motion.div>
+
           </motion.div>
         </div>
       </div>
