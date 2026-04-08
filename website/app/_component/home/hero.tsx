@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ArrowDownRight } from 'lucide-react';
 import { motion } from 'motion/react';
 
@@ -9,7 +10,26 @@ const Hero = () => {
   const baseDelay = 2.5; // 2.3s + 0.2s offset
 
   return (
-    <section className="relative -mt-[72px] flex h-[100svh] min-h-[600px] w-full flex-col overflow-hidden bg-[#C72C5B] pt-[72px]">
+    <section className="relative -mt-[72px] flex h-[100svh] min-h-[600px] w-full flex-col overflow-hidden pt-[72px]">
+      {/* Background Image */}
+      <motion.div 
+        initial={{ scale: 1.1, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 1.5, delay: baseDelay - 0.5, ease: [0.22, 1, 0.36, 1] }}
+        className="absolute inset-0 -z-10"
+      >
+        <Image
+          src="/images/hero_background.webp"
+          alt=""
+          fill
+          priority
+          className="object-cover object-center"
+          sizes="100vw"
+        />
+        {/* Overlay for better text readability */}
+        <div className="absolute inset-0 bg-[#C72C5B]/70" />
+      </motion.div>
+
       {/* Large background circle */}
       <motion.div 
         initial={{ scale: 0.8, opacity: 0 }}
@@ -17,8 +37,6 @@ const Hero = () => {
         transition={{ duration: 1.2, delay: baseDelay, ease: [0.22, 1, 0.36, 1] }}
         className="pointer-events-none absolute left-1/2 top-1/3 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-white/10 blur-3xl" 
       />
-
-      
 
       {/* Main content - centered */}
       <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-4 py-6 text-center sm:px-6 lg:px-8">
