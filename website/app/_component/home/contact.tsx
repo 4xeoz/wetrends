@@ -35,14 +35,25 @@ export default function Contact() {
     <section 
       ref={sectionRef}
       id="contact" 
-      className="relative overflow-hidden bg-[#0F0F0F] py-24 md:py-32"
+      className="relative overflow-hidden py-24 md:py-32"
     >
-      {/* Large background text */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <span className="absolute -top-10 -right-20 text-[15rem] md:text-[25rem] font-black text-white/[0.02] leading-none select-none">
-          HI
-        </span>
-      </div>
+      {/* Background Image */}
+      <motion.div 
+        initial={{ scale: 1.1, opacity: 0 }}
+        animate={isInView ? { scale: 1, opacity: 1 } : {}}
+        transition={{ duration: 1.2 }}
+        className="absolute inset-0 -z-10"
+      >
+        <Image
+          src="/images/footer_background.webp"
+          alt=""
+          fill
+          className="object-cover object-center"
+          sizes="100vw"
+        />
+        {/* Dark overlay for readability */}
+        <div className="absolute inset-0 bg-black/60" />
+      </motion.div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
