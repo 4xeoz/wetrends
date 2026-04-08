@@ -43,9 +43,7 @@ export function Team() {
             sizes="50vw"
             priority
           />
-          {/* Overlay gradient */}
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent to-[#C72C5B]/50 lg:block hidden" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#C72C5B] via-transparent to-transparent lg:hidden" />
+         
         </motion.div>
 
         {/* Right: Content */}
@@ -69,13 +67,12 @@ export function Team() {
             transition={{ duration: 0.8, delay: 0.6 }}
             className="mb-8"
           >
-            <h2 className="text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-black text-white leading-[0.85] tracking-tight">
-              MEET
+            <h2 className="text-4xl font-bold leading-[0.95] text-white sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl">
+              meet
+              the
               <br />
-              THE
-              <br />
-              <span className="text-transparent" style={{ WebkitTextStroke: '2px white' }}>
-                SQUAD
+              <span className="font-serif italic font-thin" style={{ WebkitTextStroke: '2px white' }}>
+                Squad
               </span>
             </h2>
           </motion.div>
@@ -98,7 +95,7 @@ export function Team() {
             className="flex gap-10"
           >
             <div>
-              <p className="text-5xl md:text-6xl font-black text-white">8</p>
+              <p className="text-5xl md:text-6xl font-black text-white">12</p>
               <p className="text-sm text-white/60 uppercase tracking-wider">Creatives</p>
             </div>
             <div>
@@ -142,11 +139,6 @@ export function Team() {
         </div>
       </div>
 
-      {/* Diagonal divider */}
-      <div 
-        className="absolute bottom-0 left-0 right-0 h-24 bg-white"
-        style={{ clipPath: 'polygon(0 100%, 100% 0, 100% 100%, 0% 100%)' }}
-      />
     </section>
   );
 }
