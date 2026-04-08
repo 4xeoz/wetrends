@@ -26,8 +26,7 @@ const Hero = () => {
           className="object-cover object-center"
           sizes="100vw"
         />
-        {/* Overlay for better text readability */}
-        <div className="absolute inset-0 bg-[#C72C5B]/70" />
+
       </motion.div>
 
       {/* Large background circle */}
