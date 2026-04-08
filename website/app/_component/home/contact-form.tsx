@@ -115,16 +115,12 @@ export default function ContactForm() {
 
   if (isSubmitted) {
     return (
-      <div className="text-center py-10">
-        <motion.div 
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          className="inline-flex items-center justify-center w-20 h-20 bg-[#C72C5B] rounded-full mb-6"
-        >
-          <CheckCircle className="h-10 w-10 text-white" />
-        </motion.div>
-        <h3 className="text-3xl font-bold mb-3 text-white">Message Sent!</h3>
-        <p className="text-lg text-white/70">Thank you for reaching out. We&apos;ll get back to you within 24 hours.</p>
+      <div className="text-center py-6 sm:py-10">
+        <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-[#C72C5B] rounded-full mb-4 sm:mb-6">
+          <CheckCircle className="h-8 w-8 sm:h-10 sm:w-10 text-white" />
+        </div>
+        <h3 className="text-2xl sm:text-3xl font-bold mb-2 sm:mb-3 text-white">Message Sent!</h3>
+        <p className="text-base sm:text-lg text-white/70">Thank you for reaching out. We&apos;ll get back to you within 24 hours.</p>
       </div>
     )
   }
@@ -132,26 +128,26 @@ export default function ContactForm() {
   return (
     <div className="w-full">
       {/* Progress Bar */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between mb-4">
+      <div className="mb-6 sm:mb-8">
+        <div className="flex items-center justify-between mb-3 sm:mb-4">
           {steps.map((step, index) => (
             <div key={step.id} className="flex items-center">
               <div 
-                className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300 ${
+                className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-xs sm:text-sm font-bold transition-all duration-300 ${
                   currentStep >= step.id 
                     ? "bg-[#C72C5B] text-white" 
                     : "bg-white/10 text-white/40"
                 }`}
               >
                 {currentStep > step.id ? (
-                  <CheckCircle className="h-5 w-5" />
+                  <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5" />
                 ) : (
                   step.id
                 )}
               </div>
               {index < steps.length - 1 && (
                 <div 
-                  className={`w-12 md:w-20 h-1 mx-2 transition-all duration-300 ${
+                  className={`w-6 sm:w-12 md:w-20 h-1 mx-1 sm:mx-2 transition-all duration-300 ${
                     currentStep > step.id ? "bg-[#C72C5B]" : "bg-white/10"
                   }`}
                 />
@@ -159,17 +155,17 @@ export default function ContactForm() {
             </div>
           ))}
         </div>
-        <p className="text-white/50 text-sm">Step {currentStep} of {steps.length}</p>
+        <p className="text-white/50 text-xs sm:text-sm">Step {currentStep} of {steps.length}</p>
       </div>
 
       {/* Form Content */}
       <form onSubmit={currentStep === steps.length ? handleSubmit : (e) => e.preventDefault()}>
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#C72C5B]">
-              <IconComponent className="h-6 w-6 text-white" />
+        <div className="mb-6 sm:mb-8">
+          <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+            <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-[#C72C5B] flex-shrink-0">
+              <IconComponent className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
             </div>
-            <h3 className="text-xl md:text-2xl font-bold text-white">{currentStepData.title}</h3>
+            <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-white">{currentStepData.title}</h3>
           </div>
 
           {/* Step 1: Name */}
@@ -208,23 +204,23 @@ export default function ContactForm() {
           {/* Step 3: Service */}
           {currentStep === 3 && (
             <div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
                 {services.map((service) => (
                   <button
                     key={service}
                     type="button"
                     onClick={() => handleServiceSelect(service)}
-                    className={`p-4 rounded-xl border text-left transition-all duration-300 ${
+                    className={`p-3 sm:p-4 rounded-lg sm:rounded-xl border text-left transition-all duration-300 ${
                       formData.service === service
                         ? "border-[#C72C5B] bg-[#C72C5B]/20 text-white"
                         : "border-white/20 text-white/70 hover:border-white/40"
                     }`}
                   >
-                    <span className="text-sm font-medium">{service}</span>
+                    <span className="text-xs sm:text-sm font-medium">{service}</span>
                   </button>
                 ))}
               </div>
-              {errors.service && <p className="text-red-400 text-sm mt-3">{errors.service}</p>}
+              {errors.service && <p className="text-red-400 text-xs sm:text-sm mt-2 sm:mt-3">{errors.service}</p>}
             </div>
           )}
 
@@ -246,16 +242,16 @@ export default function ContactForm() {
         </div>
 
         {/* Navigation Buttons */}
-        <div className="flex gap-3">
+        <div className="flex gap-2 sm:gap-3">
           {currentStep > 1 && (
             <Button
               type="button"
               onClick={prevStep}
               variant="outline"
-              className="px-6 py-6 border-white/20 text-white hover:bg-white/10"
+              className="px-4 sm:px-6 py-5 sm:py-6 border-white/20 text-white hover:bg-white/10 text-sm sm:text-base"
             >
-              <ArrowLeft className="h-5 w-5 mr-2" />
-              Back
+              <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">Back</span>
             </Button>
           )}
           
@@ -263,29 +259,31 @@ export default function ContactForm() {
             <Button
               type="button"
               onClick={nextStep}
-              className="flex-1 bg-[#C72C5B] hover:bg-[#A3244A] text-white py-6 text-base font-bold"
+              className="flex-1 bg-[#C72C5B] hover:bg-[#A3244A] text-white py-5 sm:py-6 text-sm sm:text-base font-bold"
             >
               Continue
-              <ArrowRight className="h-5 w-5 ml-2" />
+              <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 ml-1 sm:ml-2" />
             </Button>
           ) : (
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 bg-white hover:bg-white/90 text-[#0F0F0F] py-6 text-base font-bold"
+              className="flex-1 bg-white hover:bg-white/90 text-[#0F0F0F] py-5 sm:py-6 text-sm sm:text-base font-bold"
             >
               {isSubmitting ? (
                 <span className="flex items-center justify-center">
-                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24">
+                  <svg className="animate-spin -ml-1 mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                   </svg>
-                  Sending...
+                  <span className="hidden sm:inline">Sending...</span>
+                  <span className="sm:hidden">Send...</span>
                 </span>
               ) : (
                 <>
-                  Send Message
-                  <Send className="ml-2 h-5 w-5" />
+                  <span className="hidden sm:inline">Send Message</span>
+                  <span className="sm:hidden">Send</span>
+                  <Send className="ml-1 sm:ml-2 h-4 w-4 sm:h-5 sm:w-5" />
                 </>
               )}
             </Button>
