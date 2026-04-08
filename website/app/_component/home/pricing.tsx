@@ -35,7 +35,7 @@ const plans = [
   },
   {
     name: 'TrendOps™ Enterprise',
-    price: 'Custom',
+    price: '',
     period: '',
     description: 'Bespoke creative partnership for scaling brands.',
     features: [

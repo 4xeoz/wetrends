@@ -114,7 +114,18 @@ const Showcase = () => {
     ];
 
     return (
-        <section id="work" className="relative bg-[#0F0F0F] text-white py-20 md:py-28 px-4 sm:px-6 lg:px-8 overflow-hidden">
+        <section id="work" className="relative text-white py-20 md:py-28 px-4 sm:px-6 lg:px-8 overflow-hidden">
+            {/* Background Image */}
+            <div className="absolute inset-0 -z-10">
+                <Image
+                    src="/images/mid_dark_background.webp"
+                    alt=""
+                    fill
+                    className="object-cover object-center"
+                    sizes="100vw"
+                />
+            </div>
+
             <div className="relative z-10 max-w-7xl mx-auto w-full">
                 {/* Content Container */}
                 <div>
@@ -128,7 +139,7 @@ const Showcase = () => {
                         className="mb-8 md:mb-20"
                     >
                         <h2 className="text-4xl md:text-5xl lg:text-7xl xl:text-8xl font-bold text-white mb-2 leading-none">We Take Care</h2>
-                        <h3 className="text-4xl md:text-5xl lg:text-7xl xl:text-8xl font-serif italic font-bold text-white leading-none">of Everything</h3>
+                        <h3 className="text-4xl md:text-5xl lg:text-7xl xl:text-8xl font-serif italic font-bold text-[#C72C5B] leading-none">of Everything</h3>
                     </AnimatedContent>
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 lg:gap-16 items-start lg:items-center h-full max-w-6xl mx-auto">

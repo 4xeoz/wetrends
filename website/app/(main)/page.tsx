@@ -2,12 +2,12 @@ import type { Metadata } from 'next';
 import React from 'react';
 import Hero from '../_component/home/hero';
 import SubHero from '../_component/home/subHero';
+import { CaseStudies } from '../_component/home/case-studies';
+import { Team } from '../_component/home/team';
+import Showcase from '../_component/home/showcase';
 import WhyLoveUs from '../_component/home/whyLoveUs';
 import { Services } from '../_component/home/services';
-import Showcase from '../_component/home/showcase';
-import { CaseStudies } from '../_component/home/case-studies';
 import Pricing from '../_component/home/pricing';
-import { Team } from '../_component/home/team';
 import { BlogPreview } from '../_component/home/blog-preview';
 import Contact from '../_component/home/contact';
 
@@ -32,12 +32,12 @@ export default function Home() {
     <div className="">
       <Hero/> 
       <SubHero/>
+      <CaseStudies />
+      <Team />
+      <Showcase/>
       <WhyLoveUs/>
       <Services />
-      <Showcase/>
-      <CaseStudies />
       <Pricing/>
-      <Team />
       <BlogPreview />
       <Contact/>
     </div>

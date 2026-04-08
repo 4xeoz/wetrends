@@ -34,12 +34,12 @@ export function LoadingScreen({ children }: { children: React.ReactNode }) {
       <AnimatePresence>
         {isLoading && (
           <motion.div
-            className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-white"
+            className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-black"
             initial={{ y: 0 }}
             exit={{ y: '-100%' }}
-            transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
           >
-            {/* Logo - parallax stagger */}
+            {/* Logo */}
             <motion.div
               className="relative mb-16 flex items-center justify-center"
               initial={{ y: 0 }}
@@ -53,7 +53,7 @@ export function LoadingScreen({ children }: { children: React.ReactNode }) {
                 height={140}
                 className="h-20 w-auto md:h-28"
                 style={{
-                  filter: 'brightness(0) saturate(100%) invert(27%) sepia(81%) saturate(5000%) hue-rotate(330deg) brightness(90%) contrast(95%)',
+                  filter: 'brightness(0) invert(1)',
                 }}
                 priority
               />
@@ -66,13 +66,13 @@ export function LoadingScreen({ children }: { children: React.ReactNode }) {
               exit={{ opacity: 0, y: 20 }}
               transition={{ duration: 0.4, ease: 'easeInOut' }}
             >
-              <div className="relative h-px overflow-hidden bg-gray-100">
+              <div className="relative h-px overflow-hidden bg-white/20">
                 <motion.div
-                  className="absolute inset-y-0 left-0 bg-[#C72C5B]"
+                  className="absolute inset-y-0 left-0 bg-white"
                   style={{ width: `${progress}%` }}
                 />
               </div>
-              <p className="mt-4 text-center text-[10px] font-bold uppercase tracking-[0.3em] text-gray-400">
+              <p className="mt-4 text-center text-[10px] font-bold uppercase tracking-[0.3em] text-white/70">
                 Loading
               </p>
             </motion.div>
@@ -80,14 +80,10 @@ export function LoadingScreen({ children }: { children: React.ReactNode }) {
         )}
       </AnimatePresence>
 
-      {/* Content */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: isLoading ? 0 : 1 }}
-        transition={{ duration: 0.8, ease: 'easeInOut', delay: 0.4 }}
-      >
+      {/* Content - always rendered, just hidden during loading */}
+      <div style={{ visibility: isLoading ? 'hidden' : 'visible' }}>
         {children}
-      </motion.div>
+      </div>
     </>
   );
 }
