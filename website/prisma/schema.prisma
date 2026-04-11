@@ -187,10 +187,36 @@ model VoucherTransaction {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
   voucherId   String   @db.ObjectId
   voucher     Voucher  @relation(fields: [voucherId], references: [id], onDelete: Cascade)
-  
+
   amount      Float
   description String?
   location    String?
-  
+
   createdAt   DateTime @default(now())
+}
+
+// Cinematography & Photography Booking System
+model CinemaBooking {
+  id        String         @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  phone     String
+  date      DateTime
+  service   CinemaService
+  status    CinemaBookingStatus @default(PENDING)
+  notes     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum CinemaService {
+  PHOTOS_8       // £35 - 8 photos of choice, 48h delivery
+  PHOTOS_10_VIDEO // £45 - 10 photos + short cinematic video, 48h delivery
+}
+
+enum CinemaBookingStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
 }

@@ -11,6 +11,7 @@ import {
   Settings,
   ChevronDown,
   LogOut,
+  Clapperboard,
 } from 'lucide-react';
 import {
   Sidebar,
@@ -72,6 +73,16 @@ const navSections: NavSection[] = [
         label: 'Scan Voucher',
         href: '/voucher/scan',
         icon: <Ticket className="h-5 w-5" />,
+      },
+    ],
+  },
+  {
+    title: 'Services',
+    items: [
+      {
+        label: 'Cinematography',
+        href: '/me/cinematography',
+        icon: <Clapperboard className="h-5 w-5" />,
       },
     ],
   },
