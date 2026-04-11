@@ -1,108 +1,98 @@
-'use client';
-
-import { motion } from 'motion/react';
-import { useInView } from 'react-intersection-observer';
+// Lightweight portfolio — CSS-only reveal, no Framer Motion
+// Images lazy-loaded by default via Next.js Image
 import Image from 'next/image';
 
-// Unsplash graduation / portrait photography images
 const portfolioImages = [
   {
-    src: 'https://images.unsplash.com/photo-1627556704302-624286467c65?w=800&q=80',
-    alt: 'Graduation portrait at Surrey University',
-    span: 'col-span-2 row-span-2',
+    src: 'https://images.unsplash.com/photo-1627556704302-624286467c65?w=700&q=80',
+    alt: 'Graduation portrait at University of Surrey campus',
+    tall: true, // spans 2 rows
   },
   {
-    src: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=600&q=80',
+    src: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=500&q=75',
     alt: 'Graduate celebrating at Guildford ceremony',
-    span: '',
+    tall: false,
   },
   {
-    src: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=600&q=80',
-    alt: 'Graduation cap thrown in the air',
-    span: '',
+    src: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=500&q=75',
+    alt: 'Graduation cap in the air, Surrey University',
+    tall: false,
   },
   {
-    src: 'https://images.unsplash.com/photo-1592280771190-3e2e4d571952?w=600&q=80',
-    alt: 'Student portrait graduation day Surrey',
-    span: '',
+    src: 'https://images.unsplash.com/photo-1592280771190-3e2e4d571952?w=500&q=75',
+    alt: 'Student portrait on graduation day',
+    tall: false,
   },
   {
-    src: 'https://images.unsplash.com/photo-1604004215402-a637698cf7e9?w=600&q=80',
-    alt: 'Cinematic graduation shoot outdoors Guildford',
-    span: '',
+    src: 'https://images.unsplash.com/photo-1563237023-b1e970526dcb?w=500&q=75',
+    alt: 'Graduate holding diploma outdoors Guildford',
+    tall: false,
   },
   {
-    src: 'https://images.unsplash.com/photo-1563237023-b1e970526dcb?w=600&q=80',
-    alt: 'Graduate holding diploma University of Surrey',
-    span: '',
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1571260899304-425eee4c7efc?w=800&q=80',
-    alt: 'Group of graduates University of Surrey Guildford',
-    span: 'col-span-2',
+    src: 'https://images.unsplash.com/photo-1571260899304-425eee4c7efc?w=700&q=80',
+    alt: 'Group of Surrey University graduates celebrating',
+    tall: false,
   },
 ];
 
 export default function CinematographyPortfolio() {
-  const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.1 });
-
   return (
-    <section
-      id="work"
-      ref={ref}
-      className="bg-[#111111] py-24"
-    >
+    <section id="work" className="bg-gray-50 py-20">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         {/* Heading */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
-          className="mb-14 text-center"
-        >
-          <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-[#C72C5B]">
+        <div className="mb-10 text-center">
+          <p className="mb-2 text-sm font-semibold uppercase tracking-widest text-[#C72C5B]">
             Our Work
           </p>
-          <h2 className="text-4xl font-black text-white sm:text-5xl">
-            Every Moment, Cinematic
+          <h2 className="text-3xl font-black text-gray-900 sm:text-4xl">
+            Real Graduates. Real Moments.
           </h2>
-          <p className="mt-4 max-w-xl mx-auto text-lg text-white/50">
-            From the ceremony halls to the grounds of Guildford, we turn your
-            graduation day into a timeless visual story.
+          <p className="mt-3 text-base text-gray-500">
+            Every shoot is unique — here's a taste of what we create at Surrey
+            University and across Guildford.
           </p>
-        </motion.div>
+        </div>
 
-        {/* Masonry-style grid */}
-        <div className="grid auto-rows-[220px] grid-cols-2 gap-4 md:grid-cols-3 lg:auto-rows-[240px]">
+        {/* Grid */}
+        <div className="grid auto-rows-[200px] grid-cols-2 gap-3 md:grid-cols-3 lg:auto-rows-[220px]">
           {portfolioImages.map((img, i) => (
-            <motion.div
+            <div
               key={img.src}
-              initial={{ opacity: 0, scale: 0.96 }}
-              animate={inView ? { opacity: 1, scale: 1 } : {}}
-              transition={{ duration: 0.6, delay: i * 0.08 }}
-              className={`group relative overflow-hidden rounded-2xl bg-zinc-900 ${img.span}`}
+              className={`group relative overflow-hidden rounded-xl bg-gray-200 ${
+                img.tall ? 'row-span-2' : ''
+              }`}
             >
               <Image
                 src={img.src}
                 alt={img.alt}
                 fill
-                sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 400px"
-                className="object-cover transition-transform duration-700 group-hover:scale-105"
+                sizes={
+                  img.tall
+                    ? '(max-width: 768px) 50vw, 33vw'
+                    : '(max-width: 768px) 50vw, 33vw'
+                }
+                loading={i < 2 ? 'eager' : 'lazy'}
+                className="object-cover transition-transform duration-500 will-change-transform group-hover:scale-[1.04]"
               />
-              {/* Hover overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-            </motion.div>
+              {/* Subtle hover overlay */}
+              <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/15" />
+            </div>
           ))}
         </div>
 
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={inView ? { opacity: 1 } : {}}
-          transition={{ duration: 0.6, delay: 0.6 }}
-          className="mt-6 text-center text-sm text-white/30"
-        >
-          Sample portfolio images — your photos will be tailored to your graduation day
-        </motion.p>
+        <p className="mt-5 text-center text-xs text-gray-400">
+          Sample portfolio — your photos will be tailored to your graduation day
+        </p>
+
+        {/* Inline CTA */}
+        <div className="mt-8 text-center">
+          <a
+            href="#book"
+            className="inline-flex items-center gap-2 rounded-full border border-[#C72C5B] px-6 py-2.5 text-sm font-semibold text-[#C72C5B] transition-colors hover:bg-[#C72C5B] hover:text-white"
+          >
+            Book your shoot &rarr;
+          </a>
+        </div>
       </div>
     </section>
   );

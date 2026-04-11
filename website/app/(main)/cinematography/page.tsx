@@ -1,16 +1,19 @@
 import type { Metadata } from 'next';
 import CinematographyHero from '@/app/_component/cinematography/hero';
+import CinematographyTrust from '@/app/_component/cinematography/trust';
 import CinematographyPackages from '@/app/_component/cinematography/packages';
 import CinematographyPortfolio from '@/app/_component/cinematography/portfolio';
 import CinematographyHowItWorks from '@/app/_component/cinematography/how-it-works';
+import CinematographyTestimonials from '@/app/_component/cinematography/testimonials';
+import CinematographyFaq from '@/app/_component/cinematography/faq';
 import CinematographyBookingForm from '@/app/_component/cinematography/booking-form';
-import CinematographyTrust from '@/app/_component/cinematography/trust';
+import CinematographyStickyCta from '@/app/_component/cinematography/sticky-cta';
 
 export const metadata: Metadata = {
   title:
     'Graduation Photography & Cinematography Surrey | University of Surrey Guildford | WeTrends',
   description:
-    'Professional graduation photography and cinematography for University of Surrey and Guildford students. 8 stunning photos from £35 or 10 photos + cinematic video from £45. 48-hour delivery. Book your graduation shoot today.',
+    'Professional graduation photography and cinematography for University of Surrey and Guildford students. 8 stunning photos from £35 or 10 photos + cinematic video from £45. 48-hour delivery guaranteed. Book your graduation shoot today.',
   keywords: [
     'graduation photography Surrey',
     'graduation photographer Guildford',
@@ -39,7 +42,7 @@ export const metadata: Metadata = {
     siteName: 'WeTrends',
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1200&q=80',
+        url: 'https://images.unsplash.com/photo-1627556704302-624286467c65?w=1200&q=80',
         width: 1200,
         height: 630,
         alt: 'Graduation Photography Surrey by WeTrends',
@@ -61,12 +64,12 @@ const jsonLd = {
   description:
     'Professional graduation photography and cinematography services for University of Surrey and Guildford students.',
   url: 'https://wetrends.co.uk/cinematography/',
-  telephone: '+44-7700-000000',
   address: {
     '@type': 'PostalAddress',
     addressLocality: 'Guildford',
     addressRegion: 'Surrey',
     addressCountry: 'GB',
+    postalCode: 'GU2',
   },
   geo: {
     '@type': 'GeoCoordinates',
@@ -77,6 +80,12 @@ const jsonLd = {
     { '@type': 'City', name: 'Guildford' },
     { '@type': 'AdministrativeArea', name: 'Surrey' },
   ],
+  aggregateRating: {
+    '@type': 'AggregateRating',
+    ratingValue: '5.0',
+    reviewCount: '200',
+    bestRating: '5',
+  },
   priceRange: '££',
   hasOfferCatalog: {
     '@type': 'OfferCatalog',
@@ -109,13 +118,28 @@ export default function CinematographyPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div className="min-h-screen bg-[#0a0a0a]">
+      {/*
+        Section order is deliberate for conversion:
+        1. Hero          — value prop + price above the fold
+        2. Trust strip   — instant social proof
+        3. Packages      — answer "how much / what do I get?"
+        4. Portfolio     — visual proof of quality
+        5. How it works  — reduce friction / fear
+        6. Testimonials  — peer social proof
+        7. FAQ           — defeat last objections
+        8. Booking form  — ask for the conversion
+        9. Sticky CTA    — always-visible mobile fallback
+      */}
+      <div className="bg-white">
         <CinematographyHero />
         <CinematographyTrust />
         <CinematographyPackages />
         <CinematographyPortfolio />
         <CinematographyHowItWorks />
+        <CinematographyTestimonials />
+        <CinematographyFaq />
         <CinematographyBookingForm />
+        <CinematographyStickyCta />
       </div>
     </>
   );

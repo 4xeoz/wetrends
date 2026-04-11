@@ -1,170 +1,165 @@
 'use client';
 
-import { motion } from 'motion/react';
 import { useInView } from 'react-intersection-observer';
-import { Camera, Film, Clock, Check, Star } from 'lucide-react';
+import { Camera, Film, Clock, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const packages = [
   {
     id: 'PHOTOS_8',
     name: 'Essentials',
-    tagline: 'Perfect for sharing with family',
+    subtitle: 'Perfect for framing & sharing with family',
     price: 35,
     icon: Camera,
     popular: false,
-    color: 'from-zinc-800 to-zinc-900',
-    borderColor: 'border-white/10',
     features: [
       '8 professionally edited photos',
-      'Your choice of shots from the session',
+      'You choose the shots you love',
       'High-resolution digital files',
       'Delivered within 48 hours',
-      'Perfect for framing & sharing',
-      'Guildford campus or outdoor settings',
+      'Surrey campus or Guildford outdoors',
+      'Colour-graded to perfection',
     ],
-    delivery: '48h',
   },
   {
     id: 'PHOTOS_10_VIDEO',
     name: 'Premium',
-    tagline: 'Ideal for LinkedIn & social media',
+    subtitle: 'Ideal for LinkedIn, Instagram & proud parents',
     price: 45,
     icon: Film,
     popular: true,
-    color: 'from-[#C72C5B]/20 to-[#0a0a0a]',
-    borderColor: 'border-[#C72C5B]/40',
     features: [
       '10 professionally edited photos',
-      'Your choice of shots from the session',
-      'Short cinematic graduation video',
+      'You choose the shots you love',
+      'Short cinematic graduation reel',
       'Optimised for LinkedIn & social media',
       'High-resolution digital files',
       'Delivered within 48 hours',
-      'Perfect for CV, profiles & memories',
-      'Guildford campus or outdoor settings',
+      'Surrey campus or Guildford outdoors',
+      'Colour-graded to perfection',
     ],
-    delivery: '48h',
   },
 ];
 
 export default function CinematographyPackages() {
-  const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.1 });
+  const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.15 });
 
   return (
-    <section
-      id="packages"
-      ref={ref}
-      className="bg-[#0a0a0a] py-24"
-    >
+    <section id="packages" ref={ref} className="bg-white py-20">
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         {/* Heading */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
-          className="mb-16 text-center"
-        >
-          <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-[#C72C5B]">
-            Our Packages
+        <div className="mb-12 text-center">
+          <p className="mb-2 text-sm font-semibold uppercase tracking-widest text-[#C72C5B]">
+            Transparent Pricing
           </p>
-          <h2 className="text-4xl font-black text-white sm:text-5xl">
-            Choose Your Package
+          <h2 className="text-3xl font-black text-gray-900 sm:text-4xl">
+            Two Packages, Zero Surprises
           </h2>
-          <p className="mt-4 text-lg text-white/50">
-            Transparent pricing, no hidden fees — just beautiful memories
+          <p className="mt-3 text-base text-gray-500">
+            No hidden fees. No complicated add-ons. Just beautiful memories.
           </p>
-        </motion.div>
+        </div>
 
         {/* Cards */}
-        <div className="grid gap-8 md:grid-cols-2">
+        <div className="grid gap-6 md:grid-cols-2">
           {packages.map((pkg, i) => {
             const Icon = pkg.icon;
             return (
-              <motion.div
+              <div
                 key={pkg.id}
-                initial={{ opacity: 0, y: 30 }}
-                animate={inView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.6, delay: i * 0.15 }}
-                className={`relative overflow-hidden rounded-2xl border bg-gradient-to-br p-8 ${pkg.color} ${pkg.borderColor}`}
+                style={{
+                  opacity: inView ? 1 : 0,
+                  transform: inView ? 'translateY(0)' : 'translateY(24px)',
+                  transition: `opacity 0.5s ease ${i * 0.12}s, transform 0.5s ease ${i * 0.12}s`,
+                }}
+                className={`relative flex flex-col rounded-2xl border p-8 ${
+                  pkg.popular
+                    ? 'border-[#C72C5B] shadow-xl shadow-[#C72C5B]/10 ring-1 ring-[#C72C5B]'
+                    : 'border-gray-200 shadow-sm hover:shadow-md transition-shadow'
+                } bg-white`}
               >
+                {/* Most Popular ribbon */}
                 {pkg.popular && (
-                  <div className="absolute -right-8 top-6 rotate-45 bg-[#C72C5B] px-10 py-1 text-xs font-bold uppercase tracking-widest text-white shadow-lg">
-                    Most Popular
+                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
+                    <span className="rounded-full bg-[#C72C5B] px-4 py-1 text-xs font-bold uppercase tracking-widest text-white shadow-sm">
+                      Most Popular
+                    </span>
                   </div>
                 )}
 
-                {/* Icon */}
-                <div
-                  className={`mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl ${
-                    pkg.popular ? 'bg-[#C72C5B]' : 'bg-white/10'
-                  }`}
-                >
-                  <Icon className="h-6 w-6 text-white" />
-                </div>
-
-                {/* Name & price */}
-                <div className="mb-2 flex items-end justify-between">
-                  <div>
-                    <h3 className="text-xl font-black text-white">{pkg.name}</h3>
-                    <p className="text-sm text-white/50">{pkg.tagline}</p>
+                {/* Icon + name */}
+                <div className="mb-5 flex items-start justify-between">
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={`flex h-10 w-10 items-center justify-center rounded-xl ${
+                        pkg.popular ? 'bg-[#C72C5B]' : 'bg-gray-100'
+                      }`}
+                    >
+                      <Icon
+                        className={`h-5 w-5 ${
+                          pkg.popular ? 'text-white' : 'text-gray-600'
+                        }`}
+                      />
+                    </div>
+                    <div>
+                      <h3 className="font-black text-gray-900">{pkg.name}</h3>
+                      <p className="text-xs text-gray-500">{pkg.subtitle}</p>
+                    </div>
                   </div>
+                  {/* Price */}
                   <div className="text-right">
-                    <span className="text-4xl font-black text-white">
+                    <span
+                      className={`text-3xl font-black ${
+                        pkg.popular ? 'text-[#C72C5B]' : 'text-gray-900'
+                      }`}
+                    >
                       £{pkg.price}
                     </span>
+                    <p className="text-xs text-gray-400">one-time</p>
                   </div>
                 </div>
 
-                {/* Delivery badge */}
-                <div className="mb-6 flex items-center gap-2">
-                  <Clock className="h-4 w-4 text-[#C72C5B]" />
-                  <span className="text-sm font-medium text-white/60">
-                    {pkg.delivery} delivery guaranteed
-                  </span>
+                {/* Delivery pill */}
+                <div className="mb-5 inline-flex w-fit items-center gap-1.5 rounded-full bg-green-50 px-3 py-1.5 text-xs font-semibold text-green-700">
+                  <Clock className="h-3 w-3" />
+                  Delivered within 48 hours
                 </div>
 
                 {/* Features */}
-                <ul className="mb-8 space-y-3">
+                <ul className="mb-7 flex-1 space-y-2.5">
                   {pkg.features.map((feature) => (
-                    <li key={feature} className="flex items-start gap-3">
+                    <li key={feature} className="flex items-start gap-2.5">
                       <Check
                         className={`mt-0.5 h-4 w-4 flex-shrink-0 ${
-                          pkg.popular ? 'text-[#C72C5B]' : 'text-white/40'
+                          pkg.popular ? 'text-[#C72C5B]' : 'text-gray-400'
                         }`}
                       />
-                      <span className="text-sm text-white/70">{feature}</span>
+                      <span className="text-sm text-gray-700">{feature}</span>
                     </li>
                   ))}
                 </ul>
 
                 {/* CTA */}
-                <a href="#book">
+                <a href="#book" className="block">
                   <Button
-                    className={`w-full rounded-xl py-5 font-semibold transition-all duration-300 ${
+                    className={`w-full py-5 font-bold rounded-xl ${
                       pkg.popular
-                        ? 'bg-[#C72C5B] text-white shadow-lg shadow-[#C72C5B]/25 hover:bg-[#a8244d]'
-                        : 'border border-white/20 bg-white/5 text-white hover:bg-white/10'
-                    }`}
+                        ? 'bg-[#C72C5B] text-white hover:bg-[#a8244d] shadow-md shadow-[#C72C5B]/20'
+                        : 'border border-gray-300 bg-white text-gray-800 hover:bg-gray-50'
+                    } transition-colors`}
                   >
-                    Book {pkg.name} – £{pkg.price}
+                    Book {pkg.name} — £{pkg.price}
                   </Button>
                 </a>
-              </motion.div>
+              </div>
             );
           })}
         </div>
 
-        {/* Reassurance note */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={inView ? { opacity: 1 } : {}}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="mt-8 text-center text-sm text-white/30"
-        >
-          <Star className="mr-1 inline h-4 w-4 text-amber-400" />
-          All packages include professional editing, colour grading, and digital delivery
-        </motion.p>
+        {/* Reassurance */}
+        <p className="mt-8 text-center text-sm text-gray-400">
+          Both packages include professional colour grading &amp; full digital delivery. Shoots at the University of Surrey campus or nearby Guildford locations.
+        </p>
       </div>
     </section>
   );

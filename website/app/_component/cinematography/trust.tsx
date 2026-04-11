@@ -1,39 +1,28 @@
-'use client';
-
-import { motion } from 'motion/react';
-import { useInView } from 'react-intersection-observer';
-import { GraduationCap, Star, Zap, Shield } from 'lucide-react';
+// Static — no client JS needed, no animations. Renders instantly.
+import { GraduationCap, Star, Zap, MapPin } from 'lucide-react';
 
 const stats = [
-  { icon: GraduationCap, value: '200+', label: 'Graduates Photographed' },
-  { icon: Star, value: '5.0', label: 'Average Rating' },
-  { icon: Zap, value: '48h', label: 'Guaranteed Delivery' },
-  { icon: Shield, value: '100%', label: 'Satisfaction Guaranteed' },
+  { icon: GraduationCap, value: '200+', label: 'Graduates served' },
+  { icon: Star, value: '5.0 ★', label: 'Average rating' },
+  { icon: Zap, value: '48h', label: 'Delivery guaranteed' },
+  { icon: MapPin, value: 'Guildford', label: 'University of Surrey' },
 ];
 
 export default function CinematographyTrust() {
-  const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.2 });
-
   return (
-    <section ref={ref} className="bg-[#111111] py-12 border-y border-white/5">
-      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+    <section className="border-b border-gray-100 bg-gray-50">
+      <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
-          {stats.map(({ icon: Icon, value, label }, i) => (
-            <motion.div
-              key={label}
-              initial={{ opacity: 0, y: 20 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.5, delay: i * 0.1 }}
-              className="flex flex-col items-center gap-2 text-center"
-            >
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#C72C5B]/10">
-                <Icon className="h-5 w-5 text-[#C72C5B]" />
+          {stats.map(({ icon: Icon, value, label }) => (
+            <div key={label} className="flex items-center gap-3">
+              <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-[#C72C5B]/8 border border-[#C72C5B]/12">
+                <Icon className="h-4 w-4 text-[#C72C5B]" />
               </div>
-              <p className="text-2xl font-black text-white">{value}</p>
-              <p className="text-xs text-white/50 font-medium uppercase tracking-wider">
-                {label}
-              </p>
-            </motion.div>
+              <div>
+                <p className="text-sm font-black text-gray-900">{value}</p>
+                <p className="text-xs text-gray-500">{label}</p>
+              </div>
+            </div>
           ))}
         </div>
       </div>

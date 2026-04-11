@@ -1,8 +1,6 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { useInView } from 'react-intersection-observer';
 import { z } from 'zod';
 import {
   Camera,
@@ -13,6 +11,7 @@ import {
   CheckCircle2,
   Loader2,
   AlertCircle,
+  Clock,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -33,14 +32,14 @@ type FormErrors = Partial<Record<keyof z.infer<typeof formSchema>, string>>;
 const packageOptions = [
   {
     value: 'PHOTOS_8' as const,
-    label: 'Essentials',
-    desc: '8 photos · £35',
+    label: 'Essentials — £35',
+    sub: '8 photos · 48h delivery',
     icon: Camera,
   },
   {
     value: 'PHOTOS_10_VIDEO' as const,
-    label: 'Premium',
-    desc: '10 photos + video · £45',
+    label: 'Premium — £45',
+    sub: '10 photos + video · 48h delivery',
     icon: Film,
     popular: true,
   },
@@ -52,8 +51,17 @@ function getMinDate() {
   return d.toISOString().split('T')[0];
 }
 
+function FieldError({ msg }: { msg?: string }) {
+  if (!msg) return null;
+  return (
+    <p className="mt-1.5 flex items-center gap-1 text-xs text-red-500">
+      <AlertCircle className="h-3 w-3 flex-shrink-0" />
+      {msg}
+    </p>
+  );
+}
+
 export default function CinematographyBookingForm() {
-  const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.1 });
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
@@ -76,7 +84,7 @@ export default function CinematographyBookingForm() {
       phone: phoneRef.current?.value ?? '',
       date: dateRef.current?.value ?? '',
       service: (selectedService ?? '') as 'PHOTOS_8' | 'PHOTOS_10_VIDEO',
-      notes: notesRef.current?.value ?? undefined,
+      notes: notesRef.current?.value || undefined,
     };
 
     const parsed = formSchema.safeParse(raw);
@@ -105,233 +113,174 @@ export default function CinematographyBookingForm() {
   }
 
   return (
-    <section id="book" ref={ref} className="relative bg-[#111111] py-24">
-      {/* Background blobs */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -left-40 top-1/2 h-96 w-96 -translate-y-1/2 rounded-full bg-[#C72C5B]/5 blur-3xl" />
-        <div className="absolute -right-40 top-1/2 h-96 w-96 -translate-y-1/2 rounded-full bg-[#C72C5B]/5 blur-3xl" />
-      </div>
-
-      <div className="relative mx-auto max-w-2xl px-4 sm:px-6 lg:px-8">
+    <section id="book" className="bg-gray-50 py-20">
+      <div className="mx-auto max-w-xl px-4 sm:px-6 lg:px-8">
         {/* Heading */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
-          className="mb-12 text-center"
-        >
-          <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-[#C72C5B]">
-            Ready to Book?
+        <div className="mb-8 text-center">
+          <p className="mb-2 text-sm font-semibold uppercase tracking-widest text-[#C72C5B]">
+            Book Your Shoot
           </p>
-          <h2 className="text-4xl font-black text-white sm:text-5xl">
-            Reserve Your Shoot
+          <h2 className="text-3xl font-black text-gray-900 sm:text-4xl">
+            Reserve Your Spot
           </h2>
-          <p className="mt-4 text-white/50">
-            Fill in your details below — we'll confirm within 24 hours. Multiple
-            students can book the same graduation date.
+          <p className="mt-3 text-sm text-gray-500">
+            Fill in your details — we'll confirm within 24 hours. Multiple students
+            can book the same graduation date.
           </p>
-        </motion.div>
+        </div>
 
-        <AnimatePresence mode="wait">
-          {submitted ? (
-            /* Success state */
-            <motion.div
-              key="success"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5 }}
-              className="rounded-2xl border border-[#C72C5B]/30 bg-[#C72C5B]/5 p-12 text-center"
+        {submitted ? (
+          /* ── Success ── */
+          <div className="rounded-2xl border border-green-100 bg-white p-10 text-center shadow-sm">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-green-50">
+              <CheckCircle2 className="h-7 w-7 text-green-600" />
+            </div>
+            <h3 className="mb-2 text-xl font-black text-gray-900">Booking Received!</h3>
+            <p className="text-sm text-gray-500 leading-relaxed">
+              Thanks! We'll confirm your booking within 24 hours. Your photos will
+              be delivered within 48 hours of your shoot date.
+            </p>
+            <button
+              onClick={() => {
+                setSubmitted(false);
+                setSelectedService(null);
+              }}
+              className="mt-6 text-sm font-semibold text-[#C72C5B] underline-offset-2 hover:underline"
             >
-              <div className="mb-4 flex justify-center">
-                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#C72C5B]/20">
-                  <CheckCircle2 className="h-8 w-8 text-[#C72C5B]" />
-                </div>
-              </div>
-              <h3 className="mb-2 text-2xl font-black text-white">
-                Booking Received!
-              </h3>
-              <p className="mb-6 text-white/60">
-                Thank you! We've received your booking and will confirm within
-                24 hours. Your photos will be delivered within 48 hours of your
-                shoot.
-              </p>
-              <Button
-                onClick={() => {
-                  setSubmitted(false);
-                  setSelectedService(null);
-                }}
-                variant="outline"
-                className="border-white/20 text-white hover:bg-white/10"
-              >
-                Book Another Slot
-              </Button>
-            </motion.div>
-          ) : (
-            /* Form */
-            <motion.form
-              key="form"
-              initial={{ opacity: 0, y: 20 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.15 }}
-              onSubmit={handleSubmit}
-              className="space-y-6"
-            >
+              Book another slot
+            </button>
+          </div>
+        ) : (
+          /* ── Form card ── */
+          <div className="rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
+            <form onSubmit={handleSubmit} className="space-y-5" noValidate>
               {/* Package selector */}
               <div>
-                <label className="mb-3 block text-sm font-semibold text-white/70">
+                <label className="mb-2.5 block text-sm font-semibold text-gray-800">
                   Choose Your Package
                 </label>
-                <div className="grid grid-cols-2 gap-4">
-                  {packageOptions.map(({ value, label, desc, icon: Icon, popular }) => (
+                <div className="grid grid-cols-2 gap-3">
+                  {packageOptions.map(({ value, label, sub, icon: Icon, popular }) => (
                     <button
                       key={value}
                       type="button"
                       onClick={() => {
                         setSelectedService(value);
-                        setFieldErrors((prev) => ({ ...prev, service: undefined }));
+                        setFieldErrors((p) => ({ ...p, service: undefined }));
                       }}
-                      className={`relative flex flex-col items-start gap-1 rounded-xl border p-4 text-left transition-all duration-200 ${
+                      className={`relative flex flex-col gap-1 rounded-xl border p-4 text-left transition-all duration-150 ${
                         selectedService === value
-                          ? 'border-[#C72C5B] bg-[#C72C5B]/10'
-                          : 'border-white/10 bg-white/5 hover:border-white/20'
+                          ? 'border-[#C72C5B] bg-[#C72C5B]/5 ring-1 ring-[#C72C5B]'
+                          : 'border-gray-200 bg-gray-50 hover:border-gray-300 hover:bg-white'
                       }`}
                     >
                       {popular && (
-                        <span className="absolute right-3 top-3 rounded-full bg-[#C72C5B] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white">
+                        <span className="absolute right-2 top-2 rounded-full bg-[#C72C5B] px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white">
                           Popular
                         </span>
                       )}
                       <div
-                        className={`mb-1 flex h-8 w-8 items-center justify-center rounded-lg ${
-                          selectedService === value ? 'bg-[#C72C5B]' : 'bg-white/10'
+                        className={`flex h-7 w-7 items-center justify-center rounded-lg ${
+                          selectedService === value ? 'bg-[#C72C5B]' : 'bg-gray-200'
                         }`}
                       >
-                        <Icon className="h-4 w-4 text-white" />
+                        <Icon className={`h-3.5 w-3.5 ${selectedService === value ? 'text-white' : 'text-gray-600'}`} />
                       </div>
-                      <span className="font-bold text-white">{label}</span>
-                      <span className="text-xs text-white/50">{desc}</span>
+                      <span className="text-xs font-bold text-gray-900 leading-tight">
+                        {label}
+                      </span>
+                      <span className="text-[11px] text-gray-500">{sub}</span>
                     </button>
                   ))}
                 </div>
-                {fieldErrors.service && (
-                  <p className="mt-2 flex items-center gap-1 text-xs text-red-400">
-                    <AlertCircle className="h-3 w-3" />
-                    {fieldErrors.service}
-                  </p>
-                )}
+                <FieldError msg={fieldErrors.service} />
               </div>
 
               {/* Name */}
               <div>
-                <label
-                  htmlFor="name"
-                  className="mb-2 block text-sm font-semibold text-white/70"
-                >
+                <label htmlFor="cin-name" className="mb-1.5 block text-sm font-semibold text-gray-800">
                   Full Name
                 </label>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/30" />
+                  <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                   <Input
-                    id="name"
+                    id="cin-name"
                     ref={nameRef}
-                    placeholder="Your full name"
-                    className="border-white/10 bg-white/5 pl-10 text-white placeholder:text-white/30 focus:border-[#C72C5B] focus:ring-[#C72C5B]/20"
+                    placeholder="e.g. Sarah Johnson"
+                    className="pl-9 border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-[#C72C5B] focus:ring-[#C72C5B]/20 bg-white"
                   />
                 </div>
-                {fieldErrors.name && (
-                  <p className="mt-1 flex items-center gap-1 text-xs text-red-400">
-                    <AlertCircle className="h-3 w-3" />
-                    {fieldErrors.name}
-                  </p>
-                )}
+                <FieldError msg={fieldErrors.name} />
               </div>
 
               {/* Phone */}
               <div>
-                <label
-                  htmlFor="phone"
-                  className="mb-2 block text-sm font-semibold text-white/70"
-                >
+                <label htmlFor="cin-phone" className="mb-1.5 block text-sm font-semibold text-gray-800">
                   Phone Number
                 </label>
                 <div className="relative">
-                  <Phone className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/30" />
+                  <Phone className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                   <Input
-                    id="phone"
+                    id="cin-phone"
                     type="tel"
                     ref={phoneRef}
-                    placeholder="+44 7700 000000"
-                    className="border-white/10 bg-white/5 pl-10 text-white placeholder:text-white/30 focus:border-[#C72C5B] focus:ring-[#C72C5B]/20"
+                    placeholder="+44 7700 000 000"
+                    className="pl-9 border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-[#C72C5B] focus:ring-[#C72C5B]/20 bg-white"
                   />
                 </div>
-                {fieldErrors.phone && (
-                  <p className="mt-1 flex items-center gap-1 text-xs text-red-400">
-                    <AlertCircle className="h-3 w-3" />
-                    {fieldErrors.phone}
-                  </p>
-                )}
+                <FieldError msg={fieldErrors.phone} />
               </div>
 
               {/* Date */}
               <div>
-                <label
-                  htmlFor="date"
-                  className="mb-2 block text-sm font-semibold text-white/70"
-                >
+                <label htmlFor="cin-date" className="mb-1.5 block text-sm font-semibold text-gray-800">
                   Graduation / Shoot Date
                 </label>
                 <div className="relative">
-                  <Calendar className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/30" />
+                  <Calendar className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                   <Input
-                    id="date"
+                    id="cin-date"
                     type="date"
                     ref={dateRef}
                     min={getMinDate()}
-                    className="border-white/10 bg-white/5 pl-10 text-white placeholder:text-white/30 focus:border-[#C72C5B] focus:ring-[#C72C5B]/20 [color-scheme:dark]"
+                    className="pl-9 border-gray-300 text-gray-900 focus:border-[#C72C5B] focus:ring-[#C72C5B]/20 bg-white"
                   />
                 </div>
-                {fieldErrors.date && (
-                  <p className="mt-1 flex items-center gap-1 text-xs text-red-400">
-                    <AlertCircle className="h-3 w-3" />
-                    {fieldErrors.date}
-                  </p>
-                )}
-                <p className="mt-1 text-xs text-white/30">
-                  Multiple students can book the same graduation date — we shoot all day.
+                <FieldError msg={fieldErrors.date} />
+                <p className="mt-1.5 flex items-center gap-1 text-xs text-gray-400">
+                  <Clock className="h-3 w-3" />
+                  Multiple students can book the same date — we shoot all day.
                 </p>
               </div>
 
-              {/* Notes */}
+              {/* Notes (optional) */}
               <div>
-                <label
-                  htmlFor="notes"
-                  className="mb-2 block text-sm font-semibold text-white/70"
-                >
-                  Additional Notes{' '}
-                  <span className="font-normal text-white/30">(optional)</span>
+                <label htmlFor="cin-notes" className="mb-1.5 block text-sm font-semibold text-gray-800">
+                  Notes{' '}
+                  <span className="font-normal text-gray-400">(optional)</span>
                 </label>
                 <textarea
-                  id="notes"
+                  id="cin-notes"
                   ref={notesRef}
-                  rows={3}
-                  placeholder="E.g. specific locations on campus, any special requests..."
-                  className="w-full resize-none rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 focus:border-[#C72C5B] focus:outline-none focus:ring-1 focus:ring-[#C72C5B]/20"
+                  rows={2}
+                  placeholder="Preferred location, special requests…"
+                  className="w-full resize-none rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-[#C72C5B] focus:outline-none focus:ring-1 focus:ring-[#C72C5B]/20"
                 />
               </div>
 
               {/* Server error */}
               {serverError && (
-                <p className="flex items-center gap-2 rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-400">
-                  <AlertCircle className="h-4 w-4 flex-shrink-0" />
+                <div className="flex items-start gap-2 rounded-lg border border-red-100 bg-red-50 p-3 text-sm text-red-600">
+                  <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0" />
                   {serverError}
-                </p>
+                </div>
               )}
 
               {/* Submit */}
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full rounded-xl bg-[#C72C5B] py-6 text-base font-bold text-white shadow-lg shadow-[#C72C5B]/25 hover:bg-[#a8244d] disabled:opacity-60 transition-all duration-300"
+                className="w-full rounded-xl bg-[#C72C5B] py-5 text-sm font-bold text-white shadow-md shadow-[#C72C5B]/20 hover:bg-[#a8244d] disabled:opacity-60 transition-colors"
               >
                 {isSubmitting ? (
                   <span className="flex items-center gap-2">
@@ -343,12 +292,12 @@ export default function CinematographyBookingForm() {
                 )}
               </Button>
 
-              <p className="text-center text-xs text-white/20">
-                We'll contact you within 24 hours to confirm your booking details.
+              <p className="text-center text-xs text-gray-400">
+                We'll contact you within 24 hours to confirm. No payment required yet.
               </p>
-            </motion.form>
-          )}
-        </AnimatePresence>
+            </form>
+          </div>
+        )}
       </div>
     </section>
   );
