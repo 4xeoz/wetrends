@@ -124,7 +124,7 @@ export default function CinematographyBookingForm() {
             Reserve Your Spot
           </h2>
           <p className="mt-3 text-sm text-gray-500">
-            Fill in your details — we'll confirm within 24 hours. Multiple students
+            Fill in your details — we&apos;ll confirm within 24 hours. Multiple students
             can book the same graduation date.
           </p>
         </div>
@@ -137,7 +137,7 @@ export default function CinematographyBookingForm() {
             </div>
             <h3 className="mb-2 text-xl font-black text-gray-900">Booking Received!</h3>
             <p className="text-sm text-gray-500 leading-relaxed">
-              Thanks! We'll confirm your booking within 24 hours. Your photos will
+              Thanks! We&apos;ll confirm your booking within 24 hours. Your photos will
               be delivered within 48 hours of your shoot date.
             </p>
             <button
@@ -293,7 +293,7 @@ export default function CinematographyBookingForm() {
               </Button>
 
               <p className="text-center text-xs text-gray-400">
-                We'll contact you within 24 hours to confirm. No payment required yet.
+                We&apos;ll contact you within 24 hours to confirm. No payment required yet.
               </p>
             </form>
           </div>

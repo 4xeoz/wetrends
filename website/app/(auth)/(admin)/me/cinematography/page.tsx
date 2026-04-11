@@ -20,7 +20,6 @@ import {
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import {
   getAllCinemaBookings,
   updateBookingStatus,
@@ -28,6 +27,8 @@ import {
 } from '@/actions/cinematography';
 
 type BookingStatus = 'PENDING' | 'CONFIRMED' | 'COMPLETED' | 'CANCELLED';
+// Local alias that matches the Prisma CinemaBookingStatus enum values
+type CinemaBookingStatus = BookingStatus;
 type ServiceType = 'PHOTOS_8' | 'PHOTOS_10_VIDEO';
 
 interface Booking {
@@ -122,7 +123,7 @@ export default function CinematographyAdminPage() {
   const handleStatusUpdate = async (id: string, newStatus: BookingStatus) => {
     setUpdatingId(id);
     try {
-      const res = await updateBookingStatus(id, newStatus as any);
+      const res = await updateBookingStatus(id, newStatus as CinemaBookingStatus);
       if (res.success) {
         setBookings((prev) =>
           prev.map((b) => (b.id === id ? { ...b, status: newStatus } : b))

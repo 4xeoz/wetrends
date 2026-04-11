@@ -49,7 +49,7 @@ export default function CinematographyTestimonials() {
             Student Reviews
           </p>
           <h2 className="text-3xl font-black text-gray-900 sm:text-4xl">
-            Don't Take Our Word for It
+            Don&apos;t Take Our Word for It
           </h2>
         </div>
 

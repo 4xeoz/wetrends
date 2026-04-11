@@ -48,7 +48,7 @@ export default function CinematographyPortfolio() {
             Real Graduates. Real Moments.
           </h2>
           <p className="mt-3 text-base text-gray-500">
-            Every shoot is unique — here's a taste of what we create at Surrey
+            Every shoot is unique — here&apos;s a taste of what we create at Surrey
             University and across Guildford.
           </p>
         </div>

@@ -27,7 +27,7 @@ export default function CinematographyHero() {
             <h1 className="text-4xl font-black leading-[1.1] tracking-tight text-gray-900 sm:text-5xl lg:text-[3.25rem]">
               Graduation Photos
               <br />
-              <span className="text-[#C72C5B]">You'll Love Forever</span>
+              <span className="text-[#C72C5B]">You&apos;ll Love Forever</span>
             </h1>
 
             {/* Sub-headline */}

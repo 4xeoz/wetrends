@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { ChevronDown } from 'lucide-react';
 
 const faqs = [
@@ -64,7 +65,7 @@ export default function CinematographyFaq() {
             FAQ
           </p>
           <h2 className="text-3xl font-black text-gray-900 sm:text-4xl">
-            Questions? We've Got Answers.
+            Questions? We&apos;ve Got Answers.
           </h2>
         </div>
 
@@ -78,12 +79,12 @@ export default function CinematographyFaq() {
         {/* Still have questions */}
         <p className="mt-6 text-center text-sm text-gray-500">
           Still have a question?{' '}
-          <a
+          <Link
             href="/#contact"
             className="font-semibold text-[#C72C5B] underline-offset-2 hover:underline"
           >
             Drop us a message
-          </a>
+          </Link>
           .
         </p>
       </div>
