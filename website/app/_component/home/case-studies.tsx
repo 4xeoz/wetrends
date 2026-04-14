@@ -108,7 +108,7 @@ export function CaseStudies() {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={isInView ? { opacity: 1, scale: 1 } : {}}
                 transition={{ duration: 0.8, delay: 0.2 }}
-                className="relative aspect-[4/3] lg:aspect-square rounded-3xl overflow-hidden group shadow-2xl shadow-black/10"
+                className="relative aspect-[4/3] lg:aspect-square rounded-3xl overflow-hidden group"
                 onMouseEnter={() => setIsHovering(true)}
                 onMouseLeave={() => setIsHovering(false)}
               >
@@ -147,7 +147,7 @@ export function CaseStudies() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4 }}
                 >
-                  <span className="px-4 py-1.5 rounded-full bg-white text-[#0F0F0F] text-xs font-bold shadow-lg">
+                  <span className="px-4 py-1.5 rounded-full bg-white text-[#0F0F0F] text-xs font-bold">
                     {activeStudy.service}
                   </span>
                   <span className="px-3 py-1.5 rounded-full bg-white/20 backdrop-blur-sm text-white text-xs">
@@ -162,7 +162,7 @@ export function CaseStudies() {
                     animate={{ opacity: isHovering ? 1 : 0, scale: isHovering ? 1 : 0.8 }}
                     className="absolute inset-0 flex items-center justify-center"
                   >
-                    <div className="w-24 h-24 rounded-full bg-white flex items-center justify-center shadow-2xl">
+                    <div className="w-24 h-24 rounded-full bg-white flex items-center justify-center">
                       <ArrowUpRight className="w-8 h-8 text-[#0F0F0F]" />
                     </div>
                   </motion.div>

@@ -4,10 +4,9 @@ import Hero from '../_component/home/hero';
 import SubHero from '../_component/home/subHero';
 import { CaseStudies } from '../_component/home/case-studies';
 import { Team } from '../_component/home/team';
-import Showcase from '../_component/home/showcase';
-import WhyLoveUs from '../_component/home/whyLoveUs';
+
 import { Services } from '../_component/home/services';
-import Pricing from '../_component/home/pricing';
+
 import { BlogPreview } from '../_component/home/blog-preview';
 import Contact from '../_component/home/contact';
 
@@ -34,10 +33,9 @@ export default function Home() {
       <SubHero/>
       <CaseStudies />
       <Team />
-      <Showcase/>
-      <WhyLoveUs/>
+
       <Services />
-      <Pricing/>
+
       <BlogPreview />
       <Contact/>
     </div>

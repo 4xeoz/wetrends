@@ -100,7 +100,7 @@ const Hero = () => {
             }}
             className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-white/90 sm:text-base md:mt-6 md:text-lg"
           >
-            Video production, brand identity, web design & social media for ambitious businesses in Guildford, Surrey and beyond.
+            Software development, brand strategy, and creative execution — we're the technical partner that helps businesses solve problems and scale.
           </motion.p>
 
           {/* Buttons with elastic stagger */}
@@ -122,7 +122,7 @@ const Hero = () => {
             >
               <Link
                 href="/#contact"
-                className="group inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-bold text-[#C72C5B] shadow-lg transition-all hover:bg-gray-100 hover:shadow-xl sm:px-7 sm:py-3.5 sm:text-base md:px-8"
+                className="group inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-bold text-[#C72C5B] transition-all hover:bg-gray-100 sm:px-7 sm:py-3.5 sm:text-base md:px-8"
               >
                 Start Your Project
                 <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#C72C5B] text-white transition-transform group-hover:scale-110 group-hover:rotate-45 sm:h-8 sm:w-8">
