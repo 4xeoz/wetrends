@@ -13,11 +13,7 @@ const orbitPills = [
   { icon: Lightbulb, label: 'Strategy', delay: 2 },
 ];
 
-const stats = [
-  { value: '150+', label: 'Projects Delivered' },
-  { value: '£10M+', label: 'Revenue Generated' },
-  { value: '100%', label: 'In-House Team' },
-];
+
 
 const positions = [
   { top: '15%', left: '12%' },
@@ -94,7 +90,7 @@ const SubHero = () => {
   const parallaxY = useSpring(mouseY, springConfig);
 
   return (
-    <section id="subhero" ref={containerRef} className="relative z-20 h-[120svh]">
+    <section id="subhero" ref={containerRef} className="relative z-20 h-[100svh]">
       <div className="sticky top-0 flex h-[100svh] items-center justify-center overflow-hidden bg-white">
         <motion.div
           style={{ width, height, borderRadius, opacity: cardOpacity }}
@@ -185,20 +181,22 @@ const SubHero = () => {
               </div>
             </div>
 
-            {/* Bottom Stats */}
+            {/* Bottom CTA */}
             <div className="absolute bottom-8 left-0 right-0 px-4 sm:bottom-12 sm:px-6 lg:bottom-16">
               <AnimatedContent direction="vertical" distance={30} duration={0.8} delay={0.6} ease="power3.out">
-                <div className="mx-auto flex max-w-4xl flex-wrap items-center justify-center gap-8 border-t border-white/10 pt-6 sm:gap-12 sm:pt-8 md:gap-16 lg:gap-24">
-                  {stats.map((stat) => (
-                    <div key={stat.label} className="text-center">
-                      <div className="text-2xl font-bold text-white sm:text-3xl md:text-4xl lg:text-5xl">
-                        {stat.value}
-                      </div>
-                      <div className="mt-1 text-xs uppercase tracking-wider text-white/50 sm:text-sm">
-                        {stat.label}
-                      </div>
-                    </div>
-                  ))}
+                <div className="mx-auto flex max-w-4xl flex-col items-center justify-center gap-4 border-t border-white/10 pt-6 sm:pt-8">
+                  <p className="text-sm text-white/50">
+                    Ready to build something unforgettable?
+                  </p>
+                  <a
+                    href="/#contact"
+                    className="group inline-flex items-center gap-2 rounded-full bg-[#C72C5B] px-6 py-3 text-sm font-semibold text-white transition-transform hover:scale-105"
+                  >
+                    Start Your Project
+                    <span className="inline-block transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
+                      →
+                    </span>
+                  </a>
                 </div>
               </AnimatedContent>
             </div>
