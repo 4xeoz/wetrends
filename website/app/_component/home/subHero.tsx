@@ -180,26 +180,6 @@ const SubHero = () => {
                 ))}
               </div>
             </div>
-
-            {/* Bottom CTA */}
-            <div className="absolute bottom-8 left-0 right-0 px-4 sm:bottom-12 sm:px-6 lg:bottom-16">
-              <AnimatedContent direction="vertical" distance={30} duration={0.8} delay={0.6} ease="power3.out">
-                <div className="mx-auto flex max-w-4xl flex-col items-center justify-center gap-4 border-t border-white/10 pt-6 sm:pt-8">
-                  <p className="text-sm text-white/50">
-                    Ready to build something unforgettable?
-                  </p>
-                  <a
-                    href="/#contact"
-                    className="group inline-flex items-center gap-2 rounded-full bg-[#C72C5B] px-6 py-3 text-sm font-semibold text-white transition-transform hover:scale-105"
-                  >
-                    Start Your Project
-                    <span className="inline-block transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
-                      →
-                    </span>
-                  </a>
-                </div>
-              </AnimatedContent>
-            </div>
           </div>
 
           {/* Inline keyframes */}

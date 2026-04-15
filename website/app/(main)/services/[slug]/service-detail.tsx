@@ -1,21 +1,20 @@
 'use client';
 
-import { motion } from 'motion/react';
-import { 
-  Video, 
-  Palette, 
-  Globe, 
-  Users, 
-  Zap, 
+import { useRef } from 'react';
+import { motion, useScroll, useTransform } from 'motion/react';
+import {
+  Video,
+  Palette,
+  Globe,
+  Users,
+  Zap,
   PenTool,
   ArrowUpRight,
   ArrowLeft,
   CheckCircle2,
   MapPin,
-  Clock,
-  TrendingUp,
-  Star,
-  Sparkles
+  Sparkles,
+  ArrowDownRight,
 } from 'lucide-react';
 import AnimatedContent from '@/components/ui/animated-content';
 import Link from 'next/link';
@@ -26,7 +25,6 @@ const services = {
     title: 'Video Production',
     headline: 'Cinematic Stories That Stop The Scroll',
     description: 'From concept to final cut, we create video content that captures attention and drives meaningful engagement across all platforms. Our Guildford studio combines creative excellence with technical expertise.',
-    color: '#C72C5B',
     features: ['Brand Films', 'Social Content', 'Motion Graphics', 'Commercials', 'Documentary Style', 'Product Videos', 'Event Coverage', 'Aerial/Drone'],
     process: [
       { step: '01', title: 'Discovery', description: 'We learn your brand, goals, and audience to craft the perfect concept.' },
@@ -35,24 +33,24 @@ const services = {
       { step: '04', title: 'Post-Production', description: 'Editing, color grading, sound design, and motion graphics.' },
     ],
     benefits: [
-      { title: '1200% More Shares', description: 'Video content generates 1200% more shares than text and images combined.' },
-      { title: '87% Conversion Boost', description: 'Including video on landing pages can increase conversions by 87%.' },
-      { title: 'Better Retention', description: 'Viewers retain 95% of a message when watching video vs 10% reading text.' },
+      { title: 'Increase Engagement', description: 'Video content generates significantly more shares than text and images combined.' },
+      { title: 'Professional Quality', description: '4K/8K production quality that elevates your brand above the competition.' },
+      { title: 'Fast Turnaround', description: 'From brief to delivery in as little as two weeks.' },
+      { title: 'Local Filming', description: 'We film across Guildford, Woking, Farnham and the wider Surrey area.' },
     ],
-    stats: { value: '500+', label: 'Videos Produced' },
     testimonial: {
       quote: "WeTrends transformed our brand story into a cinematic experience. The video they produced for our product launch exceeded all expectations and drove record engagement.",
       author: "Sarah Mitchell",
       role: "Marketing Director, TechStart UK"
     },
     localFocus: 'We film across Guildford, Woking, Farnham and the wider Surrey area. Local knowledge means we know the best locations and can respond quickly to your needs.',
+    video: '/videos/video-preview-wetrends.mp4',
   },
   'brand-identity': {
     icon: Palette,
     title: 'Brand Identity',
     headline: 'Make Your Brand Impossible to Ignore',
     description: 'We craft distinctive visual identities that capture your essence and resonate deeply with your target audience. Stand out in the crowded Guildford and Surrey business landscape.',
-    color: '#8B5CF6',
     features: ['Logo Design', 'Visual Identity', 'Brand Guidelines', 'Packaging', 'Brand Strategy', 'Naming', 'Typography', 'Color Systems'],
     process: [
       { step: '01', title: 'Research', description: 'Deep dive into your market, competitors, and target audience.' },
@@ -61,24 +59,24 @@ const services = {
       { step: '04', title: 'Rollout', description: 'Implement across all touchpoints with comprehensive guidelines.' },
     ],
     benefits: [
-      { title: 'Increased Recognition', description: 'Consistent branding increases revenue by an average of 33%.' },
-      { title: 'Customer Trust', description: '59% of consumers prefer to buy from brands they recognize.' },
-      { title: 'Premium Pricing', description: 'Strong brands can command prices 20-30% higher than competitors.' },
+      { title: 'Increased Recognition', description: 'Consistent branding makes you memorable and builds trust over time.' },
+      { title: 'Customer Trust', description: 'Consumers prefer to buy from brands they recognize and relate to.' },
+      { title: 'Premium Positioning', description: 'Strong brands can command higher prices than competitors.' },
+      { title: 'Scalable Systems', description: 'Identity systems that grow with your business.' },
     ],
-    stats: { value: '150+', label: 'Brands Launched' },
     testimonial: {
-      quote: "The brand identity WeTrends created for us perfectly captures who we are. We've seen a 40% increase in brand recognition since the rebrand launched.",
+      quote: "The brand identity WeTrends created for us perfectly captures who we are. We've seen a significant increase in brand recognition since the rebrand launched.",
       author: "James Anderson",
       role: "CEO, GreenLeaf Solutions"
     },
     localFocus: 'We understand the Guildford and Surrey business environment. Our designs help local companies compete with London agencies while maintaining their unique identity.',
+    video: '/videos/design-preview-wetrends.mp4',
   },
   'web-design': {
     icon: Globe,
     title: 'Web Design',
     headline: 'Websites That Convert Visitors to Customers',
     description: 'High-performing digital experiences built for results. We design and develop websites that turn Guildford browsers into buyers across all devices.',
-    color: '#3B82F6',
     features: ['UI/UX Design', 'Development', 'E-commerce', 'Web Apps', 'SEO Optimization', 'CMS Integration', 'Performance', 'Analytics'],
     process: [
       { step: '01', title: 'Discovery', description: 'Understand your business goals, users, and technical requirements.' },
@@ -87,24 +85,24 @@ const services = {
       { step: '04', title: 'Launch', description: 'Rigorous testing, optimization, and deployment to your domain.' },
     ],
     benefits: [
-      { title: '3x Conversions', description: 'Our clients see an average 3x increase in conversion rates.' },
-      { title: '90+ PageSpeed', description: 'Lightning-fast load times for better SEO and user experience.' },
-      { title: 'Mobile First', description: 'Over 60% of traffic is mobile - we design for thumb-friendly interaction.' },
+      { title: 'Higher Conversions', description: 'User-centered design that turns visitors into leads and customers.' },
+      { title: 'Lightning Fast', description: 'Optimized performance for better SEO and user experience.' },
+      { title: 'Mobile First', description: 'Over 60% of traffic is mobile — we design for thumb-friendly interaction.' },
+      { title: 'Built to Scale', description: 'Next.js architecture that grows with your business.' },
     ],
-    stats: { value: '200+', label: 'Sites Launched' },
     testimonial: {
-      quote: "Our new website from WeTrends increased online enquiries by 250%. The design is stunning and the performance is incredible - we rank #1 for our key terms.",
+      quote: "Our new website from WeTrends increased online enquiries dramatically. The design is stunning and the performance is incredible — we rank highly for our key terms.",
       author: "Emily Chen",
       role: "Founder, Surrey Wellness"
     },
     localFocus: 'Based in Guildford, we offer face-to-face consultations and rapid response times. We build websites that help local businesses compete nationally.',
+    video: '/videos/website-preview-wetrends.mp4',
   },
   'social-media': {
     icon: Users,
     title: 'Social Media',
     headline: 'Build Communities That Drive Revenue',
     description: 'Strategic social media management that grows your following and turns engagement into revenue. We handle content, community, and campaigns across all platforms.',
-    color: '#10B981',
     features: ['Content Strategy', 'Creative Direction', 'Community Management', 'Analytics', 'Paid Social', 'Influencer Campaigns', 'Video Content', 'Reporting'],
     process: [
       { step: '01', title: 'Strategy', description: 'Develop a tailored strategy aligned with your business goals.' },
@@ -113,24 +111,24 @@ const services = {
       { step: '04', title: 'Optimization', description: 'Analyze performance and continuously refine for better results.' },
     ],
     benefits: [
-      { title: '2M+ Followers Grown', description: 'We\'ve helped clients grow over 2 million engaged followers.' },
-      { title: '4.2x ROI Average', description: 'Our social campaigns deliver an average 4.2x return on investment.' },
-      { title: '24/7 Management', description: 'Round-the-clock monitoring and engagement with your community.' },
+      { title: 'Organic Growth', description: 'We help clients grow engaged, loyal follower bases.' },
+      { title: 'Strong ROI', description: 'Our social campaigns are optimized for measurable returns.' },
+      { title: 'Always-On Management', description: 'Round-the-clock monitoring and engagement with your community.' },
+      { title: 'Data-Driven', description: 'Every decision is backed by analytics and audience insights.' },
     ],
-    stats: { value: '2M+', label: 'Followers Grown' },
     testimonial: {
-      quote: "WeTrends took our Instagram from 500 to 50,000 followers in 6 months. Their content strategy is unmatched - they truly understand what resonates with our audience.",
+      quote: "WeTrends took our Instagram from dormant to thriving in just a few months. Their content strategy is unmatched — they truly understand what resonates with our audience.",
       author: "Michael Brown",
       role: "Owner, Guildford Cafe Co"
     },
     localFocus: 'We know the Surrey social landscape. From Guildford to Woking, we create content that resonates with local audiences while building national reach.',
+    video: '/videos/social-preview-wetrends.mp4',
   },
   'animation': {
     icon: Zap,
     title: 'Animation',
     headline: 'Bring Complex Ideas to Life',
     description: 'Dynamic motion design that explains, entertains, and engages. From 2D explainers to complex motion graphics, we make the complex simple and captivating.',
-    color: '#F59E0B',
     features: ['2D Animation', 'Motion Graphics', 'Explainers', 'Micro-interactions', 'Logo Animation', 'Lottie Files', 'Character Design', 'UI Animation'],
     process: [
       { step: '01', title: 'Script', description: 'Craft a compelling narrative that communicates your message clearly.' },
@@ -139,24 +137,24 @@ const services = {
       { step: '04', title: 'Animate', description: 'Bring designs to life with smooth, engaging motion.' },
     ],
     benefits: [
-      { title: 'Explain in 60 Seconds', description: 'Complex products explained simply through animated storytelling.' },
-      { title: '40% More Engagement', description: 'Animated content increases time-on-page by an average of 40%.' },
+      { title: 'Explain Simply', description: 'Complex products explained clearly through animated storytelling.' },
+      { title: 'More Engagement', description: 'Animated content increases time-on-page and social shares.' },
       { title: 'Universal Appeal', description: 'Animation transcends language barriers for global audiences.' },
+      { title: 'Endless Creative', description: 'Any concept is possible with the right animation approach.' },
     ],
-    stats: { value: '300+', label: 'Animations' },
     testimonial: {
-      quote: "The explainer video WeTrends created helped us reduce support tickets by 60%. Customers finally understand our product, and sales have increased dramatically.",
+      quote: "The explainer video WeTrends created helped us reduce support tickets significantly. Customers finally understand our product, and sales have increased dramatically.",
       author: "Lisa Park",
       role: "Product Manager, SaaS Co"
     },
     localFocus: 'Our Guildford animation studio serves clients across the UK. We combine local accessibility with world-class animation expertise.',
+    video: '/videos/animations-preview-wetrends.mp4',
   },
   'content-strategy': {
     icon: PenTool,
     title: 'Content Strategy',
     headline: 'Words That Work as Hard as You Do',
     description: 'Strategic content that positions you as the authority in your space. We craft narratives that educate, engage, and convert your Guildford and UK audience.',
-    color: '#EC4899',
     features: ['SEO Content', 'Copywriting', 'Editorial', 'Storytelling', 'Blog Management', 'Email Campaigns', 'White Papers', 'Case Studies'],
     process: [
       { step: '01', title: 'Research', description: 'Identify high-value topics your audience is searching for.' },
@@ -165,181 +163,172 @@ const services = {
       { step: '04', title: 'Optimize', description: 'SEO refinement, internal linking, and performance tracking.' },
     ],
     benefits: [
-      { title: '3x Organic Traffic', description: 'Our SEO content strategy triples organic traffic on average.' },
+      { title: 'Organic Traffic', description: 'SEO-optimized content strategy that drives sustainable growth.' },
       { title: 'Thought Leadership', description: 'Position your brand as the go-to expert in your industry.' },
       { title: 'Evergreen Results', description: 'Quality content continues driving traffic for years.' },
+      { title: 'Consistent Voice', description: 'A unified tone across every channel and touchpoint.' },
     ],
-    stats: { value: '1000+', label: 'Articles Written' },
     testimonial: {
-      quote: "Since WeTrends took over our content strategy, our organic traffic has grown 400%. We now rank for over 200 competitive keywords in our industry.",
+      quote: "Since WeTrends took over our content strategy, our organic traffic has grown consistently. We now rank for highly competitive keywords in our industry.",
       author: "David Wilson",
       role: "CMO, FinanceHub UK"
     },
     localFocus: 'We understand the Surrey business landscape and create content that resonates locally while building national authority.',
+    video: '/videos/design-preview-wetrends.mp4',
   },
 };
 
 export default function ServiceDetail({ slug }: { slug: string }) {
   const service = services[slug as keyof typeof services];
   const Icon = service.icon;
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ['start end', 'start start'],
+  });
+
+  const width = useTransform(scrollYProgress, [0, 0.7], ['90%', '100%']);
+  const height = useTransform(scrollYProgress, [0, 0.7], ['80%', '100%']);
+  const borderRadius = useTransform(scrollYProgress, [0, 0.5], ['2rem', '0rem']);
+  const cardOpacity = useTransform(scrollYProgress, [0, 0.2], [0.5, 1]);
 
   return (
     <main className="min-h-[100svh] bg-white">
-      {/* Back Navigation */}
-      <div className="">
-        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-          <Link 
+      {/* Back nav */}
+      <div className="fixed left-0 right-0 top-0 z-50 px-4 py-6 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          <Link
             href="/services/"
-            className="inline-flex items-center gap-2 text-gray-500 transition-colors hover:text-gray-900"
+            className="group inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-4 py-2 text-sm text-white/80 backdrop-blur-md transition-colors hover:border-white/40 hover:bg-white/10 hover:text-white"
           >
-            <ArrowLeft className="h-4 w-4" />
+            <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
             Back to Services
           </Link>
         </div>
       </div>
 
-      {/* Hero Section */}
-      <section
-        className="relative flex min-h-[calc(100svh-72px)] items-center overflow-hidden py-12 md:py-24"
-        style={{ background: `linear-gradient(135deg, white 60%, ${service.color}08 100%)` }}
-      >
-        {/* Decorative accent */}
-        <div
-          className="absolute right-0 top-0 h-full w-1 opacity-60"
-          style={{ backgroundColor: service.color }}
-        />
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
-            {/* Left - Content */}
-            <div>
-              <AnimatedContent
-                direction="vertical"
-                distance={60}
-                duration={1}
-                ease="power3.out"
-              >
-                <div 
-                  className="mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-2"
-                  style={{ borderColor: `${service.color}30`, backgroundColor: `${service.color}10` }}
-                >
-                  <Icon className="h-4 w-4" style={{ color: service.color }} />
-                  <span className="text-sm font-medium" style={{ color: service.color }}>
-                    {service.title}
-                  </span>
-                </div>
-              </AnimatedContent>
+      {/* Dark Expanding Hero */}
+      <section ref={containerRef} className="relative z-20 h-[110svh]">
+        <div className="sticky top-0 flex h-[100svh] items-center justify-center overflow-hidden bg-white">
+          <motion.div
+            style={{ width, height, borderRadius, opacity: cardOpacity }}
+            className="relative overflow-hidden bg-[#050505] text-white will-change-[width,height,border-radius]"
+          >
+            {/* Video background with overlay */}
+            <div className="absolute inset-0 opacity-20">
+              <video
+                src={service.video}
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="h-full w-full object-cover"
+              />
+            </div>
+            <div className="absolute inset-0 bg-gradient-to-b from-[#050505]/80 via-[#050505]/90 to-[#050505]" />
 
-              <AnimatedContent
-                direction="vertical"
-                distance={80}
-                duration={1.2}
-                delay={0.1}
-                ease="power3.out"
-              >
-                <h1 className="mb-6 text-4xl font-bold text-gray-900 md:text-5xl lg:text-6xl">
-                  {service.headline.split(' ').slice(0, -2).join(' ')}
-                  <br />
-                  <span style={{ color: service.color }}>
-                    {service.headline.split(' ').slice(-2).join(' ')}
-                  </span>
-                </h1>
-              </AnimatedContent>
-
-              <AnimatedContent
-                direction="vertical"
-                distance={60}
-                duration={1.2}
-                delay={0.2}
-                ease="power3.out"
-              >
-                <p className="mb-8 max-w-xl text-lg text-gray-600">
-                  {service.description}
-                </p>
-              </AnimatedContent>
-
-              <AnimatedContent
-                direction="vertical"
-                distance={60}
-                duration={1.2}
-                delay={0.3}
-                ease="power3.out"
-              >
-                <div className="flex flex-wrap gap-4">
-                  <motion.a
-                    href="/#contact"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="inline-flex items-center gap-2 rounded-full px-6 py-3 font-semibold text-white transition-all"
-                    style={{ backgroundColor: service.color }}
-                  >
-                    Get a Quote
-                    <ArrowUpRight className="h-4 w-4" />
-                  </motion.a>
-                  
-                  <div className="flex items-center gap-2 rounded-full border border-gray-200 px-4 py-3 text-gray-600">
-                    <MapPin className="h-4 w-4" style={{ color: service.color }} />
-                    <span className="text-sm">Guildford, Surrey</span>
-                  </div>
-                </div>
-              </AnimatedContent>
+            {/* Aurora orbs */}
+            <div className="pointer-events-none absolute inset-0 overflow-hidden">
+              <div
+                className="absolute -right-[10%] top-[10%] h-[60svw] w-[60svw] rounded-full opacity-40"
+                style={{
+                  background: 'radial-gradient(circle, rgba(199,44,91,0.35) 0%, transparent 70%)',
+                  animation: 'drift1 20s ease-in-out infinite',
+                }}
+              />
+              <div
+                className="absolute -bottom-[20%] -left-[10%] h-[50svw] w-[50svw] rounded-full opacity-30"
+                style={{
+                  background: 'radial-gradient(circle, rgba(188,42,80,0.3) 0%, transparent 70%)',
+                  animation: 'drift2 25s ease-in-out infinite',
+                }}
+              />
             </div>
 
-            {/* Right - Stats Card */}
-            <AnimatedContent
-              direction="vertical"
-              distance={60}
-              duration={1}
-              delay={0.3}
-              ease="power3.out"
-            >
-              <div className="rounded-3xl border border-gray-200 bg-white p-8 md:p-12 shadow-sm">
-                <div
-                  className="mb-8 rounded-2xl p-6 text-center"
-                  style={{ backgroundColor: `${service.color}10` }}
-                >
-                  <div className="text-6xl font-bold md:text-7xl" style={{ color: service.color }}>
-                    {service.stats.value}
-                  </div>
-                  <div className="mt-2 font-medium text-gray-700">{service.stats.label}</div>
-                </div>
+            {/* Noise */}
+            <div
+              className="pointer-events-none absolute inset-0 opacity-[0.03]"
+              style={{
+                backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+              }}
+            />
 
-                <div className="space-y-4">
-                  <div className="flex items-center gap-3 rounded-xl border border-gray-100 bg-gray-50 p-3">
-                    <Clock className="h-5 w-5 flex-shrink-0" style={{ color: service.color }} />
-                    <span className="text-gray-900">2-Week Average Turnaround</span>
+            {/* Content */}
+            <div className="relative z-10 flex h-full flex-col justify-center px-6 pt-20 md:px-10 lg:px-16">
+              <div className="mx-auto w-full max-w-7xl">
+                <AnimatedContent direction="vertical" distance={60} duration={1} delay={0.1} ease="power3.out">
+                  <div className="mb-6 inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-4 py-2 backdrop-blur-sm">
+                    <Icon className="h-4 w-4 text-[#C72C5B]" />
+                    <span className="text-sm font-medium uppercase tracking-widest text-[#C72C5B]">
+                      {service.title}
+                    </span>
                   </div>
-                  <div className="flex items-center gap-3 rounded-xl border border-gray-100 bg-gray-50 p-3">
-                    <CheckCircle2 className="h-5 w-5 flex-shrink-0" style={{ color: service.color }} />
-                    <span className="text-gray-900">100% Satisfaction Guarantee</span>
+                </AnimatedContent>
+
+                <AnimatedContent direction="vertical" distance={80} duration={1.2} delay={0.2} ease="power3.out">
+                  <h1 className="max-w-4xl text-[clamp(2.5rem,7vw,6rem)] font-bold leading-[0.9] tracking-tight">
+                    {service.headline.split(' ').slice(0, -2).join(' ')}
+                    <br />
+                    <span className="font-serif italic text-[#C72C5B]">
+                      {service.headline.split(' ').slice(-2).join(' ')}
+                    </span>
+                  </h1>
+                </AnimatedContent>
+
+                <AnimatedContent direction="vertical" distance={40} duration={1} delay={0.4} ease="power3.out">
+                  <p className="mt-6 max-w-2xl text-base leading-relaxed text-white/60 md:mt-8 md:text-lg">
+                    {service.description}
+                  </p>
+                </AnimatedContent>
+
+                <AnimatedContent direction="vertical" distance={40} duration={1} delay={0.5} ease="power3.out">
+                  <div className="mt-8 flex flex-wrap items-center gap-4">
+                    <motion.a
+                      href="/#contact"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="group inline-flex items-center gap-2 rounded-full bg-[#C72C5B] px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#a82448]"
+                    >
+                      Get a Quote
+                      <ArrowUpRight className="h-4 w-4 transition-transform group-hover:rotate-45" />
+                    </motion.a>
+                    <div className="flex items-center gap-2 text-sm text-white/50">
+                      <MapPin className="h-4 w-4 text-[#C72C5B]" />
+                      Guildford, Surrey
+                    </div>
                   </div>
-                  <div className="flex items-center gap-3 rounded-xl border border-gray-100 bg-gray-50 p-3">
-                    <Star className="h-5 w-5 flex-shrink-0" style={{ color: service.color }} />
-                    <span className="text-gray-900">5-Star Average Rating</span>
-                  </div>
-                </div>
+                </AnimatedContent>
               </div>
-            </AnimatedContent>
-          </div>
+            </div>
+
+            <style jsx>{`
+              @keyframes drift1 {
+                0%, 100% { transform: translate(0, 0) scale(1); }
+                50% { transform: translate(-6%, 4%) scale(1.06); }
+              }
+              @keyframes drift2 {
+                0%, 100% { transform: translate(0, 0) scale(1); }
+                50% { transform: translate(4%, -6%) scale(1.04); }
+              }
+            `}</style>
+          </motion.div>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="py-24 md:py-32 bg-gray-50">
+      {/* Features — Bento Grid */}
+      <section className="bg-white py-24 md:py-32">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <AnimatedContent
-            direction="vertical"
-            distance={60}
-            duration={1}
-            ease="power3.out"
-            className="mb-12"
-          >
-            <h2 className="mb-4 text-3xl font-bold text-gray-900 md:text-4xl">
-              What We <span style={{ color: service.color }}>Offer</span>
-            </h2>
-            <p className="max-w-2xl text-gray-600">
-              Comprehensive {service.title.toLowerCase()} services tailored to your specific needs.
-            </p>
-          </AnimatedContent>
+          <div className="mb-16 md:mb-20">
+            <AnimatedContent direction="vertical" distance={60} duration={1} ease="power3.out">
+              <span className="mb-4 inline-flex items-center gap-2 text-sm font-medium text-[#C72C5B]">
+                <span className="h-px w-8 bg-[#C72C5B]" />
+                Capabilities
+              </span>
+              <h2 className="text-4xl font-bold text-[#0F0F0F] md:text-5xl lg:text-6xl">
+                What We <span className="font-serif italic text-[#C72C5B]">Offer</span>
+              </h2>
+            </AnimatedContent>
+          </div>
 
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {service.features.map((feature, index) => (
@@ -352,16 +341,13 @@ export default function ServiceDetail({ slug }: { slug: string }) {
                 ease="power3.out"
               >
                 <motion.div
-                  whileHover={{ scale: 1.02 }}
-                  className="flex items-center gap-3 rounded-xl border border-gray-200 bg-white p-4"
+                  whileHover={{ y: -4 }}
+                  className="group flex h-full items-center gap-3 rounded-2xl border border-gray-200 bg-white p-5 transition-shadow hover:shadow-lg"
                 >
-                  <div 
-                    className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg"
-                    style={{ backgroundColor: `${service.color}15` }}
-                  >
-                    <Sparkles className="h-4 w-4" style={{ color: service.color }} />
+                  <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-[#C72C5B]/10">
+                    <Sparkles className="h-4 w-4 text-[#C72C5B]" />
                   </div>
-                  <span className="font-medium text-gray-900">{feature}</span>
+                  <span className="font-medium text-[#0F0F0F]">{feature}</span>
                 </motion.div>
               </AnimatedContent>
             ))}
@@ -369,113 +355,57 @@ export default function ServiceDetail({ slug }: { slug: string }) {
         </div>
       </section>
 
-      {/* Process Section */}
-      <section className="py-24 md:py-32">
+      {/* Process — Vertical Timeline */}
+      <section className="relative overflow-hidden bg-[#050505] py-24 md:py-32">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <AnimatedContent
-            direction="vertical"
-            distance={60}
-            duration={1}
-            ease="power3.out"
-            className="mb-16 text-center"
-          >
-            <h2 className="mb-4 text-3xl font-bold text-gray-900 md:text-4xl">
-              Our <span style={{ color: service.color }}>Process</span>
-            </h2>
-            <p className="mx-auto max-w-2xl text-gray-600">
-              A proven four-step approach that delivers exceptional results every time.
-            </p>
-          </AnimatedContent>
-
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            {service.process.map((step, index) => (
-              <AnimatedContent
-                key={step.step}
-                direction="vertical"
-                distance={60}
-                duration={0.8}
-                delay={0.1 * index}
-                ease="power3.out"
-              >
-                <div className="relative h-full rounded-2xl border border-gray-200 bg-white p-6">
-                  <div
-                    className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl text-sm font-bold text-white"
-                    style={{ backgroundColor: service.color }}
-                  >
-                    {step.step}
-                  </div>
-                  <h3 className="mb-2 text-xl font-bold text-gray-900">{step.title}</h3>
-                  <p className="text-sm text-gray-600">{step.description}</p>
-                  
-                  {index < 3 && (
-                    <div className="absolute -right-3 top-1/2 hidden h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full bg-gray-100 lg:flex">
-                      <ArrowUpRight className="h-3 w-3 text-gray-400" />
-                    </div>
-                  )}
-                </div>
-              </AnimatedContent>
-            ))}
+          <div className="mb-16 text-center md:mb-20">
+            <AnimatedContent direction="vertical" distance={60} duration={1} ease="power3.out">
+              <span className="mb-4 inline-flex items-center justify-center gap-2 text-sm font-medium text-[#C72C5B]">
+                <span className="h-px w-8 bg-[#C72C5B]" />
+                Our Process
+                <span className="h-px w-8 bg-[#C72C5B]" />
+              </span>
+              <h2 className="text-4xl font-bold text-white md:text-5xl lg:text-6xl">
+                How We <span className="font-serif italic text-[#C72C5B]">Work</span>
+              </h2>
+            </AnimatedContent>
           </div>
-        </div>
-      </section>
 
-      {/* Benefits Section */}
-      <section className="py-24 md:py-32 bg-gray-50">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid gap-12 lg:grid-cols-2">
-            <div>
-              <AnimatedContent
-                direction="vertical"
-                distance={60}
-                duration={1}
-                ease="power3.out"
-              >
-                <h2 className="mb-6 text-4xl font-bold text-gray-900 md:text-5xl">
-                  Results That
-                  <br />
-                  <span style={{ color: service.color }}>Speak Volumes</span>
-                </h2>
-              </AnimatedContent>
-              
-              <AnimatedContent
-                direction="vertical"
-                distance={60}
-                duration={1}
-                delay={0.1}
-                ease="power3.out"
-              >
-                <p className="text-lg text-gray-600">
-                  Our {service.title.toLowerCase()} services deliver measurable business impact. 
-                  Here&apos;s what you can expect when you work with us.
-                </p>
-              </AnimatedContent>
-            </div>
+          <div className="relative">
+            {/* Central line */}
+            <div className="absolute left-4 top-0 bottom-0 w-px bg-white/10 md:left-1/2 md:-translate-x-px" />
 
-            <div className="space-y-6">
-              {service.benefits.map((benefit, index) => (
+            <div className="space-y-12 md:space-y-16">
+              {service.process.map((step, index) => (
                 <AnimatedContent
-                  key={benefit.title}
-                  direction="horizontal"
+                  key={step.step}
+                  direction={index % 2 === 0 ? 'horizontal' : 'horizontal'}
                   distance={40}
                   duration={0.8}
                   delay={0.1 * index}
                   ease="power3.out"
+                  reverse={index % 2 !== 0}
                 >
-                  <motion.div 
-                    whileHover={{ x: 8 }}
-                    className="flex gap-4 rounded-2xl border border-gray-200 bg-white p-6"
-                  >
-                    <div 
-                      className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl"
-                      style={{ backgroundColor: `${service.color}15` }}
-                    >
-                      <TrendingUp className="h-6 w-6" style={{ color: service.color }} />
+                  <div className={`relative flex items-center gap-8 md:gap-0 ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'}`}>
+                    {/* Content */}
+                    <div className={`flex-1 md:px-12 ${index % 2 === 0 ? 'md:text-right' : 'md:text-left'}`}>
+                      <div className={`inline-block rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm md:p-8 ${index % 2 === 0 ? 'md:ml-auto' : 'md:mr-auto'}`}>
+                        <span className="text-xs font-bold uppercase tracking-widest text-[#C72C5B]">
+                          {step.step}
+                        </span>
+                        <h3 className="mt-2 text-xl font-bold text-white md:text-2xl">{step.title}</h3>
+                        <p className="mt-2 max-w-sm text-sm text-white/60">{step.description}</p>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="mb-1 text-lg font-bold text-gray-900">{benefit.title}</h3>
-                      <p className="text-gray-600">{benefit.description}</p>
+
+                    {/* Dot */}
+                    <div className="absolute left-4 flex h-8 w-8 -translate-x-1/2 items-center justify-center rounded-full border border-white/20 bg-[#050505] md:left-1/2">
+                      <div className="h-2.5 w-2.5 rounded-full bg-[#C72C5B]" />
                     </div>
-                  </motion.div>
+
+                    {/* Spacer */}
+                    <div className="hidden flex-1 md:block" />
+                  </div>
                 </AnimatedContent>
               ))}
             </div>
@@ -483,45 +413,75 @@ export default function ServiceDetail({ slug }: { slug: string }) {
         </div>
       </section>
 
-      {/* Local Focus Section */}
-      <section className="py-24 md:py-32">
+      {/* Benefits */}
+      <section className="bg-white py-24 md:py-32">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="rounded-3xl border border-gray-200 bg-gray-50 p-8 md:p-12 lg:p-16">
-            <div className="grid gap-8 lg:grid-cols-2 lg:items-center">
-              <div>
-                <AnimatedContent
-                  direction="vertical"
-                  distance={60}
-                  duration={1}
-                  ease="power3.out"
-                >
-                  <div className="mb-4 inline-flex items-center gap-2">
-                    <MapPin className="h-5 w-5" style={{ color: service.color }} />
-                    <span className="text-sm font-medium text-gray-500">Local Service</span>
-                  </div>
-                  <h2 className="mb-4 text-3xl font-bold text-gray-900 md:text-4xl">
-                    Proudly Serving
-                    <br />
-                    <span style={{ color: service.color }}>Guildford & Surrey</span>
-                  </h2>
-                  <p className="text-gray-600">
-                    {service.localFocus}
-                  </p>
-                </AnimatedContent>
-              </div>
-              
+          <div className="mb-16 md:mb-20">
+            <AnimatedContent direction="vertical" distance={60} duration={1} ease="power3.out">
+              <span className="mb-4 inline-flex items-center gap-2 text-sm font-medium text-[#C72C5B]">
+                <span className="h-px w-8 bg-[#C72C5B]" />
+                Why It Works
+              </span>
+              <h2 className="text-4xl font-bold text-[#0F0F0F] md:text-5xl lg:text-6xl">
+                Results That <span className="font-serif italic text-[#C72C5B]">Matter</span>
+              </h2>
+            </AnimatedContent>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-2">
+            {service.benefits.map((benefit, index) => (
               <AnimatedContent
-                direction="vertical"
-                distance={60}
-                duration={1}
-                delay={0.2}
+                key={benefit.title}
+                direction="horizontal"
+                distance={40}
+                duration={0.8}
+                delay={0.1 * index}
                 ease="power3.out"
               >
+                <motion.div
+                  whileHover={{ x: 6 }}
+                  className="group flex gap-5 rounded-2xl border border-gray-200 bg-white p-6 transition-shadow hover:shadow-lg md:p-8"
+                >
+                  <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-[#C72C5B]/10">
+                    <CheckCircle2 className="h-6 w-6 text-[#C72C5B]" />
+                  </div>
+                  <div>
+                    <h3 className="mb-1 text-lg font-bold text-[#0F0F0F]">{benefit.title}</h3>
+                    <p className="text-gray-600">{benefit.description}</p>
+                  </div>
+                </motion.div>
+              </AnimatedContent>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Local Focus */}
+      <section className="bg-gray-50 py-24 md:py-32">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="rounded-3xl border border-gray-200 bg-white p-8 md:p-12 lg:p-16">
+            <div className="grid gap-8 lg:grid-cols-2 lg:items-center">
+              <div>
+                <AnimatedContent direction="vertical" distance={60} duration={1} ease="power3.out">
+                  <div className="mb-4 inline-flex items-center gap-2">
+                    <MapPin className="h-5 w-5 text-[#C72C5B]" />
+                    <span className="text-sm font-medium text-gray-500">Local Service</span>
+                  </div>
+                  <h2 className="mb-4 text-3xl font-bold text-[#0F0F0F] md:text-4xl lg:text-5xl">
+                    Proudly Serving
+                    <br />
+                    <span className="font-serif italic text-[#C72C5B]">Guildford & Surrey</span>
+                  </h2>
+                  <p className="text-gray-600">{service.localFocus}</p>
+                </AnimatedContent>
+              </div>
+
+              <AnimatedContent direction="vertical" distance={60} duration={1} delay={0.2} ease="power3.out">
                 <div className="flex flex-wrap gap-3">
                   {['Guildford', 'Woking', 'Farnham', 'Dorking', 'Reigate', 'Cobham', 'Esher', 'Leatherhead'].map((town) => (
-                    <span 
+                    <span
                       key={town}
-                      className="rounded-full border border-gray-200 bg-white px-4 py-2 text-sm text-gray-700"
+                      className="rounded-full border border-gray-200 bg-gray-50 px-4 py-2 text-sm text-gray-700 transition-colors hover:border-[#C72C5B]/30 hover:bg-[#C72C5B]/5"
                     >
                       {town}
                     </span>
@@ -533,59 +493,42 @@ export default function ServiceDetail({ slug }: { slug: string }) {
         </div>
       </section>
 
-      {/* Testimonial Section */}
-      <section className="py-24 md:py-32 bg-gray-50">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
-          <AnimatedContent
-            direction="vertical"
-            distance={60}
-            duration={1}
-            ease="power3.out"
-          >
-            <div 
-              className="mx-auto mb-8 flex h-16 w-16 items-center justify-center rounded-2xl"
-              style={{ backgroundColor: `${service.color}15` }}
-            >
-              <span className="text-3xl" style={{ color: service.color }}>"</span>
+      {/* Testimonial */}
+      <section className="bg-[#050505] py-24 md:py-32">
+        <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
+          <AnimatedContent direction="vertical" distance={60} duration={1} ease="power3.out">
+            <div className="mx-auto mb-8 flex h-16 w-16 items-center justify-center rounded-2xl bg-white/5">
+              <span className="text-3xl text-[#C72C5B]">"</span>
             </div>
-            
-            <blockquote className="mb-8 text-2xl font-medium text-gray-900 md:text-3xl">
+            <blockquote className="mb-8 text-2xl font-medium leading-relaxed text-white md:text-3xl">
               {service.testimonial.quote}
             </blockquote>
-            
             <div>
-              <div className="font-semibold text-gray-900">{service.testimonial.author}</div>
-              <div className="text-sm" style={{ color: service.color }}>{service.testimonial.role}</div>
+              <div className="font-semibold text-white">{service.testimonial.author}</div>
+              <div className="text-sm text-[#C72C5B]">{service.testimonial.role}</div>
             </div>
           </AnimatedContent>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-24 md:py-32" style={{ backgroundColor: service.color }}>
-        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
-          <AnimatedContent
-            direction="vertical"
-            distance={60}
-            duration={1}
-            ease="power3.out"
-          >
-            <h2 className="mb-6 text-4xl font-bold text-white md:text-5xl">
+      {/* CTA */}
+      <section className="bg-[#C72C5B] py-24 md:py-32">
+        <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
+          <AnimatedContent direction="vertical" distance={60} duration={1} ease="power3.out">
+            <h2 className="mb-6 text-4xl font-bold text-white md:text-5xl lg:text-6xl">
               Ready to Get Started?
             </h2>
             <p className="mb-8 text-lg text-white/80">
-              Let&apos;s discuss your {service.title.toLowerCase()} project. 
-              Free consultation for Guildford & Surrey businesses.
+              Let&apos;s discuss your {service.title.toLowerCase()} project. Free consultation for Guildford & Surrey businesses.
             </p>
             <motion.a
               href="/#contact"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="inline-flex items-center gap-3 rounded-full bg-white px-8 py-4 text-lg font-bold shadow-lg transition-all hover:bg-gray-100"
-              style={{ color: service.color }}
+              className="group inline-flex items-center gap-3 rounded-full bg-white px-8 py-4 text-lg font-bold text-[#C72C5B] shadow-lg transition-all hover:bg-gray-100"
             >
               Start Your Project
-              <ArrowUpRight className="h-5 w-5" />
+              <ArrowDownRight className="h-5 w-5 transition-transform group-hover:rotate-45" />
             </motion.a>
           </AnimatedContent>
         </div>
