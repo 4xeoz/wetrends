@@ -1,7 +1,8 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { motion, useScroll, useTransform, useMotionValue, useSpring } from 'motion/react';
+import Image from 'next/image';
+import { motion, useScroll, useTransform } from 'motion/react';
 import {
   Video,
   Palette,
@@ -14,51 +15,6 @@ import {
 } from 'lucide-react';
 import AnimatedContent from '@/components/ui/animated-content';
 import Link from 'next/link';
-
-const floatingPills = [
-  { label: 'Creative', top: '18%', left: '10%', delay: 0 },
-  { label: 'Strategic', top: '25%', right: '12%', delay: 0.8 },
-  { label: 'Technical', bottom: '20%', left: '15%', delay: 1.6 },
-];
-
-function FloatingPill({
-  pill,
-  index,
-  parallaxX,
-  parallaxY,
-}: {
-  pill: typeof floatingPills[0];
-  index: number;
-  parallaxX: ReturnType<typeof useSpring>;
-  parallaxY: ReturnType<typeof useSpring>;
-}) {
-  const moveX = useTransform(parallaxX, [-0.5, 0.5], [-18 - index * 6, 18 + index * 6]);
-  const moveY = useTransform(parallaxY, [-0.5, 0.5], [-14 - index * 4, 14 + index * 4]);
-
-  return (
-    <motion.div
-      style={{
-        top: pill.top,
-        left: pill.left,
-        right: pill.right,
-        bottom: pill.bottom,
-        x: moveX,
-        y: moveY,
-      }}
-      initial={{ opacity: 0, scale: 0.8 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ delay: 0.6 + index * 0.15, duration: 0.6 }}
-      className="absolute"
-    >
-      <div
-        className="rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-xs font-medium tracking-wide text-white/80 backdrop-blur-md"
-        style={{ animation: `floatY ${4 + index * 0.6}s ease-in-out infinite`, animationDelay: `${pill.delay}s` }}
-      >
-        {pill.label}
-      </div>
-    </motion.div>
-  );
-}
 
 const services = [
   {
@@ -215,21 +171,6 @@ export default function ServicesPage() {
   const borderRadius = useTransform(scrollYProgress, [0, 0.5], ['2rem', '0rem']);
   const cardOpacity = useTransform(scrollYProgress, [0, 0.2], [0.5, 1]);
 
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = (e.clientX - rect.left - rect.width / 2) / rect.width;
-    const y = (e.clientY - rect.top - rect.height / 2) / rect.height;
-    mouseX.set(x);
-    mouseY.set(y);
-  };
-
-  const springConfig = { stiffness: 60, damping: 20 };
-  const parallaxX = useSpring(mouseX, springConfig);
-  const parallaxY = useSpring(mouseY, springConfig);
-
   return (
     <main className="min-h-[100svh] bg-white">
       {/* Dark Expanding Hero */}
@@ -238,46 +179,21 @@ export default function ServicesPage() {
           <motion.div
             style={{ width, height, borderRadius, opacity: cardOpacity }}
             className="relative overflow-hidden bg-[#050505] text-white will-change-[width,height,border-radius]"
-            onMouseMove={handleMouseMove}
           >
-            {/* Aurora orbs */}
-            <div className="pointer-events-none absolute inset-0 overflow-hidden">
-              <div
-                className="absolute -right-[20%] -top-[20%] h-[70svw] w-[70svw] rounded-full opacity-40"
-                style={{
-                  background: 'radial-gradient(circle, rgba(199,44,91,0.4) 0%, transparent 70%)',
-                  animation: 'drift1 22s ease-in-out infinite',
-                }}
-              />
-              <div
-                className="absolute -bottom-[30%] -left-[10%] h-[60svw] w-[60svw] rounded-full opacity-30"
-                style={{
-                  background: 'radial-gradient(circle, rgba(188,42,80,0.3) 0%, transparent 70%)',
-                  animation: 'drift2 28s ease-in-out infinite',
-                }}
+            {/* Background Image */}
+            <div className="absolute inset-0 -z-10">
+              <Image
+                src="/images/hero_background.webp"
+                alt=""
+                fill
+                priority
+                className="object-cover object-center"
+                sizes="100vw"
               />
             </div>
 
-            {/* Noise */}
-            <div
-              className="pointer-events-none absolute inset-0 opacity-[0.03]"
-              style={{
-                backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
-              }}
-            />
-
-            {/* Floating pills */}
-            <div className="pointer-events-none absolute inset-0 hidden md:block">
-              {floatingPills.map((pill, index) => (
-                <FloatingPill
-                  key={pill.label}
-                  pill={pill}
-                  index={index}
-                  parallaxX={parallaxX}
-                  parallaxY={parallaxY}
-                />
-              ))}
-            </div>
+            {/* Dark overlay */}
+            <div className="absolute inset-0 bg-[#050505]/70" />
 
             {/* Content */}
             <div className="relative z-10 flex h-full flex-col px-6 pb-8 pt-24 md:px-10 md:pb-12 lg:px-16">
@@ -330,21 +246,7 @@ export default function ServicesPage() {
               </div>
             </div>
 
-            {/* Keyframes */}
-            <style jsx>{`
-              @keyframes drift1 {
-                0%, 100% { transform: translate(0, 0) scale(1); }
-                50% { transform: translate(-8%, 6%) scale(1.08); }
-              }
-              @keyframes drift2 {
-                0%, 100% { transform: translate(0, 0) scale(1); }
-                50% { transform: translate(6%, -8%) scale(1.05); }
-              }
-              @keyframes floatY {
-                0%, 100% { transform: translateY(0); }
-                50% { transform: translateY(-10px); }
-              }
-            `}</style>
+
           </motion.div>
         </div>
       </section>

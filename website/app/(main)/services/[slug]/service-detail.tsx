@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef } from 'react';
+import Image from 'next/image';
 import { motion, useScroll, useTransform } from 'motion/react';
 import {
   Video,
@@ -214,44 +215,20 @@ export default function ServiceDetail({ slug }: { slug: string }) {
             style={{ width, height, borderRadius, opacity: cardOpacity }}
             className="relative overflow-hidden bg-[#050505] text-white will-change-[width,height,border-radius]"
           >
-            {/* Video background with overlay */}
-            <div className="absolute inset-0 opacity-20">
-              <video
-                src={service.video}
-                autoPlay
-                muted
-                loop
-                playsInline
-                className="h-full w-full object-cover"
-              />
-            </div>
-            <div className="absolute inset-0 bg-gradient-to-b from-[#050505]/80 via-[#050505]/90 to-[#050505]" />
-
-            {/* Aurora orbs */}
-            <div className="pointer-events-none absolute inset-0 overflow-hidden">
-              <div
-                className="absolute -right-[10%] top-[10%] h-[60svw] w-[60svw] rounded-full opacity-40"
-                style={{
-                  background: 'radial-gradient(circle, rgba(199,44,91,0.35) 0%, transparent 70%)',
-                  animation: 'drift1 20s ease-in-out infinite',
-                }}
-              />
-              <div
-                className="absolute -bottom-[20%] -left-[10%] h-[50svw] w-[50svw] rounded-full opacity-30"
-                style={{
-                  background: 'radial-gradient(circle, rgba(188,42,80,0.3) 0%, transparent 70%)',
-                  animation: 'drift2 25s ease-in-out infinite',
-                }}
+            {/* Background Image */}
+            <div className="absolute inset-0 -z-10">
+              <Image
+                src="/images/hero_background.webp"
+                alt=""
+                fill
+                priority
+                className="object-cover object-center"
+                sizes="100vw"
               />
             </div>
 
-            {/* Noise */}
-            <div
-              className="pointer-events-none absolute inset-0 opacity-[0.03]"
-              style={{
-                backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
-              }}
-            />
+            {/* Dark overlay */}
+            <div className="absolute inset-0 bg-[#050505]/75" />
 
             {/* Content */}
             <div className="relative z-10 flex h-full flex-col justify-center px-6 pt-20 md:px-10 lg:px-16">
@@ -301,16 +278,7 @@ export default function ServiceDetail({ slug }: { slug: string }) {
               </div>
             </div>
 
-            <style jsx>{`
-              @keyframes drift1 {
-                0%, 100% { transform: translate(0, 0) scale(1); }
-                50% { transform: translate(-6%, 4%) scale(1.06); }
-              }
-              @keyframes drift2 {
-                0%, 100% { transform: translate(0, 0) scale(1); }
-                50% { transform: translate(4%, -6%) scale(1.04); }
-              }
-            `}</style>
+
           </motion.div>
         </div>
       </section>
