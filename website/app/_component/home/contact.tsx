@@ -38,10 +38,7 @@ export default function Contact() {
       className="relative overflow-hidden py-16 sm:py-24 md:py-32"
     >
       {/* Background Image */}
-      <motion.div 
-        initial={{ scale: 1.1, opacity: 0 }}
-        animate={isInView ? { scale: 1, opacity: 1 } : {}}
-        transition={{ duration: 1.2 }}
+      <div 
         className="absolute inset-0 -z-10"
       >
         <Image
@@ -51,9 +48,7 @@ export default function Contact() {
           className="object-cover object-center"
           sizes="100vw"
         />
-        {/* Dark overlay for readability */}
-        <div className="absolute inset-0 bg-black/60" />
-      </motion.div>
+      </div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
