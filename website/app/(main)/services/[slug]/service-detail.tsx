@@ -209,8 +209,8 @@ export default function ServiceDetail({ slug }: { slug: string }) {
       </div>
 
       {/* Dark Expanding Hero */}
-      <section ref={containerRef} className="relative z-20 h-[110svh]">
-        <div className="sticky top-0 flex h-[100svh] items-center justify-center overflow-hidden bg-white">
+      <section ref={containerRef} className="relative z-20 h-[140svh]">
+        <div className="sticky top-0 flex min-h-[120svh] items-start justify-center overflow-visible bg-white pt-20 md:pt-24">
           <motion.div
             style={{ width, height, borderRadius, opacity: cardOpacity }}
             className="relative overflow-hidden bg-[#050505] text-white will-change-[width,height,border-radius]"
