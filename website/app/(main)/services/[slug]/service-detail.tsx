@@ -1,8 +1,8 @@
 'use client';
 
-import { useRef } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
-import { motion, useScroll, useTransform } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import {
   Video,
   Palette,
@@ -45,7 +45,6 @@ const services = {
       role: "Marketing Director, TechStart UK"
     },
     localFocus: 'We film across Guildford, Woking, Farnham and the wider Surrey area. Local knowledge means we know the best locations and can respond quickly to your needs.',
-    video: '/videos/video-preview-wetrends.mp4',
   },
   'brand-identity': {
     icon: Palette,
@@ -71,7 +70,6 @@ const services = {
       role: "CEO, GreenLeaf Solutions"
     },
     localFocus: 'We understand the Guildford and Surrey business environment. Our designs help local companies compete with London agencies while maintaining their unique identity.',
-    video: '/videos/design-preview-wetrends.mp4',
   },
   'web-design': {
     icon: Globe,
@@ -97,7 +95,6 @@ const services = {
       role: "Founder, Surrey Wellness"
     },
     localFocus: 'Based in Guildford, we offer face-to-face consultations and rapid response times. We build websites that help local businesses compete nationally.',
-    video: '/videos/website-preview-wetrends.mp4',
   },
   'social-media': {
     icon: Users,
@@ -123,7 +120,6 @@ const services = {
       role: "Owner, Guildford Cafe Co"
     },
     localFocus: 'We know the Surrey social landscape. From Guildford to Woking, we create content that resonates with local audiences while building national reach.',
-    video: '/videos/social-preview-wetrends.mp4',
   },
   'animation': {
     icon: Zap,
@@ -149,7 +145,6 @@ const services = {
       role: "Product Manager, SaaS Co"
     },
     localFocus: 'Our Guildford animation studio serves clients across the UK. We combine local accessibility with world-class animation expertise.',
-    video: '/videos/animations-preview-wetrends.mp4',
   },
   'content-strategy': {
     icon: PenTool,
@@ -175,23 +170,17 @@ const services = {
       role: "CMO, FinanceHub UK"
     },
     localFocus: 'We understand the Surrey business landscape and create content that resonates locally while building national authority.',
-    video: '/videos/design-preview-wetrends.mp4',
   },
 };
+
+const tabs = ['Overview', 'Features', 'Process', 'Results'] as const;
+
+type Tab = typeof tabs[number];
 
 export default function ServiceDetail({ slug }: { slug: string }) {
   const service = services[slug as keyof typeof services];
   const Icon = service.icon;
-  const containerRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ['start end', 'start start'],
-  });
-
-  const width = useTransform(scrollYProgress, [0, 0.7], ['90%', '100%']);
-  const height = useTransform(scrollYProgress, [0, 0.7], ['80%', '100%']);
-  const borderRadius = useTransform(scrollYProgress, [0, 0.5], ['2rem', '0rem']);
-  const cardOpacity = useTransform(scrollYProgress, [0, 0.2], [0.5, 1]);
+  const [activeTab, setActiveTab] = useState<Tab>('Overview');
 
   return (
     <main className="min-h-[100svh] bg-white">
@@ -208,279 +197,285 @@ export default function ServiceDetail({ slug }: { slug: string }) {
         </div>
       </div>
 
-      {/* Dark Expanding Hero */}
-      <section ref={containerRef} className="relative z-20 h-[140svh]">
-        <div className="sticky top-0 flex min-h-[120svh] items-start justify-center overflow-visible bg-white pt-20 md:pt-24">
-          <motion.div
-            style={{ width, height, borderRadius, opacity: cardOpacity }}
-            className="relative overflow-hidden bg-[#050505] text-white will-change-[width,height,border-radius]"
-          >
-            {/* Background Image */}
-            <div className="absolute inset-0 -z-10">
-              <Image
-                src="/images/hero_background.webp"
-                alt=""
-                fill
-                priority
-                className="object-cover object-center"
-                sizes="100vw"
-              />
-            </div>
-
-            {/* Dark overlay */}
-            <div className="absolute inset-0 bg-[#050505]/75" />
-
-            {/* Content */}
-            <div className="relative z-10 flex h-full flex-col justify-center px-6 pt-20 md:px-10 lg:px-16">
-              <div className="mx-auto w-full max-w-7xl">
-                <AnimatedContent direction="vertical" distance={60} duration={1} delay={0.1} ease="power3.out">
-                  <div className="mb-6 inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-4 py-2 backdrop-blur-sm">
-                    <Icon className="h-4 w-4 text-[#C72C5B]" />
-                    <span className="text-sm font-medium uppercase tracking-widest text-[#C72C5B]">
-                      {service.title}
-                    </span>
-                  </div>
-                </AnimatedContent>
-
-                <AnimatedContent direction="vertical" distance={80} duration={1.2} delay={0.2} ease="power3.out">
-                  <h1 className="max-w-4xl text-[clamp(2.5rem,7vw,6rem)] font-bold leading-[0.9] tracking-tight">
-                    {service.headline.split(' ').slice(0, -2).join(' ')}
-                    <br />
-                    <span className="font-serif italic text-[#C72C5B]">
-                      {service.headline.split(' ').slice(-2).join(' ')}
-                    </span>
-                  </h1>
-                </AnimatedContent>
-
-                <AnimatedContent direction="vertical" distance={40} duration={1} delay={0.4} ease="power3.out">
-                  <p className="mt-6 max-w-2xl text-base leading-relaxed text-white/60 md:mt-8 md:text-lg">
-                    {service.description}
-                  </p>
-                </AnimatedContent>
-
-                <AnimatedContent direction="vertical" distance={40} duration={1} delay={0.5} ease="power3.out">
-                  <div className="mt-8 flex flex-wrap items-center gap-4">
-                    <motion.a
-                      href="/#contact"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="group inline-flex items-center gap-2 rounded-full bg-[#C72C5B] px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#a82448]"
-                    >
-                      Get a Quote
-                      <ArrowUpRight className="h-4 w-4 transition-transform group-hover:rotate-45" />
-                    </motion.a>
-                    <div className="flex items-center gap-2 text-sm text-white/50">
-                      <MapPin className="h-4 w-4 text-[#C72C5B]" />
-                      Guildford, Surrey
-                    </div>
-                  </div>
-                </AnimatedContent>
-              </div>
-            </div>
-
-
-          </motion.div>
+      {/* Dark Hero */}
+      <section className="relative flex min-h-[70svh] flex-col justify-end pb-12 pt-32 md:min-h-[75svh] md:pb-16 md:pt-40">
+        {/* Background Image */}
+        <div className="absolute inset-0 -z-10">
+          <Image
+            src="/images/hero_background.webp"
+            alt=""
+            fill
+            priority
+            className="object-cover object-center"
+            sizes="100vw"
+          />
         </div>
-      </section>
 
-      {/* Features — Bento Grid */}
-      <section className="bg-white py-24 md:py-32">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-16 md:mb-20">
-            <AnimatedContent direction="vertical" distance={60} duration={1} ease="power3.out">
-              <span className="mb-4 inline-flex items-center gap-2 text-sm font-medium text-[#C72C5B]">
-                <span className="h-px w-8 bg-[#C72C5B]" />
-                Capabilities
+        {/* Dark overlay */}
+        <div className="absolute inset-0 bg-[#050505]/80" />
+
+        {/* Content */}
+        <div className="relative z-10 mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+          <AnimatedContent direction="vertical" distance={60} duration={1} delay={0.1} ease="power3.out">
+            <div className="mb-6 inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-4 py-2 backdrop-blur-sm">
+              <Icon className="h-4 w-4 text-[#C72C5B]" />
+              <span className="text-sm font-medium uppercase tracking-widest text-[#C72C5B]">
+                {service.title}
               </span>
-              <h2 className="text-4xl font-bold text-[#0F0F0F] md:text-5xl lg:text-6xl">
-                What We <span className="font-serif italic text-[#C72C5B]">Offer</span>
-              </h2>
-            </AnimatedContent>
-          </div>
+            </div>
+          </AnimatedContent>
 
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {service.features.map((feature, index) => (
-              <AnimatedContent
-                key={feature}
-                direction="vertical"
-                distance={40}
-                duration={0.8}
-                delay={0.05 * index}
-                ease="power3.out"
+          <AnimatedContent direction="vertical" distance={80} duration={1.2} delay={0.2} ease="power3.out">
+            <h1 className="max-w-4xl text-[clamp(2.5rem,7vw,6rem)] font-bold leading-[0.9] tracking-tight text-white">
+              {service.headline.split(' ').slice(0, -2).join(' ')}
+              <br />
+              <span className="font-serif italic text-[#C72C5B]">
+                {service.headline.split(' ').slice(-2).join(' ')}
+              </span>
+            </h1>
+          </AnimatedContent>
+
+          <AnimatedContent direction="vertical" distance={40} duration={1} delay={0.4} ease="power3.out">
+            <p className="mt-6 max-w-2xl text-base leading-relaxed text-white/60 md:mt-8 md:text-lg">
+              {service.description}
+            </p>
+          </AnimatedContent>
+
+          <AnimatedContent direction="vertical" distance={40} duration={1} delay={0.5} ease="power3.out">
+            <div className="mt-8 flex flex-wrap items-center gap-4">
+              <motion.a
+                href="/#contact"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="group inline-flex items-center gap-2 rounded-full bg-[#C72C5B] px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#a82448]"
               >
-                <motion.div
-                  whileHover={{ y: -4 }}
-                  className="group flex h-full items-center gap-3 rounded-2xl border border-gray-200 bg-white p-5 transition-shadow hover:shadow-lg"
-                >
-                  <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-[#C72C5B]/10">
-                    <Sparkles className="h-4 w-4 text-[#C72C5B]" />
-                  </div>
-                  <span className="font-medium text-[#0F0F0F]">{feature}</span>
-                </motion.div>
-              </AnimatedContent>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Process — Vertical Timeline */}
-      <section className="relative overflow-hidden bg-[#050505] py-24 md:py-32">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-16 text-center md:mb-20">
-            <AnimatedContent direction="vertical" distance={60} duration={1} ease="power3.out">
-              <span className="mb-4 inline-flex items-center justify-center gap-2 text-sm font-medium text-[#C72C5B]">
-                <span className="h-px w-8 bg-[#C72C5B]" />
-                Our Process
-                <span className="h-px w-8 bg-[#C72C5B]" />
-              </span>
-              <h2 className="text-4xl font-bold text-white md:text-5xl lg:text-6xl">
-                How We <span className="font-serif italic text-[#C72C5B]">Work</span>
-              </h2>
-            </AnimatedContent>
-          </div>
-
-          <div className="relative">
-            {/* Central line */}
-            <div className="absolute left-4 top-0 bottom-0 w-px bg-white/10 md:left-1/2 md:-translate-x-px" />
-
-            <div className="space-y-12 md:space-y-16">
-              {service.process.map((step, index) => (
-                <AnimatedContent
-                  key={step.step}
-                  direction={index % 2 === 0 ? 'horizontal' : 'horizontal'}
-                  distance={40}
-                  duration={0.8}
-                  delay={0.1 * index}
-                  ease="power3.out"
-                  reverse={index % 2 !== 0}
-                >
-                  <div className={`relative flex items-center gap-8 md:gap-0 ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'}`}>
-                    {/* Content */}
-                    <div className={`flex-1 md:px-12 ${index % 2 === 0 ? 'md:text-right' : 'md:text-left'}`}>
-                      <div className={`inline-block rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm md:p-8 ${index % 2 === 0 ? 'md:ml-auto' : 'md:mr-auto'}`}>
-                        <span className="text-xs font-bold uppercase tracking-widest text-[#C72C5B]">
-                          {step.step}
-                        </span>
-                        <h3 className="mt-2 text-xl font-bold text-white md:text-2xl">{step.title}</h3>
-                        <p className="mt-2 max-w-sm text-sm text-white/60">{step.description}</p>
-                      </div>
-                    </div>
-
-                    {/* Dot */}
-                    <div className="absolute left-4 flex h-8 w-8 -translate-x-1/2 items-center justify-center rounded-full border border-white/20 bg-[#050505] md:left-1/2">
-                      <div className="h-2.5 w-2.5 rounded-full bg-[#C72C5B]" />
-                    </div>
-
-                    {/* Spacer */}
-                    <div className="hidden flex-1 md:block" />
-                  </div>
-                </AnimatedContent>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Benefits */}
-      <section className="bg-white py-24 md:py-32">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-16 md:mb-20">
-            <AnimatedContent direction="vertical" distance={60} duration={1} ease="power3.out">
-              <span className="mb-4 inline-flex items-center gap-2 text-sm font-medium text-[#C72C5B]">
-                <span className="h-px w-8 bg-[#C72C5B]" />
-                Why It Works
-              </span>
-              <h2 className="text-4xl font-bold text-[#0F0F0F] md:text-5xl lg:text-6xl">
-                Results That <span className="font-serif italic text-[#C72C5B]">Matter</span>
-              </h2>
-            </AnimatedContent>
-          </div>
-
-          <div className="grid gap-6 md:grid-cols-2">
-            {service.benefits.map((benefit, index) => (
-              <AnimatedContent
-                key={benefit.title}
-                direction="horizontal"
-                distance={40}
-                duration={0.8}
-                delay={0.1 * index}
-                ease="power3.out"
-              >
-                <motion.div
-                  whileHover={{ x: 6 }}
-                  className="group flex gap-5 rounded-2xl border border-gray-200 bg-white p-6 transition-shadow hover:shadow-lg md:p-8"
-                >
-                  <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-[#C72C5B]/10">
-                    <CheckCircle2 className="h-6 w-6 text-[#C72C5B]" />
-                  </div>
-                  <div>
-                    <h3 className="mb-1 text-lg font-bold text-[#0F0F0F]">{benefit.title}</h3>
-                    <p className="text-gray-600">{benefit.description}</p>
-                  </div>
-                </motion.div>
-              </AnimatedContent>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Local Focus */}
-      <section className="bg-gray-50 py-24 md:py-32">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="rounded-3xl border border-gray-200 bg-white p-8 md:p-12 lg:p-16">
-            <div className="grid gap-8 lg:grid-cols-2 lg:items-center">
-              <div>
-                <AnimatedContent direction="vertical" distance={60} duration={1} ease="power3.out">
-                  <div className="mb-4 inline-flex items-center gap-2">
-                    <MapPin className="h-5 w-5 text-[#C72C5B]" />
-                    <span className="text-sm font-medium text-gray-500">Local Service</span>
-                  </div>
-                  <h2 className="mb-4 text-3xl font-bold text-[#0F0F0F] md:text-4xl lg:text-5xl">
-                    Proudly Serving
-                    <br />
-                    <span className="font-serif italic text-[#C72C5B]">Guildford & Surrey</span>
-                  </h2>
-                  <p className="text-gray-600">{service.localFocus}</p>
-                </AnimatedContent>
+                Get a Quote
+                <ArrowUpRight className="h-4 w-4 transition-transform group-hover:rotate-45" />
+              </motion.a>
+              <div className="flex items-center gap-2 text-sm text-white/50">
+                <MapPin className="h-4 w-4 text-[#C72C5B]" />
+                Guildford, Surrey
               </div>
-
-              <AnimatedContent direction="vertical" distance={60} duration={1} delay={0.2} ease="power3.out">
-                <div className="flex flex-wrap gap-3">
-                  {['Guildford', 'Woking', 'Farnham', 'Dorking', 'Reigate', 'Cobham', 'Esher', 'Leatherhead'].map((town) => (
-                    <span
-                      key={town}
-                      className="rounded-full border border-gray-200 bg-gray-50 px-4 py-2 text-sm text-gray-700 transition-colors hover:border-[#C72C5B]/30 hover:bg-[#C72C5B]/5"
-                    >
-                      {town}
-                    </span>
-                  ))}
-                </div>
-              </AnimatedContent>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonial */}
-      <section className="bg-[#050505] py-24 md:py-32">
-        <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
-          <AnimatedContent direction="vertical" distance={60} duration={1} ease="power3.out">
-            <div className="mx-auto mb-8 flex h-16 w-16 items-center justify-center rounded-2xl bg-white/5">
-              <span className="text-3xl text-[#C72C5B]">"</span>
-            </div>
-            <blockquote className="mb-8 text-2xl font-medium leading-relaxed text-white md:text-3xl">
-              {service.testimonial.quote}
-            </blockquote>
-            <div>
-              <div className="font-semibold text-white">{service.testimonial.author}</div>
-              <div className="text-sm text-[#C72C5B]">{service.testimonial.role}</div>
             </div>
           </AnimatedContent>
         </div>
       </section>
 
+      {/* Sticky Tab Bar */}
+      <div className="sticky top-0 z-40 border-b border-gray-200 bg-white/95 backdrop-blur-md">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-2 overflow-x-auto py-4 scrollbar-hide">
+            {tabs.map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`relative whitespace-nowrap rounded-full px-5 py-2 text-sm font-medium transition-colors ${
+                  activeTab === tab
+                    ? 'bg-[#C72C5B] text-white'
+                    : 'text-gray-600 hover:bg-gray-100 hover:text-[#0F0F0F]'
+                }`}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Tab Content */}
+      <section className="min-h-[60svh] bg-gray-50 py-16 md:py-24">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <AnimatePresence mode="wait">
+            {activeTab === 'Overview' && (
+              <motion.div
+                key="overview"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                className="grid gap-12 lg:grid-cols-2"
+              >
+                <div className="space-y-8">
+                  <div className="rounded-2xl border border-gray-200 bg-white p-8 md:p-10">
+                    <h2 className="mb-4 text-2xl font-bold text-[#0F0F0F] md:text-3xl">
+                      What to Expect
+                    </h2>
+                    <p className="leading-relaxed text-gray-600">
+                      {service.description}
+                    </p>
+                    <div className="mt-6 flex flex-wrap gap-2">
+                      {service.features.slice(0, 4).map((f) => (
+                        <span
+                          key={f}
+                          className="rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs text-gray-600"
+                        >
+                          {f}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="rounded-2xl border border-gray-200 bg-white p-8 md:p-10">
+                    <div className="mb-4 inline-flex items-center gap-2">
+                      <MapPin className="h-5 w-5 text-[#C72C5B]" />
+                      <span className="text-sm font-medium text-gray-500">Local Service</span>
+                    </div>
+                    <h3 className="mb-3 text-xl font-bold text-[#0F0F0F]">
+                      Proudly Serving Guildford & Surrey
+                    </h3>
+                    <p className="text-gray-600">{service.localFocus}</p>
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      {['Guildford', 'Woking', 'Farnham', 'Dorking', 'Reigate', 'Cobham', 'Esher', 'Leatherhead'].map((town) => (
+                        <span
+                          key={town}
+                          className="rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs text-gray-600"
+                        >
+                          {town}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-8">
+                  <div className="rounded-2xl border border-gray-200 bg-[#050505] p-8 text-white md:p-10">
+                    <span className="text-5xl font-bold text-[#C72C5B] md:text-6xl">"</span>
+                    <blockquote className="mb-6 text-lg font-medium leading-relaxed md:text-xl">
+                      {service.testimonial.quote}
+                    </blockquote>
+                    <div>
+                      <div className="font-semibold">{service.testimonial.author}</div>
+                      <div className="text-sm text-white/60">{service.testimonial.role}</div>
+                    </div>
+                  </div>
+
+                  <motion.a
+                    href="/#contact"
+                    whileHover={{ scale: 1.02 }}
+                    className="flex items-center justify-between rounded-2xl bg-[#C72C5B] p-6 text-white transition-colors hover:bg-[#a82448] md:p-8"
+                  >
+                    <div>
+                      <div className="text-lg font-bold md:text-xl">Ready to start?</div>
+                      <div className="text-sm text-white/80">Book a free consultation</div>
+                    </div>
+                    <ArrowUpRight className="h-6 w-6" />
+                  </motion.a>
+                </div>
+              </motion.div>
+            )}
+
+            {activeTab === 'Features' && (
+              <motion.div
+                key="features"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <div className="mb-8">
+                  <h2 className="text-2xl font-bold text-[#0F0F0F] md:text-3xl">
+                    Everything You Get
+                  </h2>
+                  <p className="mt-2 text-gray-600">
+                    Comprehensive {service.title.toLowerCase()} services tailored to your needs.
+                  </p>
+                </div>
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                  {service.features.map((feature, index) => (
+                    <motion.div
+                      key={feature}
+                      whileHover={{ y: -4 }}
+                      className="flex items-center gap-4 rounded-2xl border border-gray-200 bg-white p-5 transition-shadow hover:shadow-lg"
+                    >
+                      <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-[#C72C5B]/10">
+                        <Sparkles className="h-5 w-5 text-[#C72C5B]" />
+                      </div>
+                      <span className="font-medium text-[#0F0F0F]">{feature}</span>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+
+            {activeTab === 'Process' && (
+              <motion.div
+                key="process"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <div className="mb-8">
+                  <h2 className="text-2xl font-bold text-[#0F0F0F] md:text-3xl">
+                    Our Process
+                  </h2>
+                  <p className="mt-2 text-gray-600">
+                    A proven four-step approach that delivers exceptional results every time.
+                  </p>
+                </div>
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+                  {service.process.map((step, index) => (
+                    <div
+                      key={step.step}
+                      className="relative rounded-2xl border border-gray-200 bg-white p-6 md:p-8"
+                    >
+                      <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-[#C72C5B] text-sm font-bold text-white">
+                        {step.step}
+                      </div>
+                      <h3 className="mb-2 text-xl font-bold text-[#0F0F0F]">{step.title}</h3>
+                      <p className="text-sm text-gray-600">{step.description}</p>
+                      {index < 3 && (
+                        <div className="absolute -right-3 top-1/2 hidden h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full bg-gray-100 lg:flex">
+                          <ArrowUpRight className="h-3 w-3 text-gray-400" />
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+
+            {activeTab === 'Results' && (
+              <motion.div
+                key="results"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <div className="mb-8">
+                  <h2 className="text-2xl font-bold text-[#0F0F0F] md:text-3xl">
+                    Why It Works
+                  </h2>
+                  <p className="mt-2 text-gray-600">
+                    Measurable impact you can expect when working with us.
+                  </p>
+                </div>
+                <div className="grid gap-6 md:grid-cols-2">
+                  {service.benefits.map((benefit, index) => (
+                    <motion.div
+                      key={benefit.title}
+                      whileHover={{ x: 6 }}
+                      className="flex gap-5 rounded-2xl border border-gray-200 bg-white p-6 transition-shadow hover:shadow-lg md:p-8"
+                    >
+                      <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-[#C72C5B]/10">
+                        <CheckCircle2 className="h-6 w-6 text-[#C72C5B]" />
+                      </div>
+                      <div>
+                        <h3 className="mb-1 text-lg font-bold text-[#0F0F0F]">{benefit.title}</h3>
+                        <p className="text-gray-600">{benefit.description}</p>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </section>
+
       {/* CTA */}
-      <section className="bg-[#C72C5B] py-24 md:py-32">
+      <section className="bg-[#050505] py-24 md:py-32">
         <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
           <AnimatedContent direction="vertical" distance={60} duration={1} ease="power3.out">
             <h2 className="mb-6 text-4xl font-bold text-white md:text-5xl lg:text-6xl">
@@ -493,7 +488,7 @@ export default function ServiceDetail({ slug }: { slug: string }) {
               href="/#contact"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="group inline-flex items-center gap-3 rounded-full bg-white px-8 py-4 text-lg font-bold text-[#C72C5B] shadow-lg transition-all hover:bg-gray-100"
+              className="group inline-flex items-center gap-3 rounded-full bg-[#C72C5B] px-8 py-4 text-lg font-bold text-white shadow-lg shadow-[#C72C5B]/20 transition-all hover:bg-[#a82448]"
             >
               Start Your Project
               <ArrowDownRight className="h-5 w-5 transition-transform group-hover:rotate-45" />
