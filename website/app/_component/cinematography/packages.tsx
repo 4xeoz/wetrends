@@ -28,10 +28,8 @@ const packages = [
     theme: 'dark' as const,
     popular: true,
     features: [
-      '10 professionally edited photos',
+      '15 professionally edited photos',
       'You choose the shots you love',
-      'Short cinematic graduation reel',
-      'Optimised for LinkedIn & social media',
       'High-resolution digital files',
       'Delivered within 48 hours',
       'Surrey campus or Guildford outdoors',

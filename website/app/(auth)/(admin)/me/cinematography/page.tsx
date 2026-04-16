@@ -75,7 +75,7 @@ const SERVICE_CONFIG: Record<ServiceType, { label: string; price: string; icon: 
     icon: <Camera className="h-4 w-4" />,
   },
   PHOTOS_10_VIDEO: {
-    label: 'Premium · 10 Photos + Video',
+    label: 'Premium · 15 Pictures',
     price: '£45',
     icon: <Film className="h-4 w-4" />,
   },

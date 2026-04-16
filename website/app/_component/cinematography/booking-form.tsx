@@ -40,7 +40,7 @@ const packageOptions = [
   {
     value: 'PHOTOS_10_VIDEO' as const,
     label: 'Premium — £45',
-    sub: '10 photos + video · 48h delivery',
+    sub: '15 pictures · 48h delivery',
     icon: Film,
     popular: true,
   },

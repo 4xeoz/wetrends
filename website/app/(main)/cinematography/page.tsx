@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   title:
     'Graduation Photography & Cinematography Surrey | University of Surrey Guildford | WeTrends',
   description:
-    'Professional graduation photography and cinematography for University of Surrey and Guildford students. 8 stunning photos from £35 or 10 photos + cinematic video from £45. 48-hour delivery guaranteed. Book your graduation shoot today.',
+    'Professional graduation photography for University of Surrey and Guildford students. 8 stunning photos from £35 or 15 pictures from £45. 48-hour delivery guaranteed. Book your graduation shoot today.',
   keywords: [
     'graduation photography Surrey',
     'graduation photographer Guildford',
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     title:
       'Graduation Photography & Cinematography | University of Surrey | WeTrends',
     description:
-      'Capture your graduation day at the University of Surrey with professional photography and cinematic video. Packages from £35 with 48-hour delivery.',
+      'Capture your graduation day at the University of Surrey with professional photography. Packages from £35 with 48-hour delivery.',
     url: 'https://wetrends.co.uk/cinematography/',
     type: 'website',
     locale: 'en_GB',
@@ -62,7 +62,7 @@ const jsonLd = {
   '@type': 'LocalBusiness',
   name: 'WeTrends Graduation Photography',
   description:
-    'Professional graduation photography and cinematography services for University of Surrey and Guildford students.',
+    'Professional graduation photography services for University of Surrey and Guildford students.',
   url: 'https://wetrends.co.uk/cinematography/',
   address: {
     '@type': 'PostalAddress',
@@ -101,11 +101,11 @@ const jsonLd = {
       },
       {
         '@type': 'Offer',
-        name: 'Premium Package – 10 Photos + Cinematic Video',
+        name: 'Premium Package – 15 Pictures',
         price: '45',
         priceCurrency: 'GBP',
         description:
-          '10 professionally edited graduation photos plus a short cinematic video optimised for social media and LinkedIn, delivered within 48 hours.',
+          '15 professionally edited graduation photos of your choice, delivered within 48 hours.'
       },
     ],
   },
