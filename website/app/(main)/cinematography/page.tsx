@@ -1,11 +1,7 @@
 import type { Metadata } from 'next';
 import CinematographyHero from '@/app/_component/cinematography/hero';
-import CinematographyTrust from '@/app/_component/cinematography/trust';
 import CinematographyPackages from '@/app/_component/cinematography/packages';
 import CinematographyPortfolio from '@/app/_component/cinematography/portfolio';
-import CinematographyHowItWorks from '@/app/_component/cinematography/how-it-works';
-import CinematographyTestimonials from '@/app/_component/cinematography/testimonials';
-import CinematographyFaq from '@/app/_component/cinematography/faq';
 import CinematographyBookingForm from '@/app/_component/cinematography/booking-form';
 import CinematographyStickyCta from '@/app/_component/cinematography/sticky-cta';
 
@@ -118,26 +114,10 @@ export default function CinematographyPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      {/*
-        Section order is deliberate for conversion:
-        1. Hero          — value prop + price above the fold
-        2. Trust strip   — instant social proof
-        3. Packages      — answer "how much / what do I get?"
-        4. Portfolio     — visual proof of quality
-        5. How it works  — reduce friction / fear
-        6. Testimonials  — peer social proof
-        7. FAQ           — defeat last objections
-        8. Booking form  — ask for the conversion
-        9. Sticky CTA    — always-visible mobile fallback
-      */}
       <div className="bg-white">
         <CinematographyHero />
-        <CinematographyTrust />
         <CinematographyPackages />
         <CinematographyPortfolio />
-        <CinematographyHowItWorks />
-        <CinematographyTestimonials />
-        <CinematographyFaq />
         <CinematographyBookingForm />
         <CinematographyStickyCta />
       </div>
