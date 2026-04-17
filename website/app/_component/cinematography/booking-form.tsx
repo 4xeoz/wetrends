@@ -34,13 +34,13 @@ const packageOptions = [
   {
     value: 'PHOTOS_8' as const,
     label: 'Essentials — £35',
-    sub: '40+ pics · 3 spots · 8 edited',
+    sub: '20 pics · 3 spots · 8 edited',
     icon: Camera,
   },
   {
     value: 'PHOTOS_10_VIDEO' as const,
     label: 'Premium — £45',
-    sub: '100+ pics · 3 spots · 15 edited + video',
+    sub: '50 pics · 3 spots · 15 edited + video',
     icon: Film,
     popular: true,
   },

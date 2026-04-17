@@ -11,7 +11,7 @@ const steps = [
     icon: CalendarDays,
     title: 'Pick Your Date & Package',
     description:
-      'Select your graduation date and choose Essentials (£35 · 40+ pics) or Premium (£45 · 100+ pics + video). Multiple students can book the same date — we shoot all day long.',
+      'Select your graduation date and choose Essentials (£35 · 20 pics) or Premium (£45 · 50 pics + video). Multiple students can book the same date — we shoot all day long.',
   },
   {
     number: '02',

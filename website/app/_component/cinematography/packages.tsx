@@ -11,7 +11,7 @@ const packages = [
     description: 'Perfect for sharing with family and framing at home.',
     theme: 'light' as const,
     features: [
-      '40+ raw pictures to choose from',
+      '20 raw pictures to choose from',
       'Shoot across 3 different spots',
       '8 professionally edited photos',
       'High-resolution digital files',
@@ -29,7 +29,7 @@ const packages = [
     theme: 'dark' as const,
     popular: true,
     features: [
-      '100+ raw pictures to choose from',
+      '50 raw pictures to choose from',
       'Shoot across 3 different spots',
       '15 professionally edited photos',
       'Short cinematic graduation video',
