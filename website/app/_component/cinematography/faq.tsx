@@ -19,7 +19,7 @@ const faqs = [
     a: 'A typical session is 20–30 minutes — quick, relaxed and efficient. We know you have family waiting and celebrations to get to, so we make the most of every minute.',
   },
   {
-    q: 'How do I receive my photos?',
+    q: 'How do I receive my photos and video?',
     a: "We deliver everything digitally within 48 hours of your shoot. You will receive a download link straight to your inbox with all your high-resolution files, ready to share, print or post.",
   },
   {
@@ -27,8 +27,8 @@ const faqs = [
     a: "Your satisfaction matters. If there is something you are not happy with — colour, crop, edit style — just tell us and we will adjust it. We want you to love every single photo.",
   },
   {
-    q: 'Are the photos in the Premium package optimised for LinkedIn?',
-    a: 'Yes. All photos are professionally edited and exported in high resolution, perfect for LinkedIn, Instagram, and printing. We also provide web-optimised versions on request.'
+    q: 'Is the video in the Premium package optimised for LinkedIn?',
+    a: 'Yes. The short cinematic reel is exported in square or portrait format ideal for LinkedIn, Instagram Reels, and TikTok. We also export a 16:9 version on request.'
   },
 ];
 

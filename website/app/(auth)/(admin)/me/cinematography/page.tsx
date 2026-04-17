@@ -70,12 +70,12 @@ const STATUS_CONFIG: Record<
 
 const SERVICE_CONFIG: Record<ServiceType, { label: string; price: string; icon: React.ReactNode }> = {
   PHOTOS_8: {
-    label: 'Essentials · 8 Photos',
+    label: 'Essentials · 40+ pics · 3 spots',
     price: '£35',
     icon: <Camera className="h-4 w-4" />,
   },
   PHOTOS_10_VIDEO: {
-    label: 'Premium · 15 Pictures',
+    label: 'Premium · 100+ pics + video',
     price: '£45',
     icon: <Film className="h-4 w-4" />,
   },

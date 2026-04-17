@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   title:
     'Graduation Photography & Cinematography Surrey | University of Surrey Guildford | WeTrends',
   description:
-    'Professional graduation photography for University of Surrey and Guildford students. 8 stunning photos from £35 or 15 pictures from £45. 48-hour delivery guaranteed. Book your graduation shoot today.',
+    'Professional graduation photography and cinematography for University of Surrey and Guildford students. 40+ pictures across 3 spots from £35 or 100+ pictures + cinematic video from £45. 48-hour delivery guaranteed. Book your graduation shoot today.',
   keywords: [
     'graduation photography Surrey',
     'graduation photographer Guildford',
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     title:
       'Graduation Photography & Cinematography | University of Surrey | WeTrends',
     description:
-      'Capture your graduation day at the University of Surrey with professional photography. Packages from £35 with 48-hour delivery.',
+      'Capture your graduation day at the University of Surrey with professional photography and cinematic video. Packages from £35 with 48-hour delivery.',
     url: 'https://wetrends.co.uk/cinematography/',
     type: 'website',
     locale: 'en_GB',
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Graduation Photography & Cinematography Surrey | WeTrends',
     description:
-      'Professional graduation photography for University of Surrey students. From £35 with 48h delivery.',
+      'Professional graduation photography and cinematography for University of Surrey students. From £35 with 48h delivery.',
   },
 };
 
@@ -62,7 +62,7 @@ const jsonLd = {
   '@type': 'LocalBusiness',
   name: 'WeTrends Graduation Photography',
   description:
-    'Professional graduation photography services for University of Surrey and Guildford students.',
+    'Professional graduation photography and cinematography services for University of Surrey and Guildford students.',
   url: 'https://wetrends.co.uk/cinematography/',
   address: {
     '@type': 'PostalAddress',
@@ -93,11 +93,11 @@ const jsonLd = {
     itemListElement: [
       {
         '@type': 'Offer',
-        name: 'Essentials Package – 8 Photos',
+        name: 'Essentials Package – 40+ Pictures',
         price: '35',
         priceCurrency: 'GBP',
         description:
-          '8 professionally edited graduation photos of your choice, delivered within 48 hours.',
+          '40+ raw pictures across 3 spots with 8 professionally edited graduation photos, delivered within 48 hours.',
       },
       {
         '@type': 'Offer',

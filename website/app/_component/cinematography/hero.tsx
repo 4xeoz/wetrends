@@ -79,11 +79,11 @@ export default function CinematographyHero() {
             >
               <div className="flex items-baseline gap-1.5 rounded-2xl border border-gray-200 bg-white px-5 py-3 shadow-sm">
                 <span className="text-2xl font-bold text-[#0F0F0F]">£35</span>
-                <span className="text-sm text-gray-500">· 8 photos</span>
+                <span className="text-sm text-gray-500">· 40+ pictures · 3 spots</span>
               </div>
               <div className="flex items-baseline gap-1.5 rounded-2xl border border-[#C72C5B]/30 bg-[#C72C5B]/5 px-5 py-3">
                 <span className="text-2xl font-bold text-[#C72C5B]">£45</span>
-                <span className="text-sm text-gray-600">· 15 pictures</span>
+                <span className="text-sm text-gray-600">· 100+ pictures + video</span>
               </div>
             </motion.div>
 

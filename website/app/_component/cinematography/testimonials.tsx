@@ -7,7 +7,7 @@ const testimonials = [
     name: 'Sofia R.',
     detail: 'BSc Computer Science · Surrey 2024',
     quote:
-      "I was sceptical at first — £45 for 15 pictures seemed almost too affordable. But the quality blew me away. My LinkedIn has never looked so good. Photos arrived the very next day.",
+      "I was sceptical at first — £45 for 100+ pictures and a cinematic video seemed almost too affordable. But the quality blew me away. My LinkedIn has never looked so good. Photos arrived the very next day.",
     color: '#0F0F0F',
   },
   {
