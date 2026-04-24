@@ -38,16 +38,6 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
-        // Never cache QR redirects — stale responses break tracking
-        source: "/r/:code",
-        headers: [{ key: "Cache-Control", value: "no-store" }],
-      },
-      {
-        // Also cover trailing-slash variant (trailingSlash: true)
-        source: "/r/:code/",
-        headers: [{ key: "Cache-Control", value: "no-store" }],
-      },
-      {
         source: "/:path*",
         headers: [
           {
