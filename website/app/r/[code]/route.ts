@@ -44,5 +44,7 @@ export async function GET(
     })
     .catch(() => {});
 
-  return NextResponse.redirect(qrLink.destination, { status: 302 });
+  const res = NextResponse.redirect(qrLink.destination, { status: 302 });
+  res.headers.set('Cache-Control', 'no-store');
+  return res;
 }
