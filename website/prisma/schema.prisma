@@ -220,3 +220,27 @@ enum CinemaBookingStatus {
   COMPLETED
   CANCELLED
 }
+
+// QR Code Tracking System
+model QrLink {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  code        String    @unique
+  label       String
+  destination String
+  scans       QrScan[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model QrScan {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  qrLinkId  String   @db.ObjectId
+  qrLink    QrLink   @relation(fields: [qrLinkId], references: [id], onDelete: Cascade)
+  userAgent String?
+  ip        String?
+  country   String?
+  city      String?
+  device    String?
+  referer   String?
+  scannedAt DateTime @default(now())
+}
