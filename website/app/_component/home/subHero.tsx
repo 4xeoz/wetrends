@@ -97,30 +97,20 @@ const SubHero = () => {
           className="relative overflow-hidden bg-[#050505] text-white will-change-[width,height,border-radius]"
           onMouseMove={handleMouseMove}
         >
-          {/* Animated gradient orbs */}
-          <div className="pointer-events-none absolute inset-0 overflow-hidden">
-            <div
-              className="absolute -left-[20%] -top-[20%] h-[80svw] w-[80svw] rounded-full opacity-40"
-              style={{
-                background: 'radial-gradient(circle, rgba(199,44,91,0.35) 0%, transparent 70%)',
-                animation: 'drift1 20s ease-in-out infinite',
-              }}
-            />
-            <div
-              className="absolute -bottom-[30%] -right-[10%] h-[70svw] w-[70svw] rounded-full opacity-30"
-              style={{
-                background: 'radial-gradient(circle, rgba(188,42,80,0.3) 0%, rgba(80,20,40,0.1) 50%, transparent 70%)',
-                animation: 'drift2 25s ease-in-out infinite',
-              }}
-            />
-            <div
-              className="absolute left-1/3 top-1/2 h-[40svw] w-[40svw] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-20"
-              style={{
-                background: 'radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 60%)',
-                animation: 'pulseGlow 8s ease-in-out infinite',
-              }}
+          {/* Video Background */}
+          <div className="absolute inset-0 overflow-hidden">
+            <video
+              src="/videos/video-preview-wetrends.mp4"
+              autoPlay
+              muted
+              loop
+              playsInline
+              className="h-full w-full object-cover"
             />
           </div>
+
+          {/* Dark overlay */}
+          <div className="absolute inset-0 bg-[#050505]/80 pointer-events-none" />
 
           {/* Noise texture overlay */}
           <div

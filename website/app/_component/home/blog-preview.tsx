@@ -1,41 +1,40 @@
 'use client';
 
 import { motion } from 'motion/react';
+import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight, Calendar, ArrowUpRight, BookOpen } from 'lucide-react';
+import { ArrowRight, Calendar, ArrowUpRight, BookOpen, Clock } from 'lucide-react';
 import AnimatedContent from '@/components/ui/animated-content';
+import { format } from 'date-fns';
 
-const previewPosts = [
-  {
-    id: '1',
-    title: 'The Future of Video Marketing in 2024',
-    excerpt: 'Discover how short-form video content is reshaping brand storytelling and driving unprecedented engagement rates.',
-    category: 'Video Production',
-    date: 'Dec 15, 2024',
-    slug: '#',
-    color: '#0F0F0F',
-  },
-  {
-    id: '2',
-    title: 'Building a Brand That Stands Out',
-    excerpt: 'Learn the key principles of creating a distinctive brand identity that resonates with your target audience.',
-    category: 'Branding',
-    date: 'Dec 10, 2024',
-    slug: '#',
-    color: '#C72C5B',
-  },
-  {
-    id: '3',
-    title: 'Social Media Trends to Watch',
-    excerpt: 'Stay ahead of the curve with these emerging social media trends that will define the coming year.',
-    category: 'Social Media',
-    date: 'Dec 5, 2024',
-    slug: '#',
-    color: '#0F0F0F',
-  },
-];
+interface BlogPost {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  featuredImage: string | null;
+  publishedAt: Date | null;
+  category: {
+    name: string;
+    slug: string;
+  } | null;
+  author: {
+    name: string | null;
+  };
+}
 
-export function BlogPreview() {
+interface BlogPreviewProps {
+  posts: BlogPost[];
+}
+
+const fallbackColors = ['#0F0F0F', '#C72C5B', '#0F0F0F'];
+
+export function BlogPreview({ posts }: BlogPreviewProps) {
+  // If no real posts, don't render the section at all
+  if (posts.length === 0) {
+    return null;
+  }
+
   return (
     <section className="relative overflow-hidden bg-white py-12 sm:py-16 md:py-24 lg:py-28">
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full">
@@ -98,7 +97,7 @@ export function BlogPreview() {
 
         {/* Blog Grid */}
         <div className="grid gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {previewPosts.map((post, index) => (
+          {posts.map((post, index) => (
             <AnimatedContent
               key={post.id}
               direction="vertical"
@@ -112,16 +111,27 @@ export function BlogPreview() {
                 transition={{ duration: 0.25 }}
                 className="group"
               >
-                <Link href={post.slug}>
-                  {/* Solid Color Card */}
+                <Link href={`/blogs/${post.slug}`}>
+                  {/* Image or Color Card */}
                   <div 
                     className="relative mb-3 aspect-[16/10] overflow-hidden rounded-xl sm:mb-4 sm:aspect-[4/3] sm:rounded-2xl"
-                    style={{ backgroundColor: post.color }}
+                    style={{ 
+                      backgroundColor: post.featuredImage ? undefined : fallbackColors[index % fallbackColors.length]
+                    }}
                   >
-                    {/* Content */}
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <BookOpen className="w-10 h-10 text-white/30 sm:w-12 sm:h-12 md:w-16 md:h-16" />
-                    </div>
+                    {post.featuredImage ? (
+                      <Image
+                        src={post.featuredImage}
+                        alt={`Featured image for ${post.title} — WeTrends blog on digital marketing and branding`}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        unoptimized
+                      />
+                    ) : (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <BookOpen className="w-10 h-10 text-white/30 sm:w-12 sm:h-12 md:w-16 md:h-16" />
+                      </div>
+                    )}
                     
                     {/* Overlay */}
                     <div className="absolute inset-0 bg-black/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
@@ -135,18 +145,32 @@ export function BlogPreview() {
                     </div>
 
                     {/* Category Badge */}
-                    <div className="absolute left-3 top-3 sm:left-4 sm:top-4">
-                      <span className="rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-semibold text-gray-900 backdrop-blur-sm sm:px-3 sm:py-1 sm:text-xs">
-                        {post.category}
-                      </span>
-                    </div>
+                    {post.category && (
+                      <div className="absolute left-3 top-3 sm:left-4 sm:top-4">
+                        <span className="rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-semibold text-gray-900 backdrop-blur-sm sm:px-3 sm:py-1 sm:text-xs">
+                          {post.category.name}
+                        </span>
+                      </div>
+                    )}
                   </div>
 
                   {/* Content */}
                   <div>
-                    <div className="mb-1 flex items-center gap-1.5 text-xs text-gray-500 sm:mb-2 sm:gap-2 sm:text-sm">
-                      <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
-                      {post.date}
+                    <div className="mb-1 flex items-center gap-3 text-xs text-gray-500 sm:mb-2 sm:text-sm">
+                      <span className="flex items-center gap-1.5">
+                        <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
+                        {post.publishedAt ? (
+                          <time dateTime={new Date(post.publishedAt).toISOString()}>
+                            {format(new Date(post.publishedAt), 'MMM d, yyyy')}
+                          </time>
+                        ) : (
+                          'Draft'
+                        )}
+                      </span>
+                      <span className="flex items-center gap-1.5">
+                        <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
+                        {Math.ceil(post.excerpt.split(' ').length / 200)} min read
+                      </span>
                     </div>
                     
                     <h3 className="mb-1 text-base font-bold text-gray-900 transition-colors group-hover:text-[#C72C5B] sm:mb-2 sm:text-lg md:text-xl">

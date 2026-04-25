@@ -24,169 +24,114 @@ export interface CaseStudy {
 
 export const caseStudies: CaseStudy[] = [
   {
-    slug: 'surrey-wellness',
+    slug: 'nopeca',
     number: '01',
-    client: 'Surrey Wellness',
-    industry: 'Health & Wellness',
+    client: 'Nopeca',
+    industry: 'Education',
     service: 'Web Design',
     serviceSlug: 'web-design',
-    location: 'Guildford, Surrey',
-    tagline: 'From invisible to industry-leading in 60 days',
-    metric: '+250%',
-    metricLabel: 'Increase in online enquiries',
+    location: 'London, UK',
+    tagline: 'A website that gives parents confidence before they even visit',
+    metric: '+180%',
+    metricLabel: 'Increase in enquiries',
     description:
-      'Surrey Wellness came to us with a dated website that was losing them customers daily. We rebuilt their entire digital presence from the ground up with a conversion-first approach — and the results speak for themselves.',
+      "Nopeca had a brilliant approach to education but a website that looked like it was built during the dial up era. We rebuilt their digital presence so parents feel confident about their child's future.",
     challenge:
-      'Surrey Wellness was the best wellness clinic in Guildford — but nobody knew it. Their old website was slow, mobile-unfriendly, and buried on page 4 of Google. Competitors with half the quality were getting all the leads.',
+      "Nopeca was the best educational consultancy in their area — but nobody knew it. Their site was confusing, slow, and buried on page three of Google. Meanwhile, the school down the road was fully booked with a website that wasn't half as good.",
     approach: [
       {
         step: '01',
         title: 'Deep Discovery',
         description:
-          'We audited their existing site, interviewed 12 past clients, and mapped the full customer journey from search to booking.',
+          'Talked to parents, teachers, and students. Mapped the full journey from "I need a school" to "Enrolment confirmed" and found every point where people lost faith.',
       },
       {
         step: '02',
-        title: 'Conversion Architecture',
+        title: 'Conversion Design',
         description:
-          'Designed every page around a single goal: getting visitors to book a consultation. Clear hierarchy, social proof at every scroll point, and a frictionless booking flow.',
+          'Clear messaging, easy navigation, trust signals everywhere. Every page built to turn curious parents into enrolled families. If it doesn\'t build confidence, it doesn\'t go on the page.',
       },
       {
         step: '03',
-        title: 'SEO-First Build',
+        title: 'Speed First Build',
         description:
-          'Built with Next.js for a 97 PageSpeed score. Structured data, local SEO optimisation, and a content strategy targeting 40+ high-intent keywords.',
+          'Next.js, 97 PageSpeed score, mobile first. Because parents browse on their phones at 11pm when the kids are finally asleep.',
       },
       {
         step: '04',
         title: 'Launch & Optimise',
         description:
-          'A/B tested key landing pages post-launch. Iterated on hero copy and CTA placement over the first 30 days based on heatmap and session data.',
+          'A/B tested headlines, simplified enquiry forms. The winning version asked for less information upfront and had bigger buttons. Obvious in hindsight.',
       },
     ],
     results: [
-      { value: '+250%', label: 'Online enquiries' },
-      { value: '#1', label: 'Google ranking for key terms' },
-      { value: '97', label: 'PageSpeed score' },
-      { value: '60 days', label: 'Time to #1 ranking' },
+      { value: '+180%', label: 'Enquiries' },
+      { value: '4.9★', label: 'Average parent rating' },
+      { value: '2 min', label: 'Average session time' },
+      { value: '40%', label: 'Return visit rate' },
     ],
     testimonial: {
       quote:
-        'WeTrends completely transformed how patients find us online. Our enquiries tripled within two months and we had to hire two extra therapists to keep up with demand.',
-      author: 'Dr. Lisa Park',
-      role: 'Founder, Surrey Wellness',
+        "WeTrends built us a site that finally reflects who we are. Enquiries nearly tripled and parents keep telling us they chose us because the website made them feel confident about their child's future.",
+      author: 'Dr. Marco Silva',
+      role: 'Director, Nopeca',
     },
     accent: true,
   },
   {
-    slug: 'guildford-cafe-co',
+    slug: 'savana-lounge',
     number: '02',
-    client: 'Guildford Cafe Co',
+    client: 'Savana Lounge',
     industry: 'Hospitality',
-    service: 'Social Media',
-    serviceSlug: 'social-media',
-    location: 'Guildford, Surrey',
-    tagline: '500 to 50,000 followers. Coffee, culture, and community.',
-    metric: '500 → 50k',
-    metricLabel: 'Followers in 6 months',
+    service: 'Brand Identity',
+    serviceSlug: 'brand-identity',
+    location: 'Surrey, UK',
+    tagline: 'A brand that makes people choose Savana before they check the menu',
+    metric: '+320%',
+    metricLabel: 'Boost in direct bookings',
     description:
-      'A beloved local coffee shop with a loyal but small audience. We built a content machine that made them the most-talked-about spot in Guildford — and turned social followers into daily regulars.',
+      "Savana Lounge had incredible food and a brand that looked like every other restaurant on the high street. We figured out what made them different and built an identity people actually remember.",
     challenge:
-      'Guildford Cafe Co had incredible coffee, a stunning space, and zero social presence. They were relying entirely on foot traffic while competitors were building audiences of tens of thousands. They needed a social identity as good as their espresso.',
+      "The food at Savana Lounge was class. But their brand was forgettable. When people can't tell the difference between you and the place next door, they choose on price or convenience. That's a race Savana couldn't win.",
     approach: [
       {
         step: '01',
-        title: 'Brand Voice & Visual Identity',
+        title: 'Brand Archaeology',
         description:
-          'Created a distinct social persona rooted in local culture: warm, witty, and visually consistent. Every post felt unmistakably them.',
+          'Dug into their story, their regulars, and the atmosphere nobody else was capturing. Found the one thing only Savana Lounge could own.',
       },
       {
         step: '02',
-        title: 'Content Pillars',
+        title: 'Visual Identity',
         description:
-          'Built a weekly content rhythm across 4 pillars: behind-the-scenes craft, community stories, menu moments, and local culture — each designed to drive saves, shares, and follows.',
+          'Colours, typography, photography style. Everything designed to feel unmistakably Savana Lounge. If you covered up the logo, you\'d still know it was them.',
       },
       {
         step: '03',
-        title: 'Trend-Led Execution',
+        title: 'Digital Experience',
         description:
-          'Our weekly Trend Radar flagged viral formats early. We adapted them to the brand\'s voice and published at peak engagement windows.',
+          'Translated the brand into a web experience that feels as warm as the restaurant itself. Every scroll should make you want to book a table.',
       },
       {
         step: '04',
-        title: 'Community Management',
+        title: 'Launch Strategy',
         description:
-          'Responded to every comment and DM within 2 hours. Turned casual followers into brand advocates through genuine, human interaction.',
+          'Rolled it out across every touchpoint. Consistent, confident, impossible to ignore. The rebrand paid for itself in the first month.',
       },
     ],
     results: [
-      { value: '500 → 50k', label: 'Followers grown' },
-      { value: '4.2×', label: 'ROI on social spend' },
-      { value: '340%', label: 'Increase in foot traffic' },
-      { value: '6 months', label: 'Time to 50k followers' },
+      { value: '+320%', label: 'Direct bookings' },
+      { value: '65%', label: 'Returning customers' },
+      { value: '3×', label: 'Social engagement' },
+      { value: '50k', label: 'New followers' },
     ],
     testimonial: {
       quote:
-        'I used to think social media was for big brands. WeTrends proved me completely wrong. Our Instagram is now our busiest customer channel — people come in specifically because they found us online.',
-      author: 'Michael Brown',
-      role: 'Owner, Guildford Cafe Co',
+        "WeTrends didn't just give us a new look. They figured out who we actually are and put it into words and visuals we never could have got to ourselves. Our customers notice the difference.",
+      author: 'James Osei',
+      role: 'Owner, Savana Lounge',
     },
     accent: false,
-  },
-  {
-    slug: 'techstart-uk',
-    number: '03',
-    client: 'TechStart UK',
-    industry: 'Technology',
-    service: 'Video Production',
-    serviceSlug: 'video-production',
-    location: 'London & Surrey',
-    tagline: 'A brand film that closed a £2M funding round',
-    metric: '1,200%',
-    metricLabel: 'Boost in content shares',
-    description:
-      'TechStart UK needed to explain a complex AI product to investors and customers in a way that was clear, compelling, and memorable. We created a brand film that became the centrepiece of their £2M funding pitch.',
-    challenge:
-      'TechStart had brilliant technology but struggled to explain it. Their existing content was technical, dry, and landing with neither investors nor customers. They had a funding pitch in 8 weeks and needed something that could make a room full of VCs lean forward.',
-    approach: [
-      {
-        step: '01',
-        title: 'Story First',
-        description:
-          'We distilled 47 pages of technical documentation into one human story: a founder who couldn\'t find the insight she needed, and the tool that changed everything. Emotion over specification.',
-      },
-      {
-        step: '02',
-        title: 'Pre-Production',
-        description:
-          'Three rounds of scriptwriting. Storyboarded every shot. Cast a real founder — not an actor — for authenticity. Location scouted across London and Surrey for a cinematic feel.',
-      },
-      {
-        step: '03',
-        title: 'Cinema-Grade Production',
-        description:
-          'Shot over 2 days with a RED camera, professional lighting rig, and a 6-person crew. Every frame designed to feel premium, not startup-bootstrap.',
-      },
-      {
-        step: '04',
-        title: 'Post & Delivery',
-        description:
-          'Full colour grade, original score, motion graphics to visualise the product. Delivered in 6 formats: pitch deck embed, website hero, LinkedIn, YouTube, Instagram Reel, and TV-safe.',
-      },
-    ],
-    results: [
-      { value: '£2M', label: 'Funding raised after pitch' },
-      { value: '1,200%', label: 'Boost in content shares' },
-      { value: '250k', label: 'Views in first week' },
-      { value: '87%', label: 'Pitch success rate' },
-    ],
-    testimonial: {
-      quote:
-        'Every investor we pitched said the film was the reason they stayed in the room. It\'s the single best investment we\'ve ever made in our marketing. WeTrends didn\'t just make a video — they told our story.',
-      author: 'Sarah Mitchell',
-      role: 'CEO, TechStart UK',
-    },
-    accent: true,
   },
 ];
 

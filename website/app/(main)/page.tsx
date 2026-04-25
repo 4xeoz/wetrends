@@ -4,15 +4,15 @@ import Hero from '../_component/home/hero';
 import SubHero from '../_component/home/subHero';
 import { CaseStudies } from '../_component/home/case-studies';
 import { Team } from '../_component/home/team';
-
 import { Services } from '../_component/home/services';
-
 import { BlogPreview } from '../_component/home/blog-preview';
+import { HomeFaq } from '../_component/home/faq';
 import Contact from '../_component/home/contact';
+import { getPublishedPosts } from '@/actions/blog';
 
 export const metadata: Metadata = {
-  title: "Digital Marketing Agency Guildford Surrey | Video, Social Media & Web Design",
-  description: "WeTrends is Guildford's leading creative agency. We help Surrey businesses grow with video production, social media management, web design & branding. Local experts, national reach.",
+  title: "WeTrends | Creative Digital Agency Guildford, Surrey | Web Design & Branding",
+  description: "WeTrends is a creative digital agency based in Guildford, Surrey, UK. We build uncopyable brands through bespoke web design, brand identity, video production, and social media management for small businesses across Surrey and London.",
   alternates: {
     canonical: "https://wetrends.co.uk/",
   },
@@ -26,17 +26,19 @@ export const metadata: Metadata = {
   },
 };
 
-export default function Home() {
+export default async function Home() {
+  const result = await getPublishedPosts(3);
+  const posts = result.success && result.posts ? result.posts : [];
+
   return (
     <div className="">
       <Hero/> 
       <SubHero/>
       <CaseStudies />
+      <HomeFaq />
       <Team />
-
       <Services />
-
-      <BlogPreview />
+      <BlogPreview posts={posts} />
       <Contact/>
     </div>
   );
