@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, useInView, AnimatePresence } from 'motion/react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowUpRight, ArrowRight } from 'lucide-react';
 
-const caseStudies = [
+const works = [
   {
     id: '01',
     client: 'Nopeca',
@@ -14,11 +14,11 @@ const caseStudies = [
     year: '2024',
     metric: '+180%',
     metricLabel: 'Enquiries',
-    description: "A website that gives parents confidence before they even step through the door.",
+    description:
+      'A website that gives parents confidence before they even step through the door.',
     href: '/case-studies/nopeca/',
     image: '/images/nopeca-mockup.webp',
     color: '#C72C5B',
-    featured: true,
   },
   {
     id: '02',
@@ -27,296 +27,351 @@ const caseStudies = [
     year: '2024',
     metric: '+320%',
     metricLabel: 'Direct bookings',
-    description: 'A brand that makes people choose Savana before they even check the menu.',
+    description:
+      'A brand that makes people choose Savana before they even check the menu.',
     href: '/case-studies/savana-lounge/',
     image: '/images/savana-mockup.png',
     color: '#0F0F0F',
-    featured: false,
   },
 ];
 
-export function CaseStudies() {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [isHovering, setIsHovering] = useState(false);
-  const containerRef = useRef(null);
-  const isInView = useInView(containerRef, { once: true, margin: "-100px" });
+function WorkCard({
+  work,
+  index,
+  isActive,
+  onActivate,
+}: {
+  work: (typeof works)[0];
+  index: number;
+  isActive: boolean;
+  onActivate: () => void;
+}) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(cardRef, { margin: '-40% 0px -40% 0px' });
 
-  const activeStudy = caseStudies[activeIndex];
+  useEffect(() => {
+    if (isInView) {
+      onActivate();
+    }
+  }, [isInView, onActivate]);
 
   return (
-    <section id="case-studies" ref={containerRef} className="relative bg-white overflow-hidden">
-
-      <div className="relative">
-        {/* Header Section */}
-        <div className="px-4 sm:px-6 lg:px-8 xl:px-12 pt-24 pb-12">
-          <div className="max-w-7xl mx-auto">
-            <motion.div
-              initial={{ opacity: 0, y: 60 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-              className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8"
+    <div
+      ref={cardRef}
+      className="min-h-[70vh] flex items-center py-12 md:py-0"
+    >
+      <motion.div
+        initial={{ opacity: 0, x: 40 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        viewport={{ once: true, margin: '-100px' }}
+        transition={{ duration: 0.8, delay: index * 0.1 }}
+        className={`w-full rounded-3xl border p-8 transition-all duration-500 sm:p-10 md:p-12 ${
+          isActive
+            ? 'border-[#C72C5B]/20 bg-gray-50'
+            : 'border-transparent bg-transparent hover:bg-gray-50/50'
+        }`}
+      >
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <span
+              className={`text-sm font-mono transition-colors ${
+                isActive ? 'text-[#C72C5B]' : 'text-gray-300'
+              }`}
             >
-              <div>
-                <motion.span 
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={isInView ? { opacity: 1, x: 0 } : {}}
-                  transition={{ duration: 0.6, delay: 0.2 }}
-                  className="inline-flex items-center gap-2 text-sm font-medium text-[#C72C5B] mb-4"
-                >
-                  <span className="w-8 h-px bg-[#C72C5B]" />
-                  Selected Work
-                </motion.span>
-                <h2 className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold text-[#0F0F0F] leading-[0.9]">
-                  Work That
-                  <br />
-                  <span className="font-serif italic text-[#C72C5B]">Speaks</span>
-                </h2>
-              </div>
-              
-              <motion.p 
-                initial={{ opacity: 0, y: 20 }}
-                animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.6, delay: 0.3 }}
-                className="text-lg text-gray-500 max-w-md lg:text-right"
+              {work.id}
+            </span>
+            <div>
+              <h4
+                className={`text-2xl font-bold transition-colors sm:text-3xl ${
+                  isActive ? 'text-[#0F0F0F]' : 'text-gray-400'
+                }`}
               >
-                Real results for ambitious brands. Each project tells a story of transformation.
-              </motion.p>
-            </motion.div>
+                {work.client}
+              </h4>
+              <p className="text-sm text-gray-400">{work.service}</p>
+            </div>
+          </div>
+
+          <div
+            className={`text-right transition-all ${
+              isActive ? 'opacity-100' : 'opacity-0'
+            }`}
+          >
+            <span className="block text-4xl font-bold text-[#C72C5B] sm:text-5xl">
+              {work.metric}
+            </span>
+            <span className="text-xs text-gray-400">{work.metricLabel}</span>
           </div>
         </div>
 
-        {/* Main Showcase Area */}
-        <div className="px-4 sm:px-6 lg:px-8 xl:px-12 py-12">
-          <div className="max-w-7xl mx-auto">
-            <div className="grid lg:grid-cols-2 gap-8 lg:gap-16">
-              
-              {/* Left: Large Featured Image */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={isInView ? { opacity: 1, scale: 1 } : {}}
-                transition={{ duration: 0.8, delay: 0.2 }}
-                className="relative aspect-[4/3] lg:aspect-square rounded-3xl overflow-hidden group"
-                onMouseEnter={() => setIsHovering(true)}
-                onMouseLeave={() => setIsHovering(false)}
+        <p className="mt-6 max-w-md text-base leading-relaxed text-gray-600 sm:text-lg">
+          {work.description}
+        </p>
+
+        <div className="mt-6 flex items-center gap-4">
+          <span className="rounded-full bg-white px-4 py-1.5 text-xs font-bold text-[#0F0F0F] border border-gray-100">
+            {work.service}
+          </span>
+          <span className="rounded-full bg-white px-3 py-1.5 text-xs text-gray-500 border border-gray-100">
+            {work.year}
+          </span>
+        </div>
+
+        <div className="mt-8 h-0.5 overflow-hidden rounded-full bg-gray-100">
+          <motion.div
+            className="h-full bg-[#C72C5B]"
+            initial={{ width: '0%' }}
+            animate={{ width: isActive ? '100%' : '0%' }}
+            transition={{ duration: 0.5 }}
+          />
+        </div>
+
+        <Link
+          href={work.href}
+          className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-[#0F0F0F] transition-colors hover:text-[#C72C5B] group"
+        >
+          View Case Study
+          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+        </Link>
+      </motion.div>
+    </div>
+  );
+}
+
+export function CaseStudies() {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const headerRef = useRef(null);
+  const isHeaderInView = useInView(headerRef, {
+    once: true,
+    margin: '-100px',
+  });
+
+  return (
+    <section id="work" className="relative bg-white">
+      {/* Header */}
+      <div
+        ref={headerRef}
+        className="px-4 pb-12 pt-24 sm:px-6 sm:pb-16 sm:pt-32 lg:px-8 xl:px-12"
+      >
+        <div className="mx-auto max-w-7xl">
+          <motion.div
+            initial={{ opacity: 0, y: 60 }}
+            animate={isHeaderInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between"
+          >
+            <div>
+              <motion.span
+                initial={{ opacity: 0, x: -20 }}
+                animate={isHeaderInView ? { opacity: 1, x: 0 } : {}}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="mb-4 inline-flex items-center gap-2 text-sm font-medium text-[#C72C5B]"
               >
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={activeIndex}
-                    initial={{ opacity: 0, scale: 1.1 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    transition={{ duration: 0.5 }}
-                    className="absolute inset-0"
-                  >
-                    {/* Image */}
-                    <div 
-                      className="absolute inset-0 transition-transform duration-700 group-hover:scale-105"
-                      style={{ backgroundColor: activeStudy.color }}
-                    >
-                      <Image
-                        src={activeStudy.image}
-                        alt={`${activeStudy.client} ${activeStudy.service.toLowerCase()} mockup by WeTrends, a creative agency in Guildford, Surrey`}
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 1024px) 100vw, 50vw"
-                      />
-                    </div>
-                  </motion.div>
-                </AnimatePresence>
+                <span className="h-px w-8 bg-[#C72C5B]" />
+                Selected Work
+              </motion.span>
+              <h2 className="text-5xl font-bold leading-[0.9] text-[#0F0F0F] md:text-6xl lg:text-7xl xl:text-8xl">
+                Our
+                <br />
+                <span className="font-serif italic text-[#C72C5B]">Work</span>
+              </h2>
+            </div>
 
-                {/* Dark overlay on image */}
-                <div className="absolute inset-0 bg-black/30 pointer-events-none" />
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={isHeaderInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="max-w-md text-lg text-gray-500 lg:text-right"
+            >
+              Real results for ambitious brands. Each project tells a story of
+              transformation.
+            </motion.p>
+          </motion.div>
+        </div>
+      </div>
 
-                {/* Overlay Gradient */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-
-                {/* Floating Badge */}
-                <motion.div 
-                  className="absolute top-6 left-6 flex items-center gap-3"
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
-                >
-                  <span className="px-4 py-1.5 rounded-full bg-white text-[#0F0F0F] text-xs font-bold">
-                    {activeStudy.service}
-                  </span>
-                  <span className="px-3 py-1.5 rounded-full bg-white/20 backdrop-blur-sm text-white text-xs">
-                    {activeStudy.year}
-                  </span>
-                </motion.div>
-
-                {/* View Button */}
-                <Link href={activeStudy.href}>
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: isHovering ? 1 : 0, scale: isHovering ? 1 : 0.8 }}
-                    className="absolute inset-0 flex items-center justify-center"
-                  >
-                    <div className="w-24 h-24 rounded-full bg-white flex items-center justify-center">
-                      <ArrowUpRight className="w-8 h-8 text-[#0F0F0F]" />
-                    </div>
-                  </motion.div>
-                </Link>
-
-                {/* Bottom Info */}
-                <div className="absolute bottom-6 left-6 right-6">
+      {/* Sticky Scroll Showcase */}
+      <div className="px-4 sm:px-6 lg:px-8 xl:px-12">
+        <div className="mx-auto max-w-7xl">
+          <div className="grid gap-8 lg:grid-cols-2 lg:gap-16">
+            {/* Left: Sticky Image */}
+            <div className="hidden lg:block">
+              <div className="sticky top-24 h-[calc(100vh-12rem)]">
+                <div className="relative h-full w-full overflow-hidden rounded-3xl">
                   <AnimatePresence mode="wait">
                     <motion.div
                       key={activeIndex}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -20 }}
+                      initial={{ opacity: 0, scale: 1.05 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      transition={{ duration: 0.6 }}
+                      className="absolute inset-0"
                     >
-                      <h3 className="text-3xl md:text-4xl font-bold text-white mb-2">
-                        {activeStudy.client}
-                      </h3>
-                      <p className="text-white/80 text-sm max-w-sm">
-                        {activeStudy.description}
-                      </p>
+                      <div
+                        className="absolute inset-0"
+                        style={{ backgroundColor: works[activeIndex].color }}
+                      >
+                        <Image
+                          src={works[activeIndex].image}
+                          alt={`${works[activeIndex].client} ${works[activeIndex].service.toLowerCase()} mockup by WeTrends, a creative agency in Guildford, Surrey`}
+                          fill
+                          className="object-cover"
+                          sizes="50vw"
+                        />
+                      </div>
                     </motion.div>
                   </AnimatePresence>
-                </div>
-              </motion.div>
 
-              {/* Right: Case Study List */}
-              <div className="flex flex-col justify-center">
-                <div className="space-y-2">
-                  {caseStudies.map((study, index) => (
-                    <motion.div
-                      key={study.id}
-                      initial={{ opacity: 0, x: 40 }}
-                      animate={isInView ? { opacity: 1, x: 0 } : {}}
-                      transition={{ duration: 0.6, delay: 0.3 + index * 0.1 }}
-                    >
-                      <button
-                        onClick={() => setActiveIndex(index)}
-                        className={`w-full text-left p-6 rounded-2xl transition-all duration-300 group ${
-                          activeIndex === index 
-                            ? 'bg-gray-50 border border-gray-100' 
-                            : 'bg-transparent hover:bg-gray-50/50 border border-transparent'
-                        }`}
+                  {/* Overlays */}
+                  <div className="absolute inset-0 bg-black/30 pointer-events-none" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+
+                  {/* Bottom Info */}
+                  <div className="absolute bottom-6 left-6 right-6">
+                    <AnimatePresence mode="wait">
+                      <motion.div
+                        key={activeIndex}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ duration: 0.4 }}
                       >
-                        <div className="flex items-start justify-between gap-4">
-                          <div className="flex items-center gap-4">
-                            <span className={`text-sm font-mono transition-colors ${
-                              activeIndex === index ? 'text-[#C72C5B]' : 'text-gray-300'
-                            }`}>
-                              {study.id}
-                            </span>
-                            <div>
-                              <h4 className={`text-xl font-bold transition-colors ${
-                                activeIndex === index ? 'text-[#0F0F0F]' : 'text-gray-400'
-                              }`}>
-                                {study.client}
-                              </h4>
-                              <p className="text-sm text-gray-400">{study.service}</p>
-                            </div>
-                          </div>
-                          
-                          {/* Metric */}
-                          <div className={`text-right transition-all ${
-                            activeIndex === index ? 'opacity-100' : 'opacity-0'
-                          }`}>
-                            <span className="block text-3xl font-bold text-[#C72C5B]">
-                              {study.metric}
-                            </span>
-                            <span className="text-xs text-gray-400">{study.metricLabel}</span>
-                          </div>
-                        </div>
-
-                        {/* Progress Bar */}
-                        <div className="mt-4 h-0.5 bg-gray-100 rounded-full overflow-hidden">
-                          <motion.div 
-                            className="h-full bg-[#C72C5B]"
-                            initial={{ width: 0 }}
-                            animate={{ width: activeIndex === index ? '100%' : '0%' }}
-                            transition={{ duration: 0.5 }}
-                          />
-                        </div>
-                      </button>
-                    </motion.div>
-                  ))}
-                </div>
-
-                {/* Navigation */}
-                <motion.div 
-                  initial={{ opacity: 0 }}
-                  animate={isInView ? { opacity: 1 } : {}}
-                  transition={{ delay: 0.6 }}
-                  className="mt-8 flex items-center justify-between"
-                >
-                  <div className="flex items-center gap-2">
-                    {caseStudies.map((_, index) => (
-                      <button
-                        key={index}
-                        onClick={() => setActiveIndex(index)}
-                        className={`h-2 rounded-full transition-all ${
-                          activeIndex === index 
-                            ? 'w-8 bg-[#C72C5B]' 
-                            : 'w-2 bg-gray-200 hover:bg-gray-300'
-                        }`}
-                      />
-                    ))}
+                        <h3 className="text-3xl font-bold text-white md:text-4xl">
+                          {works[activeIndex].client}
+                        </h3>
+                        <p className="mt-1 text-sm text-white/80">
+                          {works[activeIndex].description}
+                        </p>
+                      </motion.div>
+                    </AnimatePresence>
                   </div>
 
-                  <Link 
-                    href={activeStudy.href}
-                    className="flex items-center gap-2 text-[#0F0F0F] hover:text-[#C72C5B] transition-colors group"
+                  {/* Floating Badge */}
+                  <div className="absolute left-6 top-6 flex items-center gap-3">
+                    <span className="rounded-full bg-white px-4 py-1.5 text-xs font-bold text-[#0F0F0F]">
+                      {works[activeIndex].service}
+                    </span>
+                    <span className="rounded-full bg-white/20 px-3 py-1.5 text-xs text-white backdrop-blur-sm">
+                      {works[activeIndex].year}
+                    </span>
+                  </div>
+
+                  {/* View Link */}
+                  <Link
+                    href={works[activeIndex].href}
+                    className="absolute right-6 top-6 flex h-12 w-12 items-center justify-center rounded-full bg-white text-[#0F0F0F] transition-transform hover:scale-110"
                   >
-                    <span className="text-sm font-medium">View Case Study</span>
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    <ArrowUpRight className="h-5 w-5" />
                   </Link>
-                </motion.div>
+                </div>
               </div>
+            </div>
+
+            {/* Mobile Images */}
+            <div className="space-y-6 lg:hidden">
+              {works.map((work, index) => (
+                <motion.div
+                  key={work.id}
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: '-100px' }}
+                  transition={{ duration: 0.8, delay: index * 0.1 }}
+                  className="relative aspect-[4/3] overflow-hidden rounded-3xl"
+                >
+                  <div
+                    className="absolute inset-0"
+                    style={{ backgroundColor: work.color }}
+                  >
+                    <Image
+                      src={work.image}
+                      alt={`${work.client} ${work.service.toLowerCase()} mockup by WeTrends, a creative agency in Guildford, Surrey`}
+                      fill
+                      className="object-cover"
+                      sizes="100vw"
+                    />
+                  </div>
+                  <div className="absolute inset-0 bg-black/30" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                  <div className="absolute left-4 top-4 flex items-center gap-2">
+                    <span className="rounded-full bg-white px-3 py-1 text-xs font-bold text-[#0F0F0F]">
+                      {work.service}
+                    </span>
+                  </div>
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <h3 className="text-2xl font-bold text-white">
+                      {work.client}
+                    </h3>
+                    <p className="text-sm text-white/80">{work.description}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Right: Scrolling Work Cards */}
+            <div className="flex flex-col">
+              {works.map((work, index) => (
+                <WorkCard
+                  key={work.id}
+                  work={work}
+                  index={index}
+                  isActive={activeIndex === index}
+                  onActivate={() => setActiveIndex(index)}
+                />
+              ))}
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Bottom Marquee */}
-        <div className="py-12 border-t border-gray-100 overflow-hidden">
-          <motion.div 
-            className="flex whitespace-nowrap"
-            animate={{ x: [0, -1000] }}
-            transition={{ 
-              repeat: Infinity, 
-              duration: 20, 
-              ease: "linear" 
-            }}
-          >
-            {[...Array(4)].map((_, i) => (
-              <div key={i} className="flex items-center gap-8 mx-8">
-                <span className="text-6xl md:text-8xl font-bold text-black">WORK</span>
-                <span className="w-4 h-4 rounded-full bg-[#C72C5B]" />
-                <span className="text-6xl md:text-8xl font-serif italic text-black">Speaks</span>
-                <span className="w-4 h-4 rounded-full bg-black" />
-              </div>
-            ))}
-          </motion.div>
-        </div>
+      {/* Bottom Marquee */}
+      <div className="overflow-hidden border-t border-gray-100 py-12">
+        <motion.div
+          className="flex whitespace-nowrap"
+          animate={{ x: [0, -1000] }}
+          transition={{
+            repeat: Infinity,
+            duration: 20,
+            ease: 'linear',
+          }}
+        >
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="mx-8 flex items-center gap-8">
+              <span className="text-6xl font-bold text-black md:text-8xl">
+                WORK
+              </span>
+              <span className="h-4 w-4 rounded-full bg-[#C72C5B]" />
+              <span className="font-serif text-6xl italic text-black md:text-8xl">
+                Speaks
+              </span>
+              <span className="h-4 w-4 rounded-full bg-black" />
+            </div>
+          ))}
+        </motion.div>
+      </div>
 
-        {/* Bottom CTA */}
-        <div className="px-4 sm:px-6 lg:px-8 xl:px-12 pb-24">
-          <motion.div 
-            initial={{ opacity: 0, y: 40 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.7 }}
-            className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-4"
+      {/* Bottom CTA */}
+      <div className="px-4 pb-24 pt-12 sm:px-6 lg:px-8 xl:px-12">
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-100px' }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="mx-auto flex max-w-7xl flex-col items-center justify-center gap-4 sm:flex-row"
+        >
+          <Link
+            href="/services/"
+            className="group inline-flex items-center gap-3 rounded-full bg-[#0F0F0F] px-8 py-4 text-base font-bold text-white transition-all hover:bg-[#C72C5B]"
           >
-            <Link
-              href="/services/"
-              className="inline-flex items-center gap-3 rounded-full bg-[#0F0F0F] px-8 py-4 text-base font-bold text-white transition-all hover:bg-[#C72C5B] group"
-            >
-              Explore All Services
-              <ArrowUpRight className="w-5 h-5 group-hover:rotate-45 transition-transform" />
-            </Link>
-            <Link
-              href="/#contact"
-              className="inline-flex items-center gap-3 rounded-full border-2 border-gray-200 px-8 py-4 text-base font-bold text-[#0F0F0F] transition-all hover:border-[#0F0F0F] hover:bg-[#0F0F0F] hover:text-white"
-            >
-              Start Your Project
-            </Link>
-          </motion.div>
-        </div>
+            Explore All Services
+            <ArrowUpRight className="h-5 w-5 transition-transform group-hover:rotate-45" />
+          </Link>
+          <Link
+            href="/#contact"
+            className="inline-flex items-center gap-3 rounded-full border-2 border-gray-200 px-8 py-4 text-base font-bold text-[#0F0F0F] transition-all hover:border-[#0F0F0F] hover:bg-[#0F0F0F] hover:text-white"
+          >
+            Start Your Project
+          </Link>
+        </motion.div>
       </div>
     </section>
   );
