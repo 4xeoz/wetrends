@@ -20,7 +20,7 @@ interface BlogPost {
   } | null;
   author: {
     name: string | null;
-  };
+  } | null;
 }
 
 interface BlogPreviewProps {

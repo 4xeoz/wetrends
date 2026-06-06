@@ -26,7 +26,7 @@ interface Post {
   author: {
     name: string | null;
     image: string | null;
-  };
+  } | null;
 }
 
 interface BlogListProps {
@@ -159,7 +159,7 @@ export function BlogList({ posts, categories }: BlogListProps) {
                           <User className="h-3.5 w-3.5 text-gray-500" />
                         </div>
                         <span className="text-sm font-medium text-gray-600">
-                          {post.author.name || 'Anonymous'}
+                          {post.author?.name || 'Anonymous'}
                         </span>
                       </div>
                       <span className="flex items-center gap-1 text-sm font-semibold text-[#C72C5B] transition-transform group-hover:translate-x-1">

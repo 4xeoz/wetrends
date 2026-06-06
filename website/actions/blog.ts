@@ -138,7 +138,7 @@ interface CreatePostData {
   content: string;
   featuredImage?: string;
   categoryId?: string;
-  authorId: string;
+  authorId?: string;
   metaTitle?: string;
   metaDescription?: string;
   keywords?: string[];
@@ -151,11 +151,35 @@ export async function createPost(data: CreatePostData) {
     return { success: false, message: 'Unauthorized' };
   }
 
+  // Validate slug format
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(data.slug)) {
+    return { success: false, message: 'Slug must be lowercase, hyphenated, and URL-safe' };
+  }
+
   try {
+    // Check slug uniqueness
+    const existing = await prisma.blogPost.findUnique({
+      where: { slug: data.slug },
+    });
+    if (existing) {
+      return { success: false, message: 'A post with this slug already exists' };
+    }
+
+    // Validate categoryId exists (if provided)
+    if (data.categoryId) {
+      const category = await prisma.blogCategory.findUnique({
+        where: { id: data.categoryId },
+        select: { id: true },
+      });
+      if (!category) {
+        return { success: false, message: `Category with id '${data.categoryId}' does not exist` };
+      }
+    }
+
     const post = await prisma.blogPost.create({
       data: {
         ...data,
-        authorId: session.user.id,
+        authorId: data.authorId || session.user.id || null,
         publishedAt: data.published ? new Date() : null,
       },
     });
@@ -192,11 +216,55 @@ export async function updatePost(data: UpdatePostData) {
   try {
     const { id, ...updateData } = data;
 
+    // Check post exists
+    const existingPost = await prisma.blogPost.findUnique({
+      where: { id },
+    });
+    if (!existingPost) {
+      return { success: false, message: 'Post not found' };
+    }
+
+    // Validate slug format (if changing)
+    if (updateData.slug && !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(updateData.slug)) {
+      return { success: false, message: 'Slug must be lowercase, hyphenated, and URL-safe' };
+    }
+
+    // Check slug uniqueness (if changed)
+    if (updateData.slug && updateData.slug !== existingPost.slug) {
+      const slugTaken = await prisma.blogPost.findUnique({
+        where: { slug: updateData.slug },
+      });
+      if (slugTaken) {
+        return { success: false, message: 'A post with this slug already exists' };
+      }
+    }
+
+    // Validate categoryId exists (if provided)
+    if (updateData.categoryId) {
+      const category = await prisma.blogCategory.findUnique({
+        where: { id: updateData.categoryId },
+        select: { id: true },
+      });
+      if (!category) {
+        return { success: false, message: `Category with id '${updateData.categoryId}' does not exist` };
+      }
+    }
+
+    // Handle publishedAt logic
+    let publishedAt = existingPost.publishedAt;
+    if (updateData.published !== undefined) {
+      if (updateData.published && !existingPost.published) {
+        publishedAt = new Date();
+      } else if (!updateData.published) {
+        publishedAt = null;
+      }
+    }
+
     const post = await prisma.blogPost.update({
       where: { id },
       data: {
         ...updateData,
-        publishedAt: updateData.published ? new Date() : null,
+        ...(publishedAt !== undefined && { publishedAt }),
       },
     });
 
@@ -236,7 +304,20 @@ export async function createCategory(name: string, slug: string, description?: s
     return { success: false, message: 'Unauthorized' };
   }
 
+  // Validate slug format
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
+    return { success: false, message: 'Slug must be lowercase, hyphenated, and URL-safe' };
+  }
+
   try {
+    // Check slug uniqueness
+    const existing = await prisma.blogCategory.findUnique({
+      where: { slug },
+    });
+    if (existing) {
+      return { success: false, message: 'A category with this slug already exists' };
+    }
+
     const category = await prisma.blogCategory.create({
       data: { name, slug, description },
     });

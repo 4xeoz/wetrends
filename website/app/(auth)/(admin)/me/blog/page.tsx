@@ -19,7 +19,7 @@ interface BlogPost {
   publishedAt: Date | null;
   views: number;
   category: { name: string } | null;
-  author: { name: string | null; email: string | null };
+  author: { name: string | null; email: string | null } | null;
   createdAt: Date;
 }
 
@@ -155,7 +155,7 @@ export default function BlogManagementPage() {
                         {post.excerpt}
                       </p>
                       <div className="flex items-center gap-4 text-sm text-gray-500">
-                        <span>By {post.author.name || post.author.email}</span>
+                        <span>By {post.author?.name || post.author?.email || 'Anonymous'}</span>
                         <span>•</span>
                         <span>{format(new Date(post.createdAt), 'MMM d, yyyy')}</span>
                         {post.publishedAt && (

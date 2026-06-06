@@ -126,8 +126,8 @@ model BlogPost {
   // Relations
   categoryId  String?  @db.ObjectId
   category    BlogCategory? @relation(fields: [categoryId], references: [id])
-  authorId    String   @db.ObjectId
-  author      User     @relation(fields: [authorId], references: [id])
+  authorId    String?  @db.ObjectId
+  author      User?    @relation(fields: [authorId], references: [id])
   
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

@@ -24,7 +24,7 @@ interface Post {
   author: {
     name: string | null;
     image: string | null;
-  };
+  } | null;
 }
 
 interface BlogPostContentProps {
@@ -195,7 +195,7 @@ export function BlogPostContent({ post }: BlogPostContentProps) {
                 <User className="h-4 w-4 text-gray-500" />
               </div>
               <span className="font-medium text-gray-700">
-                {post.author.name || 'Anonymous'}
+                {post.author?.name || 'Anonymous'}
               </span>
             </div>
             <span className="flex items-center gap-1.5">
@@ -292,7 +292,7 @@ export function BlogPostContent({ post }: BlogPostContentProps) {
                 <User className="h-5 w-5 text-[#C72C5B]" />
               </div>
               <div>
-                <p className="font-bold text-gray-900">{post.author.name || 'Anonymous'}</p>
+                <p className="font-bold text-gray-900">{post.author?.name || 'Anonymous'}</p>
                 <p className="mt-1 text-sm leading-relaxed text-gray-500">
                   Building uncopyable brands for small businesses. No jargon, no fake urgency — just the truth, told properly.
                 </p>
