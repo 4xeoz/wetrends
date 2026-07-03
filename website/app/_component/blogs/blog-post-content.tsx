@@ -1,11 +1,11 @@
 'use client';
 
 import { motion } from 'motion/react';
-import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowLeft, Calendar, Clock, Eye, User, Share2 } from 'lucide-react';
+import { ArrowLeft, Calendar, Clock, User, Share2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { useBlogEngagement } from '@/hooks/use-blog-engagement';
+import { BlogCover } from './blog-cover';
 
 interface Post {
   id: string;
@@ -143,30 +143,10 @@ export function BlogPostContent({ post }: BlogPostContentProps) {
         </div>
       </div>
 
-      {/* Hero Image */}
-      {post.featuredImage ? (
-        <div className="relative aspect-[21/9] w-full overflow-hidden">
-          <Image
-            src={post.featuredImage}
-            alt={`Featured image for ${post.title} — article by WeTrends, creative digital agency in Guildford, Surrey`}
-            fill
-            className="object-cover"
-            priority
-            unoptimized
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-        </div>
-      ) : (
-        <div className="bg-gradient-to-br from-[#C72C5B] to-purple-700">
-          <div className="mx-auto max-w-[720px] px-5 py-16 sm:px-6 sm:py-24">
-            <div className="max-w-2xl">
-              <span className="text-6xl font-black text-white/20 sm:text-8xl">
-                {post.title.charAt(0)}
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Hero Cover */}
+      <div className="relative aspect-[21/9] w-full overflow-hidden">
+        <BlogCover title={post.title} category={post.category?.name} size="hero" />
+      </div>
 
       {/* Content */}
       <div className="mx-auto max-w-[720px] px-5 py-12 sm:px-6 sm:py-16">
@@ -197,7 +177,7 @@ export function BlogPostContent({ post }: BlogPostContentProps) {
                 <User className="h-4 w-4 text-gray-500" />
               </div>
               <span className="font-medium text-gray-700">
-                {post.author?.name || 'Anonymous'}
+                {post.author?.name || 'WeTrends'}
               </span>
             </div>
             <span className="flex items-center gap-1.5">
@@ -213,10 +193,6 @@ export function BlogPostContent({ post }: BlogPostContentProps) {
             <span className="flex items-center gap-1.5">
               <Clock className="h-4 w-4" />
               {Math.ceil(post.content.split(' ').length / 200)} min read
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Eye className="h-4 w-4" />
-              {post.views} views
             </span>
           </div>
 
@@ -294,7 +270,7 @@ export function BlogPostContent({ post }: BlogPostContentProps) {
                 <User className="h-5 w-5 text-[#C72C5B]" />
               </div>
               <div>
-                <p className="font-bold text-gray-900">{post.author?.name || 'Anonymous'}</p>
+                <p className="font-bold text-gray-900">{post.author?.name || 'WeTrends'}</p>
                 <p className="mt-1 text-sm leading-relaxed text-gray-500">
                   Building uncopyable brands for small businesses. No jargon, no fake urgency — just the truth, told properly.
                 </p>

@@ -2,10 +2,10 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { Calendar, Clock, ArrowRight, User } from 'lucide-react';
 import { format } from 'date-fns';
+import { BlogCover } from './blog-cover';
 
 interface Category {
   id: string;
@@ -91,39 +91,18 @@ export function BlogList({ posts, categories }: BlogListProps) {
                 key={post.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
+                whileHover={{ y: -6 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="group flex flex-col"
+                className="group flex flex-col overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-gray-100 transition-shadow duration-300 hover:shadow-xl hover:shadow-gray-200/60"
               >
                 <Link href={`/blogs/${post.slug}`} className="flex flex-col h-full">
-                  {/* Image */}
-                  <div className="relative mb-5 aspect-[16/10] overflow-hidden rounded-2xl bg-gray-100">
-                    {post.featuredImage ? (
-                      <Image
-                        src={post.featuredImage}
-                        alt={`Featured image for ${post.title} — WeTrends blog on digital marketing, web design, and branding`}
-                        fill
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                        unoptimized
-                      />
-                    ) : (
-                      <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#C72C5B] to-purple-600">
-                        <span className="text-5xl font-black text-white/20">
-                          {post.title.charAt(0)}
-                        </span>
-                      </div>
-                    )}
-                    {/* Category badge */}
-                    {post.category && (
-                      <div className="absolute left-4 top-4">
-                        <span className="rounded-full bg-white/95 px-3 py-1 text-xs font-semibold text-gray-900 backdrop-blur-sm shadow-sm">
-                          {post.category.name}
-                        </span>
-                      </div>
-                    )}
+                  {/* Cover */}
+                  <div className="relative aspect-[16/10] overflow-hidden transition-transform duration-500 group-hover:scale-[1.02]">
+                    <BlogCover title={post.title} category={post.category?.name} index={index} />
                   </div>
 
                   {/* Content */}
-                  <div className="flex flex-col flex-1">
+                  <div className="flex flex-col flex-1 p-6">
                     {/* Meta */}
                     <div className="mb-3 flex items-center gap-4 text-xs font-medium text-gray-400">
                       <span className="flex items-center gap-1.5">
@@ -159,7 +138,7 @@ export function BlogList({ posts, categories }: BlogListProps) {
                           <User className="h-3.5 w-3.5 text-gray-500" />
                         </div>
                         <span className="text-sm font-medium text-gray-600">
-                          {post.author?.name || 'Anonymous'}
+                          {post.author?.name || 'WeTrends'}
                         </span>
                       </div>
                       <span className="flex items-center gap-1 text-sm font-semibold text-[#C72C5B] transition-transform group-hover:translate-x-1">
