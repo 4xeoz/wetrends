@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { trackEvent } from '@/lib/analytics/posthog';
+import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
 
 export default function CinematographyStickyCta() {
   const [visible, setVisible] = useState(false);
@@ -33,6 +35,7 @@ export default function CinematographyStickyCta() {
         </div>
         <a
           href="#book"
+          onClick={() => trackEvent(ANALYTICS_EVENTS.ctaClicked, { cta: 'cinematography_sticky_book_now' })}
           className="flex-shrink-0 rounded-full bg-[#C72C5B] px-5 py-2.5 text-sm font-bold text-white shadow-md shadow-[#C72C5B]/25 transition-colors hover:bg-[#a8244d]"
         >
           Book Now

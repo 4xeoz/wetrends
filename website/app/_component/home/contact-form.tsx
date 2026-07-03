@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Send, CheckCircle, ArrowRight, ArrowLeft, User, Mail, MessageSquare, Briefcase } from "lucide-react"
 import { submitContactForm } from "@/actions/contact"
+import { trackEvent } from "@/lib/analytics/posthog"
+import { ANALYTICS_EVENTS } from "@/lib/analytics/events"
 
 const steps = [
   { id: 1, title: "What's your name?", icon: User, field: "name" },
@@ -74,6 +76,9 @@ export default function ContactForm() {
 
   function nextStep() {
     if (validateStep(currentStep)) {
+      if (currentStep === 1) {
+        trackEvent(ANALYTICS_EVENTS.contactFormStarted)
+      }
       setCurrentStep((prev) => Math.min(prev + 1, steps.length))
     }
   }
@@ -93,6 +98,7 @@ export default function ContactForm() {
       const result = await submitContactForm(formData)
 
       if (result.success) {
+        trackEvent(ANALYTICS_EVENTS.contactFormSubmitted, { service: formData.service })
         setIsSubmitting(false)
         setIsSubmitted(true)
         setFormData({ name: "", email: "", service: "", message: "" })

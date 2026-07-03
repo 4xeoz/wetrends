@@ -17,6 +17,8 @@ import {
 } from 'lucide-react';
 import AnimatedContent from '@/components/ui/animated-content';
 import { createCinemaBooking } from '@/actions/cinematography';
+import { trackEvent } from '@/lib/analytics/posthog';
+import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
 
 const formSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -107,6 +109,7 @@ export default function CinematographyBookingForm() {
     try {
       const result = await createCinemaBooking(parsed.data);
       if (result.success) {
+        trackEvent(ANALYTICS_EVENTS.bookingCompleted, { package: parsed.data.service });
         setSubmitted(true);
       } else {
         setServerError(result.message ?? 'Something went wrong. Please try again.');
@@ -220,6 +223,9 @@ export default function CinematographyBookingForm() {
                           key={value}
                           type="button"
                           onClick={() => {
+                            if (!selectedService) {
+                              trackEvent(ANALYTICS_EVENTS.bookingStarted, { package: value });
+                            }
                             setSelectedService(value);
                             setFieldErrors((p) => ({ ...p, service: undefined }));
                           }}

@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowLeft, Calendar, Clock, Eye, User, Share2 } from 'lucide-react';
 import { format } from 'date-fns';
+import { useBlogEngagement } from '@/hooks/use-blog-engagement';
 
 interface Post {
   id: string;
@@ -125,6 +126,7 @@ function formatContentToHtml(content: string): string {
 
 export function BlogPostContent({ post }: BlogPostContentProps) {
   const formattedContent = formatContentToHtml(post.content);
+  useBlogEngagement(post.slug);
 
   return (
     <article className="min-h-[100svh] bg-white">
