@@ -9,41 +9,28 @@ import { ArrowUpRight, ArrowRight } from 'lucide-react';
 const caseStudies = [
   {
     id: '01',
-    client: 'Surrey Wellness',
+    client: 'Nopeca',
     service: 'Web Design',
     year: '2024',
-    metric: '+250%',
-    metricLabel: 'Online enquiries',
-    description: 'A complete digital transformation that positioned them as the leading wellness provider in Surrey.',
-    href: '/case-studies/surrey-wellness/',
-    image: '/images/case-study-1.jpg',
+    metric: '+180%',
+    metricLabel: 'Enquiries',
+    description: "A website that gives parents confidence before they even step through the door.",
+    href: '/case-studies/nopeca/',
+    image: '/images/nopeca-mockup.webp',
     color: '#C72C5B',
     featured: true,
   },
   {
     id: '02',
-    client: 'Guildford Cafe Co',
-    service: 'Social Media',
+    client: 'Savana Lounge',
+    service: 'Brand Identity',
     year: '2024',
-    metric: '50K',
-    metricLabel: 'New followers',
-    description: 'From local favourite to regional sensation through authentic storytelling.',
-    href: '/case-studies/guildford-cafe-co/',
-    image: '/images/case-study-2.jpg',
+    metric: '+320%',
+    metricLabel: 'Direct bookings',
+    description: 'A brand that makes people choose Savana before they even check the menu.',
+    href: '/case-studies/savana-lounge/',
+    image: '/images/savana-mockup.png',
     color: '#0F0F0F',
-    featured: false,
-  },
-  {
-    id: '03',
-    client: 'TechStart UK',
-    service: 'Video Production',
-    year: '2023',
-    metric: '1.2M',
-    metricLabel: 'Video views',
-    description: 'A brand film that helped secure £2M in funding and national recognition.',
-    href: '/case-studies/techstart-uk/',
-    image: '/images/case-study-3.jpg',
-    color: '#C72C5B',
     featured: false,
   },
 ];
@@ -108,7 +95,7 @@ export function CaseStudies() {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={isInView ? { opacity: 1, scale: 1 } : {}}
                 transition={{ duration: 0.8, delay: 0.2 }}
-                className="relative aspect-[4/3] lg:aspect-square rounded-3xl overflow-hidden group shadow-2xl shadow-black/10"
+                className="relative aspect-[4/3] lg:aspect-square rounded-3xl overflow-hidden group"
                 onMouseEnter={() => setIsHovering(true)}
                 onMouseLeave={() => setIsHovering(false)}
               >
@@ -121,21 +108,24 @@ export function CaseStudies() {
                     transition={{ duration: 0.5 }}
                     className="absolute inset-0"
                   >
-                    {/* Image Placeholder */}
+                    {/* Image */}
                     <div 
                       className="absolute inset-0 transition-transform duration-700 group-hover:scale-105"
                       style={{ backgroundColor: activeStudy.color }}
                     >
-                      {/* Uncomment when images ready */}
-                      {/* <Image
+                      <Image
                         src={activeStudy.image}
-                        alt={activeStudy.client}
+                        alt={`${activeStudy.client} ${activeStudy.service.toLowerCase()} mockup by WeTrends, a creative agency in Guildford, Surrey`}
                         fill
                         className="object-cover"
-                      /> */}
+                        sizes="(max-width: 1024px) 100vw, 50vw"
+                      />
                     </div>
                   </motion.div>
                 </AnimatePresence>
+
+                {/* Dark overlay on image */}
+                <div className="absolute inset-0 bg-black/30 pointer-events-none" />
 
                 {/* Overlay Gradient */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
@@ -147,7 +137,7 @@ export function CaseStudies() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4 }}
                 >
-                  <span className="px-4 py-1.5 rounded-full bg-white text-[#0F0F0F] text-xs font-bold shadow-lg">
+                  <span className="px-4 py-1.5 rounded-full bg-white text-[#0F0F0F] text-xs font-bold">
                     {activeStudy.service}
                   </span>
                   <span className="px-3 py-1.5 rounded-full bg-white/20 backdrop-blur-sm text-white text-xs">
@@ -162,7 +152,7 @@ export function CaseStudies() {
                     animate={{ opacity: isHovering ? 1 : 0, scale: isHovering ? 1 : 0.8 }}
                     className="absolute inset-0 flex items-center justify-center"
                   >
-                    <div className="w-24 h-24 rounded-full bg-white flex items-center justify-center shadow-2xl">
+                    <div className="w-24 h-24 rounded-full bg-white flex items-center justify-center">
                       <ArrowUpRight className="w-8 h-8 text-[#0F0F0F]" />
                     </div>
                   </motion.div>

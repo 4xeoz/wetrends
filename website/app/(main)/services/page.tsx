@@ -1,19 +1,17 @@
 'use client';
 
-import { motion } from 'motion/react';
-import { 
-  Video, 
-  Palette, 
-  Globe, 
-  Users, 
-  Zap, 
+import { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import {
+  Video,
+  Palette,
+  Globe,
+  Users,
+  Zap,
   PenTool,
   ArrowUpRight,
-  CheckCircle2,
-  MapPin,
-  Sparkles,
-  TrendingUp,
-  Clock
+  ArrowDownRight,
+  Play,
 } from 'lucide-react';
 import AnimatedContent from '@/components/ui/animated-content';
 import Link from 'next/link';
@@ -24,332 +22,240 @@ const services = [
     number: '01',
     icon: Video,
     title: 'Video Production',
-    headline: 'Cinematic Stories That Captivate',
-    description: 'From concept to final cut, we create video content that stops the scroll and drives engagement. Our Guildford studio produces everything from brand films to social shorts.',
-    features: ['Brand Films', 'Social Content', 'Motion Graphics', 'Commercials', 'Documentary Style', 'Product Videos'],
-    benefits: [
-      'Increase engagement by up to 1200% with video content',
-      'Professional 4K/8K production quality',
-      'Fast turnaround - from brief to delivery in 2 weeks',
-      'Local filming across Surrey & London'
-    ],
-    color: '#C72C5B',
-    stats: { label: 'Videos Produced', value: '500+' },
+    description: 'Cinematic brand films, social content, and motion graphics that stop the scroll.',
+    video: '/videos/video-preview-wetrends.mp4',
   },
   {
     slug: 'brand-identity',
     number: '02',
     icon: Palette,
     title: 'Brand Identity',
-    headline: 'Make Your Brand Unforgettable',
-    description: 'We craft distinctive visual identities that capture your essence and resonate with your audience. Stand out in the crowded Guildford and Surrey business landscape.',
-    features: ['Logo Design', 'Visual Identity', 'Brand Guidelines', 'Packaging', 'Brand Strategy', 'Naming'],
-    benefits: [
-      'Cohesive brand presence across all touchpoints',
-      'Memorable visual systems that drive recognition',
-      'Strategic positioning to differentiate from competitors',
-      'Scalable identity systems for growth'
-    ],
-    color: '#8B5CF6',
-    stats: { label: 'Brands Launched', value: '150+' },
+    description: 'Distinctive visual identities, logos, and guidelines that make you unforgettable.',
+    video: '/videos/design-preview-wetrends.mp4',
   },
   {
     slug: 'web-design',
     number: '03',
     icon: Globe,
     title: 'Web Design',
-    headline: 'Websites That Convert Visitors',
-    description: 'High-performing digital experiences built for results. We design and develop websites that turn Guildford browsers into buyers across all devices.',
-    features: ['UI/UX Design', 'Development', 'E-commerce', 'Web Apps', 'SEO Optimization', 'CMS Integration'],
-    benefits: [
-      'Average 3x increase in conversion rates',
-      'Lightning-fast performance (90+ PageSpeed)',
-      'Mobile-first responsive design',
-      'Built with Next.js for scalability'
-    ],
-    color: '#3B82F6',
-    stats: { label: 'Sites Launched', value: '200+' },
+    description: 'High-performing, conversion-focused websites built with Next.js and modern tech.',
+    video: '/videos/website-preview-wetrends.mp4',
   },
   {
     slug: 'social-media',
     number: '04',
     icon: Users,
     title: 'Social Media',
-    headline: 'Build Communities That Care',
-    description: 'Strategic social media management that grows your following and turns engagement into revenue. We handle content, community, and campaigns across all platforms.',
-    features: ['Content Strategy', 'Creative Direction', 'Community Management', 'Analytics', 'Paid Social', 'Influencer Campaigns'],
-    benefits: [
-      'Consistent brand voice across all platforms',
-      'Data-driven content that resonates',
-      '24/7 community management & engagement',
-      'Monthly reporting with actionable insights'
-    ],
-    color: '#10B981',
-    stats: { label: 'Followers Grown', value: '2M+' },
+    description: 'Strategic content and community management that turns followers into revenue.',
+    video: '/videos/social-preview-wetrends.mp4',
   },
   {
     slug: 'animation',
     number: '05',
     icon: Zap,
     title: 'Animation',
-    headline: 'Bring Your Brand to Life',
-    description: 'Dynamic motion design that explains, entertains, and engages. From 2D explainers to complex motion graphics, we make the complex simple and captivating.',
-    features: ['2D Animation', 'Motion Graphics', 'Explainers', 'Micro-interactions', 'Logo Animation', 'Lottie Files'],
-    benefits: [
-      'Explain complex products in 60 seconds',
-      'Increase time-on-page by 40%',
-      'Universal language - no translation needed',
-      'Endless creative possibilities'
-    ],
-    color: '#F59E0B',
-    stats: { label: 'Animations', value: '300+' },
+    description: '2D motion graphics, explainers, and micro-interactions that bring ideas to life.',
+    video: '/videos/animations-preview-wetrends.mp4',
   },
   {
     slug: 'content-strategy',
     number: '06',
     icon: PenTool,
     title: 'Content Strategy',
-    headline: 'Words That Work Harder',
-    description: 'Strategic content that positions you as the authority in your space. We craft narratives that educate, engage, and convert your Guildford and UK audience.',
-    features: ['SEO Content', 'Copywriting', 'Editorial', 'Storytelling', 'Blog Management', 'Email Campaigns'],
-    benefits: [
-      'Rank higher with SEO-optimized content',
-      'Establish thought leadership in your industry',
-      'Consistent publishing schedule',
-      'Data-driven topic selection'
-    ],
-    color: '#EC4899',
-    stats: { label: 'Articles Written', value: '1000+' },
+    description: 'SEO-driven copy and editorial that positions you as the authority in your space.',
+    video: '/videos/design-preview-wetrends.mp4',
   },
 ];
 
 function ServiceCard({ service, index }: { service: typeof services[0]; index: number }) {
+  const [isHovered, setIsHovered] = useState(false);
   const Icon = service.icon;
-  
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (videoRef.current) {
+      if (isHovered) videoRef.current.play();
+      else {
+        videoRef.current.pause();
+        videoRef.current.currentTime = 0;
+      }
+    }
+  }, [isHovered]);
+
   return (
     <AnimatedContent
       direction="vertical"
-      distance={80}
-      duration={1}
-      delay={0.1 * index}
+      distance={60}
+      duration={0.8}
+      delay={0.08 * index}
       ease="power3.out"
     >
-      <motion.div
-        whileHover={{ y: -8 }}
-        transition={{ duration: 0.3 }}
-        className="group relative h-full"
-      >
-        <Link href={`/services/${service.slug}/`}>
-          <div className="relative h-full overflow-hidden rounded-3xl border border-gray-200 bg-white p-8 md:p-10 shadow-sm transition-shadow hover:shadow-lg">
-            {/* Background hover effect */}
-            <motion.div 
-              className="absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-5"
-              style={{ backgroundColor: service.color }}
-            />
-            
-            {/* Large number background */}
-            <span 
-              className="absolute right-6 top-6 text-8xl font-bold text-gray-100 md:text-9xl"
-              style={{ WebkitTextStroke: `1px ${service.color}20` }}
-            >
-              {service.number}
-            </span>
+      <Link href={`/services/${service.slug}/`} className="block">
+        <motion.div
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          className="group relative aspect-[4/3] overflow-hidden rounded-2xl border border-white/10 bg-[#0F0F0F] md:aspect-[16/10] lg:aspect-[16/9]"
+        >
+          {/* Video background */}
+          <video
+            ref={videoRef}
+            src={service.video}
+            muted
+            loop
+            playsInline
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+          />
 
-            <div className="relative z-10">
-              {/* Header */}
-              <div className="mb-6 flex items-start justify-between">
-                <div className="flex items-center gap-4">
-                  <div 
-                    className="flex h-14 w-14 items-center justify-center rounded-2xl"
-                    style={{ backgroundColor: `${service.color}15` }}
-                  >
-                    <Icon className="h-7 w-7" style={{ color: service.color }} />
-                  </div>
-                  <div>
-                    <span className="text-sm font-medium" style={{ color: service.color }}>
-                      {service.number}
-                    </span>
-                    <h3 className="text-xl font-bold text-gray-900 md:text-2xl">
-                      {service.title}
-                    </h3>
-                  </div>
+          {/* Overlay */}
+          <motion.div
+            className="absolute inset-0 bg-[#050505]/60"
+            animate={{ opacity: isHovered ? 0.3 : 0.6 }}
+            transition={{ duration: 0.4 }}
+          />
+
+          {/* Accent line top */}
+          <motion.div
+            className="absolute left-0 right-0 top-0 h-1 bg-[#C72C5B]"
+            initial={{ scaleX: 0 }}
+            animate={{ scaleX: isHovered ? 1 : 0 }}
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            style={{ originX: 0 }}
+          />
+
+          {/* Content */}
+          <div className="relative z-10 flex h-full flex-col justify-between p-6 md:p-8">
+            <div className="flex items-start justify-between">
+              <span className="text-sm font-mono text-white/50">{service.number}</span>
+              <motion.div
+                animate={{ opacity: isHovered ? 1 : 0, scale: isHovered ? 1 : 0.8 }}
+                transition={{ duration: 0.3 }}
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-[#C72C5B] text-white md:h-12 md:w-12"
+              >
+                <Play className="h-4 w-4 fill-current md:h-5 md:w-5" />
+              </motion.div>
+            </div>
+
+            <div>
+              <div className="mb-3 flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-white/10 backdrop-blur-sm md:h-12 md:w-12">
+                  <Icon className="h-4 w-4 text-white md:h-5 md:w-5" />
                 </div>
-                
-                <motion.div
-                  whileHover={{ scale: 1.1, rotate: 45 }}
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 text-gray-400 transition-colors group-hover:border-gray-300 group-hover:text-gray-600"
-                >
-                  <ArrowUpRight className="h-4 w-4" />
-                </motion.div>
+                <h3 className="text-2xl font-bold text-white md:text-3xl lg:text-4xl">
+                  {service.title}
+                </h3>
               </div>
-
-              {/* Description */}
-              <p className="mb-6 text-gray-600">
+              <p className="max-w-md text-sm leading-relaxed text-white/70 md:text-base">
                 {service.description}
               </p>
 
-              {/* Features */}
-              <div className="mb-6 flex flex-wrap gap-2">
-                {service.features.slice(0, 4).map((feature) => (
-                  <span
-                    key={feature}
-                    className="rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs text-gray-600"
-                  >
-                    {feature}
-                  </span>
-                ))}
-              </div>
-
-              {/* Stats */}
-              <div className="flex items-center gap-2 border-t border-gray-100 pt-6">
-                <TrendingUp className="h-4 w-4" style={{ color: service.color }} />
-                <span className="text-sm text-gray-500">
-                  <strong className="text-gray-900">{service.stats.value}</strong> {service.stats.label}
-                </span>
-              </div>
+              <motion.div
+                className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-[#C72C5B]"
+                animate={{ x: isHovered ? 8 : 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                Explore Service
+                <ArrowUpRight className="h-4 w-4 transition-transform group-hover:rotate-45" />
+              </motion.div>
             </div>
-
-            {/* Bottom accent line */}
-            <motion.div
-              className="absolute bottom-0 left-0 h-1"
-              style={{ backgroundColor: service.color }}
-              initial={{ width: '0%' }}
-              whileInView={{ width: '100%' }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-            />
           </div>
-        </Link>
-      </motion.div>
+        </motion.div>
+      </Link>
     </AnimatedContent>
   );
 }
 
 export default function ServicesPage() {
+  const [activeVideo, setActiveVideo] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveVideo((prev) => (prev + 1) % services.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <main className="min-h-[100svh] bg-white">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden py-24 md:py-32 bg-white">
-        {/* Decorative background */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute -right-32 top-0 h-96 w-96 rounded-full bg-[#C72C5B]/8 blur-3xl" />
-          <div className="absolute left-0 bottom-0 h-64 w-64 rounded-full bg-[#8B5CF6]/8 blur-3xl" />
+    <main className="min-h-[100svh] bg-[#050505]">
+      {/* Hero — Video Crossfade Background */}
+      <section className="relative flex min-h-[85svh] flex-col justify-end pb-12 pt-32 md:min-h-[90svh] md:pb-16 md:pt-40">
+        {/* Background videos crossfade */}
+        <div className="absolute inset-0 -z-10 overflow-hidden">
+          <AnimatePresence mode="sync">
+            <motion.div
+              key={activeVideo}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 1.2, ease: 'easeInOut' }}
+              className="absolute inset-0"
+            >
+              <video
+                src={services[activeVideo].video}
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="h-full w-full object-cover"
+              />
+            </motion.div>
+          </AnimatePresence>
+          <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/80 to-[#050505]/40" />
         </div>
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
-            {/* Left - Content */}
-            <div>
-              <AnimatedContent
-                direction="vertical"
-                distance={60}
-                duration={1}
-                ease="power3.out"
-              >
-                <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#C72C5B]/30 bg-[#C72C5B]/10 px-4 py-2">
-                  <Sparkles className="h-4 w-4 text-[#C72C5B]" />
-                  <span className="text-sm font-medium text-[#C72C5B]">
-                    Full-Service Creative Agency
-                  </span>
-                </div>
-              </AnimatedContent>
 
-              <AnimatedContent
-                direction="vertical"
-                distance={80}
-                duration={1.2}
-                delay={0.1}
-                ease="power3.out"
-              >
-                <h1 className="mb-6 text-5xl font-bold text-gray-900 md:text-6xl lg:text-7xl">
-                  Services That
-                  <br />
-                  <span className="text-[#C72C5B]">Drive Growth</span>
-                </h1>
-              </AnimatedContent>
-
-              <AnimatedContent
-                direction="vertical"
-                distance={60}
-                duration={1.2}
-                delay={0.2}
-                ease="power3.out"
-              >
-                <p className="mb-8 max-w-xl text-lg text-gray-600">
-                  From concept to execution, we deliver end-to-end creative solutions 
-                  that transform brands and accelerate business success across Guildford, 
-                  Surrey, and the entire UK.
-                </p>
-              </AnimatedContent>
-
-              <AnimatedContent
-                direction="vertical"
-                distance={60}
-                duration={1.2}
-                delay={0.3}
-                ease="power3.out"
-              >
-                <div className="flex flex-wrap items-center gap-6">
-                  <div className="flex items-center gap-2">
-                    <MapPin className="h-5 w-5 text-[#C72C5B]" />
-                    <span className="text-gray-700">Guildford, Surrey</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Clock className="h-5 w-5 text-[#C72C5B]" />
-                    <span className="text-gray-700">2-Week Turnaround</span>
-                  </div>
-                </div>
-              </AnimatedContent>
-            </div>
-
-            {/* Right - Stats */}
-            <div className="grid grid-cols-2 gap-4">
-              {[
-                { value: '6', label: 'Core Services' },
-                { value: '200+', label: 'Projects Delivered' },
-                { value: '97%', label: 'Client Retention' },
-                { value: '5★', label: 'Average Rating' },
-              ].map((stat, i) => (
-                <AnimatedContent
-                  key={stat.label}
-                  direction="vertical"
-                  distance={60}
-                  duration={1}
-                  delay={0.2 + i * 0.1}
-                  ease="power3.out"
-                >
-                  <motion.div
-                    whileHover={{ y: -4 }}
-                    transition={{ duration: 0.2 }}
-                    className="rounded-2xl border border-gray-200 bg-white p-6 text-center shadow-sm"
-                  >
-                    <div className="text-4xl font-bold text-[#C72C5B] md:text-5xl">{stat.value}</div>
-                    <div className="mt-2 text-sm text-gray-600">{stat.label}</div>
-                  </motion.div>
-                </AnimatedContent>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Services Grid */}
-      <section className="py-24 md:py-32 bg-gray-50">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <AnimatedContent
-            direction="vertical"
-            distance={60}
-            duration={1}
-            ease="power3.out"
-            className="mb-16 text-center"
-          >
-            <h2 className="mb-4 text-3xl font-bold text-gray-900 md:text-4xl">
-              Explore Our <span className="text-[#C72C5B]">Expertise</span>
-            </h2>
-            <p className="mx-auto max-w-2xl text-gray-600">
-              Click on any service to learn more about how we can help your business grow.
+        {/* Content */}
+        <div className="relative z-10 mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+          <AnimatedContent direction="vertical" distance={60} duration={1} delay={0.1} ease="power3.out">
+            <p className="mb-4 text-sm font-medium uppercase tracking-[0.3em] text-[#C72C5B]">
+              What We Do
             </p>
           </AnimatedContent>
 
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <AnimatedContent direction="vertical" distance={80} duration={1.2} delay={0.2} ease="power3.out">
+            <h1 className="max-w-4xl text-[clamp(3rem,9vw,8rem)] font-bold leading-[0.85] tracking-tight text-white">
+              <span className="block">Services</span>
+              <span className="block font-serif italic text-[#C72C5B]">In Motion.</span>
+            </h1>
+          </AnimatedContent>
+
+          <AnimatedContent direction="vertical" distance={40} duration={1} delay={0.4} ease="power3.out">
+            <p className="mt-6 max-w-xl text-base leading-relaxed text-white/60 md:mt-8 md:text-lg">
+              Six creative disciplines. One unified team. Scroll down to see what we can build together.
+            </p>
+          </AnimatedContent>
+
+          {/* Video indicators */}
+          <AnimatedContent direction="vertical" distance={30} duration={0.8} delay={0.5} ease="power3.out">
+            <div className="mt-8 flex items-center gap-3">
+              {services.map((s, i) => (
+                <button
+                  key={s.slug}
+                  onClick={() => setActiveVideo(i)}
+                  className={`h-1 rounded-full transition-all duration-500 ${
+                    i === activeVideo ? 'w-10 bg-[#C72C5B]' : 'w-4 bg-white/20 hover:bg-white/40'
+                  }`}
+                  aria-label={`Show ${s.title} video`}
+                />
+              ))}
+            </div>
+          </AnimatedContent>
+        </div>
+      </section>
+
+      {/* Video Grid */}
+      <section className="py-16 md:py-24">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <AnimatedContent direction="vertical" distance={60} duration={1} ease="power3.out" className="mb-12">
+            <div className="flex items-end justify-between gap-4">
+              <h2 className="text-3xl font-bold text-white md:text-4xl lg:text-5xl">
+                Browse Our <span className="font-serif italic text-[#C72C5B]">Work</span>
+              </h2>
+              <span className="hidden text-sm text-white/50 md:block">
+                Hover to preview
+              </span>
+            </div>
+          </AnimatedContent>
+
+          <div className="grid gap-6 md:grid-cols-2">
             {services.map((service, index) => (
               <ServiceCard key={service.slug} service={service} index={index} />
             ))}
@@ -357,90 +263,67 @@ export default function ServicesPage() {
         </div>
       </section>
 
-      {/* Why Choose Us */}
-      <section className="py-24 md:py-32">
+      {/* Dark Process */}
+      <section className="border-t border-white/10 bg-[#050505] py-24 md:py-32">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid gap-12 lg:grid-cols-2">
-            <div>
-              <AnimatedContent
-                direction="vertical"
-                distance={60}
-                duration={1}
-                ease="power3.out"
-              >
-                <h2 className="mb-6 text-4xl font-bold text-gray-900 md:text-5xl">
-                  Why Guildford
-                  <br />
-                  <span className="text-[#C72C5B]">Chooses Us</span>
-                </h2>
-              </AnimatedContent>
-              
-              <AnimatedContent
-                direction="vertical"
-                distance={60}
-                duration={1}
-                delay={0.1}
-                ease="power3.out"
-              >
-                <p className="text-lg text-gray-600">
-                  We&apos;re not just another agency. We&apos;re your local creative partner 
-                  with national reach, combining Guildford&apos;s creative energy with 
-                  big-agency expertise.
-                </p>
-              </AnimatedContent>
-            </div>
+          <div className="mb-16 md:mb-20">
+            <AnimatedContent direction="vertical" distance={60} duration={1} ease="power3.out">
+              <span className="mb-4 inline-flex items-center gap-2 text-sm font-medium text-[#C72C5B]">
+                <span className="h-px w-8 bg-[#C72C5B]" />
+                How We Work
+              </span>
+              <h2 className="text-4xl font-bold text-white md:text-5xl lg:text-6xl">
+                From Brief to <span className="font-serif italic text-[#C72C5B]"> brilliance.</span>
+              </h2>
+            </AnimatedContent>
+          </div>
 
-            <div className="space-y-4">
-              {[
-                'Local team with global brand experience',
-                'Rapid turnaround without compromising quality',
-                'Transparent pricing - no hidden fees',
-                'Dedicated account manager for every client',
-                'Data-driven creative that delivers ROI',
-                'Flexible packages for startups to enterprises',
-              ].map((item, index) => (
-                <AnimatedContent
-                  key={item}
-                  direction="horizontal"
-                  distance={40}
-                  duration={0.8}
-                  delay={0.1 * index}
-                  ease="power3.out"
-                >
-                  <div className="flex items-center gap-4 rounded-xl border border-gray-200 bg-white p-4">
-                    <CheckCircle2 className="h-6 w-6 flex-shrink-0 text-[#C72C5B]" />
-                    <span className="text-gray-900">{item}</span>
-                  </div>
-                </AnimatedContent>
-              ))}
-            </div>
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+            {[
+              { step: '01', title: 'Discover', desc: 'We dive deep into your brand, goals, and audience.' },
+              { step: '02', title: 'Design', desc: 'We craft concepts that bring your vision to life.' },
+              { step: '03', title: 'Develop', desc: 'We build, film, animate, and write with precision.' },
+              { step: '04', title: 'Deliver', desc: 'We launch, optimize, and support your growth.' },
+            ].map((item, index) => (
+              <AnimatedContent
+                key={item.step}
+                direction="vertical"
+                distance={50}
+                duration={0.8}
+                delay={0.1 * index}
+                ease="power3.out"
+              >
+                <div className="group relative h-full rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm transition-colors hover:border-[#C72C5B]/50 md:p-8">
+                  <span className="text-xs font-bold uppercase tracking-widest text-[#C72C5B]">
+                    {item.step}
+                  </span>
+                  <h3 className="mt-3 text-xl font-bold text-white md:text-2xl">{item.title}</h3>
+                  <p className="mt-2 text-sm text-white/60">{item.desc}</p>
+                </div>
+              </AnimatedContent>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-24 md:py-32 bg-[#C72C5B]">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
-          <AnimatedContent
-            direction="vertical"
-            distance={60}
-            duration={1}
-            ease="power3.out"
-          >
-            <h2 className="mb-6 text-4xl font-bold text-white md:text-5xl">
-              Ready to Start Your Project?
+      {/* CTA */}
+      <section className="bg-[#C72C5B] py-24 md:py-32">
+        <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
+          <AnimatedContent direction="vertical" distance={60} duration={1} ease="power3.out">
+            <h2 className="mb-6 text-4xl font-bold text-white md:text-5xl lg:text-6xl">
+              Ready to Create?
             </h2>
             <p className="mb-8 text-lg text-white/80">
-              Let&apos;s discuss how our services can help you achieve your business goals.
+              Tell us what you&apos;re building. We&apos;ll handle the rest.
             </p>
             <motion.a
               href="/#contact"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="inline-flex items-center gap-3 rounded-full bg-white px-8 py-4 text-lg font-bold text-[#C72C5B] shadow-lg transition-all hover:bg-gray-100"
+              className="group inline-flex items-center gap-3 rounded-full bg-white px-8 py-4 text-lg font-bold text-[#C72C5B] shadow-lg transition-all hover:bg-gray-100"
             >
-              Get a Free Consultation
-              <ArrowUpRight className="h-5 w-5" />
+              Start Your Project
+              <ArrowDownRight className="h-5 w-5 transition-transform group-hover:rotate-45" />
             </motion.a>
           </AnimatedContent>
         </div>

@@ -9,6 +9,7 @@ import type { CaseStudy } from '@/lib/case-studies-data';
 export default function CaseStudyDetail({ study }: { study: CaseStudy }) {
   return (
     <main className="min-h-[100svh] bg-white">
+      <article>
       {/* Back Navigation */}
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         <Link
@@ -246,6 +247,7 @@ export default function CaseStudyDetail({ study }: { study: CaseStudy }) {
           </AnimatedContent>
         </div>
       </section>
+      </article>
     </main>
   );
 }

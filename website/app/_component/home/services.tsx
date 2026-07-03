@@ -2,54 +2,64 @@
 
 import { useRef, useState } from 'react';
 import { motion, useInView } from 'motion/react';
-import {
-  Video,
-  Palette,
-  Globe,
-  Users,
-  Zap,
-  PenTool,
-  ArrowUpRight,
-  ArrowRight
-} from 'lucide-react';
+import CardSwap, { Card } from '../../../components/ui/cardSwap';
+import { Code, Globe, Video, Palette, Cpu, Zap, ArrowUpRight } from 'lucide-react';
 import Link from 'next/link';
 
 const services = [
   {
     number: '01',
-    icon: Video,
-    title: 'Video Production',
-    description: 'Cinematic storytelling that captivates audiences and drives engagement across all platforms.',
+    icon: Code,
+    title: 'Software Development',
+    description: 'Custom web applications, MVPs, and digital products built to solve real business problems.',
+    category: "Software",
+    videoSrc: "/videos/design-preview-wetrends.mp4",
+    color: "#C72C5B",
   },
   {
     number: '02',
-    icon: Palette,
-    title: 'Brand Identity',
-    description: 'Visual systems that demand attention and create lasting impressions.',
+    icon: Globe,
+    title: 'Web Design & Development',
+    description: 'High-converting websites and e-commerce platforms that drive measurable results.',
+    category: "Web",
+    videoSrc: "/videos/website-preview-wetrends.mp4",
+    color: "#0F0F0F",
   },
   {
     number: '03',
-    icon: Globe,
-    title: 'Web Design',
-    description: 'High-converting digital experiences that turn visitors into customers.',
+    icon: Video,
+    title: 'Video Production',
+    description: 'Cinematic storytelling that captivates audiences and drives engagement across all platforms.',
+    category: "Video",
+    videoSrc: "/videos/video-preview-wetrends.mp4",
+    color: "#C72C5B",
   },
   {
     number: '04',
-    icon: Users,
-    title: 'Social Media',
-    description: 'Content strategies that build communities and foster brand loyalty.',
+    icon: Palette,
+    title: 'Brand Identity',
+    description: 'Visual systems that demand attention and create lasting impressions.',
+    category: "Branding",
+    videoSrc: "/videos/social-preview-wetrends.mp4",
+    color: "#0F0F0F",
   },
   {
     number: '05',
-    icon: Zap,
-    title: 'Animation',
-    description: 'Motion design that brings brands to life with dynamic storytelling.',
+    icon: Cpu,
+    title: 'Tech Consulting',
+    description: 'Strategic technology guidance to streamline operations and accelerate growth.',
+    category: "Consulting",
+    videoSrc: "/videos/animations-preview-wetrends.mp4",
+    color: "#C72C5B",
   },
   {
     number: '06',
-    icon: PenTool,
-    title: 'Content Strategy',
-    description: 'Stories that position you as the expert in your industry.',
+    icon: Zap,
+    title: 'Animation & Motion',
+    description: 'Motion design that brings brands to life with dynamic storytelling.',
+    category: "Animation",
+    videoSrc: "/videos/design-preview-wetrends.mp4",
+    color: "#0F0F0F",
   },
 ];
 
@@ -77,131 +87,212 @@ export function Services() {
               What We Do
             </span>
             <h2 className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold text-[#0F0F0F] leading-[0.9]">
-              Services That
+              Creative Tech,
               <br />
-              <span className="font-serif italic text-[#C72C5B]">Drive Growth</span>
+              <span className="font-serif italic text-[#C72C5B]">Real Solutions</span>
             </h2>
           </motion.div>
         </div>
 
-        {/* Services List */}
-        <div className="space-y-0">
-          {services.map((service, index) => (
-            <motion.div
-              key={service.title}
-              initial={{ opacity: 0, x: -40 }}
-              animate={isInView ? { opacity: 1, x: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.2 + index * 0.1 }}
-            >
-              <Link href={`/services/${service.title.toLowerCase().replace(' ', '-')}/`}>
+        {/* Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
+          
+          {/* Left - Services List */}
+          <motion.div
+            initial={{ opacity: 0, x: -40 }}
+            animate={isInView ? { opacity: 1, x: 0 } : {}}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            <div className="space-y-0">
+              {services.map((service, index) => (
                 <motion.div
-                  className="group relative cursor-pointer"
-                  onMouseEnter={() => setHoveredIndex(index)}
-                  onMouseLeave={() => setHoveredIndex(null)}
+                  key={service.title}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={isInView ? { opacity: 1, x: 0 } : {}}
+                  transition={{ duration: 0.6, delay: 0.3 + index * 0.1 }}
                 >
-                  {/* Top border */}
-                  <div className="absolute top-0 left-0 right-0 h-px bg-gray-200" />
+                  <Link href={`/services/${service.title.toLowerCase().replace(' ', '-')}/`}>
+                    <motion.div
+                      className="group relative cursor-pointer"
+                      onMouseEnter={() => setHoveredIndex(index)}
+                      onMouseLeave={() => setHoveredIndex(null)}
+                    >
+                      {/* Top border */}
+                      <div className="absolute top-0 left-0 right-0 h-px bg-gray-200" />
 
-                  {/* Background expand on hover */}
-                  <motion.div
-                    className="absolute inset-0 bg-[#0F0F0F]"
-                    initial={{ scaleX: 0 }}
-                    animate={{ scaleX: hoveredIndex === index ? 1 : 0 }}
-                    transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                    style={{ originX: 0 }}
-                  />
+                      {/* Background expand on hover */}
+                      <motion.div
+                        className="absolute inset-0 bg-[#0F0F0F]"
+                        initial={{ scaleX: 0 }}
+                        animate={{ scaleX: hoveredIndex === index ? 1 : 0 }}
+                        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                        style={{ originX: 0 }}
+                      />
 
-                  {/* Main content */}
-                  <div className="relative py-6 md:py-8">
-                    <div className="flex items-center justify-between gap-4">
-                      {/* Left: Number + Icon + Title */}
-                      <div className="flex items-center gap-4 md:gap-8">
-                        {/* Number */}
-                        <span className={`text-sm font-mono transition-colors duration-300 min-w-[2rem] ${
-                          hoveredIndex === index ? 'text-[#C72C5B]' : 'text-gray-400'
-                        }`}>
-                          {service.number}
-                        </span>
+                      {/* Main content */}
+                      <div className="relative py-5 md:py-6">
+                        <div className="flex items-center justify-between gap-4">
+                          {/* Left: Number + Icon + Title */}
+                          <div className="flex items-center gap-4 md:gap-6">
+                            {/* Number */}
+                            <span className={`text-sm font-mono transition-colors duration-300 min-w-[2rem] ${
+                              hoveredIndex === index ? 'text-[#C72C5B]' : 'text-gray-400'
+                            }`}>
+                              {service.number}
+                            </span>
 
-                        {/* Icon */}
-                        <div className={`hidden md:flex h-12 w-12 items-center justify-center rounded-full transition-all duration-300 ${
-                          hoveredIndex === index 
-                            ? 'bg-[#C72C5B] text-white' 
-                            : 'bg-gray-100 text-[#0F0F0F]'
-                        }`}>
-                          <service.icon className="h-5 w-5" />
+                            {/* Icon */}
+                            <div className={`hidden md:flex h-10 w-10 items-center justify-center rounded-full transition-all duration-300 ${
+                              hoveredIndex === index 
+                                ? 'bg-[#C72C5B] text-white' 
+                                : 'bg-gray-100 text-[#0F0F0F]'
+                            }`}>
+                              <service.icon className="h-4 w-4" />
+                            </div>
+
+                            {/* Title */}
+                            <h3 className={`text-lg md:text-2xl font-bold transition-colors duration-300 ${
+                              hoveredIndex === index ? 'text-white' : 'text-[#0F0F0F]'
+                            }`}>
+                              {service.title}
+                            </h3>
+                          </div>
+
+                          {/* Arrow */}
+                          <div className={`flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-full border transition-all duration-300 ${
+                            hoveredIndex === index 
+                              ? 'border-[#C72C5B] bg-[#C72C5B] text-white' 
+                              : 'border-gray-200 text-gray-400'
+                          }`}>
+                            <ArrowUpRight className={`h-3.5 w-3.5 md:h-4 md:w-4 transition-transform duration-300 ${
+                              hoveredIndex === index ? 'rotate-45' : ''
+                            }`} />
+                          </div>
                         </div>
-
-                        {/* Title */}
-                        <h3 className={`text-xl md:text-3xl lg:text-4xl font-bold transition-colors duration-300 ${
-                          hoveredIndex === index ? 'text-white' : 'text-[#0F0F0F]'
-                        }`}>
-                          {service.title}
-                        </h3>
                       </div>
 
-                      {/* Right: Description (shows on hover) + Arrow */}
-                      <div className="flex items-center gap-4 md:gap-8">
-                        {/* Description - visible on hover */}
-                        <motion.p
-                          className="hidden lg:block max-w-xs text-sm text-white/70"
-                          initial={{ opacity: 0, x: 20 }}
-                          animate={{ 
-                            opacity: hoveredIndex === index ? 1 : 0,
-                            x: hoveredIndex === index ? 0 : 20
-                          }}
-                          transition={{ duration: 0.3 }}
-                        >
-                          {service.description}
-                        </motion.p>
+                      {/* Last item border */}
+                      {index === services.length - 1 && (
+                        <div className="absolute bottom-0 left-0 right-0 h-px bg-gray-200" />
+                      )}
+                    </motion.div>
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
 
-                        {/* Arrow */}
-                        <div className={`flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-full border transition-all duration-300 ${
-                          hoveredIndex === index 
-                            ? 'border-[#C72C5B] bg-[#C72C5B] text-white' 
-                            : 'border-gray-200 text-gray-400'
-                        }`}>
-                          <ArrowUpRight className={`h-4 w-4 md:h-5 md:w-5 transition-transform duration-300 ${
-                            hoveredIndex === index ? 'rotate-45' : ''
-                          }`} />
+          {/* Right - Video Card Slider with White Background */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="relative"
+          >
+            {/* Desktop: CardSwap */}
+            <div className="hidden lg:block relative h-[480px] xl:h-[540px]">
+              <div className="absolute inset-0 overflow-hidden rounded-3xl bg-white border border-gray-200">
+                <CardSwap
+                  cardDistance={30}
+                  verticalDistance={35}
+                  delay={3000}
+                  skewAmount={0}
+                  easing="elastic"
+                >
+                  {services.map((item) => {
+                    const IconComponent = item.icon;
+                    return (
+                      <Card key={item.number} className="overflow-hidden">
+                        {/* Video Background */}
+                        <video
+                          className="absolute inset-0 w-full h-full object-cover"
+                          autoPlay
+                          muted
+                          loop
+                          playsInline
+                        >
+                          <source src={item.videoSrc} type="video/mp4" />
+                        </video>
+
+                        {/* Solid Color Overlay */}
+                        <div 
+                          className="absolute inset-0 opacity-60" 
+                          style={{ backgroundColor: item.color }}
+                        />
+
+                        {/* Content Overlay */}
+                        <div className="absolute inset-0 p-6 flex flex-col justify-between text-white">
+                          <div className="flex justify-between items-start">
+                            <span className="px-3 py-1.5 rounded-full bg-white/20 text-white text-xs font-medium backdrop-blur-sm">
+                              {item.category}
+                            </span>
+                            <div className="bg-white/20 backdrop-blur-sm rounded-full p-2">
+                              <IconComponent className="w-5 h-5" />
+                            </div>
+                          </div>
+
+                          <div className="space-y-2">
+                            <h3 className="text-2xl font-bold leading-tight">{item.title}</h3>
+                            <p className="text-white/90 text-sm leading-relaxed">{item.description}</p>
+                          </div>
+                        </div>
+                      </Card>
+                    );
+                  })}
+                </CardSwap>
+              </div>
+            </div>
+
+            {/* Mobile/Tablet: Horizontal Scroll Cards */}
+            <div className="lg:hidden">
+              <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 snap-x snap-mandatory scrollbar-hide">
+                {services.map((item) => {
+                  const IconComponent = item.icon;
+                  return (
+                    <div 
+                      key={item.number} 
+                      className="flex-shrink-0 w-[280px] sm:w-[300px] h-[380px] rounded-2xl overflow-hidden relative snap-start border border-gray-200"
+                    >
+                      {/* Video Background */}
+                      <video
+                        className="absolute inset-0 w-full h-full object-cover"
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                      >
+                        <source src={item.videoSrc} type="video/mp4" />
+                      </video>
+
+                      {/* Solid Color Overlay */}
+                      <div 
+                        className="absolute inset-0 opacity-60" 
+                        style={{ backgroundColor: item.color }}
+                      />
+
+                      {/* Content Overlay */}
+                      <div className="absolute inset-0 p-5 flex flex-col justify-between text-white">
+                        <div className="flex justify-between items-start">
+                          <span className="px-3 py-1 rounded-full bg-white/20 text-white text-xs font-medium backdrop-blur-sm">
+                            {item.category}
+                          </span>
+                          <div className="bg-white/20 backdrop-blur-sm rounded-full p-2">
+                            <IconComponent className="w-4 h-4" />
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <h3 className="text-xl font-bold leading-tight">{item.title}</h3>
+                          <p className="text-white/90 text-sm leading-relaxed">{item.description}</p>
                         </div>
                       </div>
                     </div>
-                  </div>
-
-                  {/* Last item border */}
-                  {index === services.length - 1 && (
-                    <div className="absolute bottom-0 left-0 right-0 h-px bg-gray-200" />
-                  )}
-                </motion.div>
-              </Link>
-            </motion.div>
-          ))}
+                  );
+                })}
+              </div>
+            </div>
+          </motion.div>
         </div>
-
-        {/* Bottom CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ delay: 0.8, duration: 0.6 }}
-          className="mt-16 md:mt-20 flex flex-col sm:flex-row items-center justify-between gap-6 rounded-3xl border border-gray-200 bg-gray-50 p-8 md:p-10"
-        >
-          <div>
-            <p className="text-xl md:text-2xl font-bold text-[#0F0F0F]">
-              Ready to transform your brand?
-            </p>
-            <p className="mt-1 text-gray-500">
-              Let&apos;s discuss how we can help you grow.
-            </p>
-          </div>
-          <Link
-            href="/#contact"
-            className="group inline-flex items-center gap-3 rounded-full bg-[#C72C5B] px-8 py-4 font-bold text-white transition-all hover:bg-[#0F0F0F]"
-          >
-            Start Your Project
-            <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
-          </Link>
-        </motion.div>
       </div>
     </section>
   );

@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 const navLinks = [
   { href: '/', label: 'Home' },
   { href: '/services/', label: 'Services' },
+  { href: '/cinematography/', label: 'Graduation' },
   { href: '/#work', label: 'Work' },
   { href: '/#pricing', label: 'Pricing' },
   { href: '/blogs/', label: 'Blog' },
@@ -51,7 +52,7 @@ export function Navigation() {
         transition={{ duration: 0.6, delay: isHomePage ? 2.5 : 0.3 }}
         className={`fixed left-0 right-0 top-0 z-50 transition-all duration-300 ${
           isLight
-            ? 'bg-white shadow-lg backdrop-blur-md'
+            ? 'bg-white border-b border-gray-100 backdrop-blur-md'
             : 'bg-transparent'
         }`}
       >
@@ -72,7 +73,7 @@ export function Navigation() {
                 isLight ? 'text-gray-900' : 'text-white'
               }`}
             >
-              WETRENDS
+              WeTrends
             </span>
           </Link>
 
@@ -130,7 +131,7 @@ export function Navigation() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="fixed inset-x-0 top-16 z-40 bg-white shadow-xl lg:hidden"
+            className="fixed inset-x-0 top-16 z-40 bg-white border-b border-gray-100 lg:hidden"
           >
             <nav className="flex flex-col p-4">
               {navLinks.map((link, index) => (

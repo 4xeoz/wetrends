@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
 import Image from 'next/image';
 import CardSwap, { Card } from '../../../components/ui/cardSwap';
 import { Palette, Video, Globe, Users, Zap } from 'lucide-react';
@@ -10,60 +10,6 @@ import AnimatedContent from "@/components/ui/animated-content";
  * Showcase - Full height section with solid background
  */
 const Showcase = () => {
-    const [isPlaying, setIsPlaying] = useState(false);
-    const [progress, setProgress] = useState(0);
-    const [currentTime, setCurrentTime] = useState(0);
-    const [duration, setDuration] = useState(0);
-    const audioRef = useRef<HTMLAudioElement>(null);
-
-    useEffect(() => {
-        const audio = audioRef.current;
-        if (!audio) return;
-
-        const updateTime = () => {
-            setCurrentTime(audio.currentTime);
-            setProgress((audio.currentTime / audio.duration) * 100);
-        };
-
-        const updateDuration = () => {
-            setDuration(audio.duration);
-        };
-
-        const handleEnded = () => {
-            setIsPlaying(false);
-            setProgress(0);
-            setCurrentTime(0);
-        };
-
-        audio.addEventListener('timeupdate', updateTime);
-        audio.addEventListener('loadedmetadata', updateDuration);
-        audio.addEventListener('ended', handleEnded);
-
-        return () => {
-            audio.removeEventListener('timeupdate', updateTime);
-            audio.removeEventListener('loadedmetadata', updateDuration);
-            audio.removeEventListener('ended', handleEnded);
-        };
-    }, []);
-
-    const togglePlayPause = () => {
-        const audio = audioRef.current;
-        if (!audio) return;
-
-        if (isPlaying) {
-            audio.pause();
-        } else {
-            audio.play();
-        }
-        setIsPlaying(!isPlaying);
-    };
-
-    const formatTime = (seconds: number) => {
-        if (isNaN(seconds)) return '0:00';
-        const mins = Math.floor(seconds / 60);
-        const secs = Math.floor(seconds % 60);
-        return `${mins}:${secs.toString().padStart(2, '0')}`;
-    };
 
     const showcaseItems = [
         {
@@ -143,7 +89,7 @@ const Showcase = () => {
                     </AnimatedContent>
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 lg:gap-16 items-start lg:items-center h-full max-w-6xl mx-auto">
-                        {/* Left Column - Content */}
+                        {/* Left Column - Content Only */}
                         <div className="space-y-6 md:space-y-8 lg:ml-10 order-2 lg:order-1">
                             {/* Description */}
                             <AnimatedContent
@@ -159,84 +105,6 @@ const Showcase = () => {
                                     We plug into your Slack, track the trends, script the stories, and hand back polished assets, so you
                                     never chase freelancers or juggle briefs again.
                                 </p>
-                            </AnimatedContent>
-
-                            <AnimatedContent
-                                direction="vertical"
-                                distance={80}
-                                duration={1.2}
-                                delay={0.3}
-                                ease="power3.out"
-                                animateOpacity={true}
-                                threshold={0.1}
-                            >
-                                {/* Testimonial Cards */}
-                                <div className="space-y-4 md:space-y-6">
-                                    {/* First Testimonial - Dark */}
-                                    <div className="bg-black rounded-2xl p-5 md:p-6 lg:p-8 max-w-lg">
-                                        <div className="flex items-start gap-3 md:gap-4 mb-4">
-                                            <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-[#C72C5B] flex-shrink-0 flex items-center justify-center text-white font-bold">
-                                                D
-                                            </div>
-                                            <div>
-                                                <h4 className="text-white font-semibold text-sm md:text-base">designs alton.</h4>
-                                                <p className="text-gray-400 text-xs md:text-sm">Lead Software Engineer</p>
-                                            </div>
-                                        </div>
-                                        <blockquote className="text-white text-sm md:text-base leading-relaxed">
-                                            &ldquo;Such a great team, they are friends more then business patterns, thank you.
-                                            <br />
-                                            <span className="font-bold">LOVE IT :)&rdquo;</span>
-                                        </blockquote>
-                                    </div>
-
-                                    {/* Second Testimonial - Light */}
-                                    <div className="bg-white rounded-2xl p-5 md:p-6 lg:p-8 max-w-lg">
-                                        <div className="flex items-start gap-3 md:gap-4 mb-4">
-                                            <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-[#C72C5B] flex-shrink-0 flex items-center justify-center text-white font-bold">
-                                                C
-                                            </div>
-                                            <div>
-                                                <h4 className="text-gray-900 font-semibold text-sm md:text-base">designs alton.</h4>
-                                                <p className="text-gray-500 text-xs md:text-sm">Lead Software Engineer</p>
-                                            </div>
-                                        </div>
-                                        <blockquote className="text-gray-800 text-sm md:text-base leading-relaxed mb-4">
-                                            &ldquo;I never imagined I&apos;d be praising a team like this, but their work truly impressed me. Every design wasn&apos;t just beautiful — it had purpose, built as part of a real sales funnel.&rdquo;
-                                        </blockquote>
-
-                                        {/* Voice Over Progress Bar */}
-                                        <div className="flex items-center gap-3">
-                                            <audio
-                                                ref={audioRef}
-                                                src="/sounds/Chris_testimonia.mp3"
-                                                preload="metadata"
-                                            />
-                                            <button 
-                                                onClick={togglePlayPause}
-                                                className="w-8 h-8 bg-black rounded-full flex items-center justify-center hover:bg-gray-800 transition-colors flex-shrink-0"
-                                            >
-                                                {isPlaying ? (
-                                                    <div className="flex gap-1">
-                                                        <div className="w-1 h-3 bg-white"></div>
-                                                        <div className="w-1 h-3 bg-white"></div>
-                                                    </div>
-                                                ) : (
-                                                    <div className="w-0 h-0 border-l-[6px] border-l-white border-t-[4px] border-t-transparent border-b-[4px] border-b-transparent ml-1"></div>
-                                                )}
-                                            </button>
-                                            <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden cursor-pointer">
-                                                <div 
-                                                    className={`h-full bg-black rounded-full transition-all duration-100`} 
-                                                    style={{ width: `${progress}%` }}
-                                                ></div>
-                                            </div>
-                                            <span className="text-xs text-gray-500 font-mono hidden sm:inline">
-                                                {formatTime(currentTime)} / {formatTime(duration)}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
                             </AnimatedContent>
                         </div>
 
@@ -265,7 +133,7 @@ const Showcase = () => {
                                     {showcaseItems.map((item) => {
                                         const IconComponent = item.icon;
                                         return (
-                                            <Card key={item.id} className="overflow-hidden shadow-2xl shadow-black/50">
+                                            <Card key={item.id} className="overflow-hidden">
                                                 {/* Video Background */}
                                                 <video
                                                     className="absolute inset-0 w-full h-full object-cover"
@@ -318,7 +186,7 @@ const Showcase = () => {
                                         return (
                                             <div 
                                                 key={item.id} 
-                                                className="flex-shrink-0 w-[280px] sm:w-[320px] h-[380px] sm:h-[420px] rounded-2xl overflow-hidden shadow-xl shadow-black/30 relative snap-start"
+                                                className="flex-shrink-0 w-[280px] sm:w-[320px] h-[380px] sm:h-[420px] rounded-2xl overflow-hidden relative snap-start"
                                             >
                                                 {/* Video Background */}
                                                 <video

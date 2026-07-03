@@ -26,8 +26,8 @@ export function Team() {
         </span>
       </div>
 
-      {/* Top section with image and title */}
-      <div className="relative grid lg:grid-cols-2 min-h-[80vh]">
+      {/* Main section with image and content - Full screen */}
+      <div className="relative grid lg:grid-cols-2 min-h-screen">
         {/* Left: Image */}
         <motion.div
           initial={{ opacity: 0, clipPath: 'inset(0 100% 0 0)' }}
@@ -43,7 +43,6 @@ export function Team() {
             sizes="50vw"
             priority
           />
-         
         </motion.div>
 
         {/* Right: Content */}
@@ -106,35 +105,6 @@ export function Team() {
               <p className="text-5xl md:text-6xl font-black text-white">30+</p>
               <p className="text-sm text-white/60 uppercase tracking-wider">Clients</p>
             </div>
-          </motion.div>
-        </div>
-      </div>
-
-      {/* Bottom section with CTA */}
-      <div className="relative bg-white py-16 md:py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ delay: 1, duration: 0.6 }}
-            className="flex flex-col md:flex-row items-center justify-between gap-8"
-          >
-            <div className="text-center md:text-left">
-              <p className="text-3xl md:text-4xl font-bold text-[#0F0F0F]">
-                Want to <span className="text-[#C72C5B]">join</span> the crew?
-              </p>
-              <p className="mt-2 text-gray-500">
-                We&apos;re always scouting for fearless creatives.
-              </p>
-            </div>
-
-            <Link
-              href="/#contact"
-              className="group inline-flex items-center gap-3 rounded-full bg-[#C72C5B] px-10 py-5 text-lg font-bold text-white transition-all hover:bg-[#0F0F0F] hover:scale-105"
-            >
-              Join the Squad
-              <ArrowUpRight className="h-6 w-6 transition-transform group-hover:rotate-45" />
-            </Link>
           </motion.div>
         </div>
       </div>

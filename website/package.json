@@ -52,6 +52,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@prisma/client": "^6.19.2",
+    "@tailwindcss/typography": "^0.5.19",
     "@types/node": "^20",
     "@types/pdf-parse": "^1.1.4",
     "@types/react": "^19",
