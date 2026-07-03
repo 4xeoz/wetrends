@@ -4,6 +4,7 @@ import "./globals.css";
 import { SessionProvider } from "next-auth/react";
 import { SmoothScrollProvider } from "@/components/providers/smooth-scroll";
 import { LoadingScreen } from "@/components/providers/loading-screen";
+import { PostHogProvider } from "@/components/providers/posthog-provider";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
@@ -169,13 +170,15 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <meta name="ICBM" content="51.2362, -0.5704" />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <LoadingScreen>
-          <SmoothScrollProvider>
-            <SessionProvider>
-              {children}
-            </SessionProvider>
-          </SmoothScrollProvider>
-        </LoadingScreen>
+        <PostHogProvider>
+          <LoadingScreen>
+            <SmoothScrollProvider>
+              <SessionProvider>
+                {children}
+              </SessionProvider>
+            </SmoothScrollProvider>
+          </LoadingScreen>
+        </PostHogProvider>
       </body>
     </html>
   );
