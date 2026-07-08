@@ -45,8 +45,9 @@ ${services}
 
 - [Home](${baseUrl}/): Agency overview, portfolio, and contact form
 - [Services](${baseUrl}/services/): All services with details and pricing guidance
-- [Questions](${baseUrl}/questions/): Direct answers to common questions about web design, branding, and digital marketing
+- [Case Studies](${baseUrl}/case-studies/): Real projects and proven results
 - [Blog](${baseUrl}/blogs/): Articles on branding, marketing, and growing a small business
+- [Questions](${baseUrl}/questions/): Direct answers to common questions about web design, branding, and digital marketing
 - [Cinematography](${baseUrl}/cinematography/): Cinematography and film production booking
 
 ## Blog Posts
