@@ -97,6 +97,7 @@ export async function POST(request: NextRequest) {
     // 5. Revalidate blog pages
     revalidatePath("/blogs");
     revalidatePath(`/blogs/${post.slug}`);
+    revalidatePath("/sitemap.xml");
 
     return NextResponse.json(
       { success: true, post },

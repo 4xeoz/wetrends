@@ -59,8 +59,30 @@ export default async function TeamMemberPage({ params }: Props) {
     notFound();
   }
 
+  const personSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: member.name,
+    jobTitle: member.role,
+    description: member.bio,
+    url: `https://wetrends.co.uk/who/${member.id}/`,
+    image: `https://wetrends.co.uk${member.image}`,
+    email: member.email,
+    worksFor: {
+      '@type': 'Organization',
+      name: 'WeTrends',
+      url: 'https://wetrends.co.uk',
+    },
+    knowsAbout: member.skills,
+    sameAs: [member.linkedin, member.twitter].filter(Boolean),
+  };
+
   return (
     <main className="min-h-[100svh] bg-white text-[#0F0F0F]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }}
+      />
       {/* Hero Section */}
       <section className="relative pt-[72px]">
         <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">

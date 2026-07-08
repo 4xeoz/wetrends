@@ -185,6 +185,8 @@ export async function createPost(data: CreatePostData) {
     });
 
     revalidatePath('/blogs');
+    revalidatePath(`/blogs/${post.slug}`);
+    revalidatePath('/sitemap.xml');
     return { success: true, post };
   } catch (error) {
     console.error('Error creating post:', error);
@@ -270,6 +272,7 @@ export async function updatePost(data: UpdatePostData) {
 
     revalidatePath('/blogs');
     revalidatePath(`/blogs/${post.slug}`);
+    revalidatePath('/sitemap.xml');
     return { success: true, post };
   } catch (error) {
     console.error('Error updating post:', error);
@@ -290,6 +293,7 @@ export async function deletePost(id: string) {
     });
 
     revalidatePath('/blogs');
+    revalidatePath('/sitemap.xml');
     return { success: true };
   } catch (error) {
     console.error('Error deleting post:', error);
