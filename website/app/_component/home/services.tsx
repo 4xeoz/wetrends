@@ -3,61 +3,67 @@
 import { useRef, useState } from 'react';
 import { motion, useInView } from 'motion/react';
 import CardSwap, { Card } from '../../../components/ui/cardSwap';
-import { Code, Globe, Video, Palette, Cpu, Zap, ArrowUpRight } from 'lucide-react';
+import { Globe, Video, Palette, Users, Zap, PenTool, ArrowUpRight } from 'lucide-react';
 import Link from 'next/link';
 
 const services = [
   {
     number: '01',
-    icon: Code,
-    title: 'Software Development',
-    description: 'Custom web applications, MVPs, and digital products built to solve real business problems.',
-    category: "Software",
-    videoSrc: "/videos/design-preview-wetrends.mp4",
-    color: "#C72C5B",
-  },
-  {
-    number: '02',
-    icon: Globe,
-    title: 'Web Design & Development',
-    description: 'High-converting websites and e-commerce platforms that drive measurable results.',
-    category: "Web",
-    videoSrc: "/videos/website-preview-wetrends.mp4",
-    color: "#0F0F0F",
-  },
-  {
-    number: '03',
     icon: Video,
     title: 'Video Production',
-    description: 'Cinematic storytelling that captivates audiences and drives engagement across all platforms.',
+    description: 'Award-winning video production services. Brand films, commercials, social content & motion graphics.',
     category: "Video",
+    slug: 'video-production',
     videoSrc: "/videos/video-preview-wetrends.mp4",
     color: "#C72C5B",
   },
   {
-    number: '04',
+    number: '02',
     icon: Palette,
     title: 'Brand Identity',
-    description: 'Visual systems that demand attention and create lasting impressions.',
+    description: 'Strategic brand identity design. Logo design, visual systems, brand guidelines & packaging.',
     category: "Branding",
+    slug: 'brand-identity',
+    videoSrc: "/videos/design-preview-wetrends.mp4",
+    color: "#0F0F0F",
+  },
+  {
+    number: '03',
+    icon: Globe,
+    title: 'Web Design',
+    description: 'High-converting web design & development. Custom websites, e-commerce, Next.js specialists.',
+    category: "Web",
+    slug: 'web-design',
+    videoSrc: "/videos/website-preview-wetrends.mp4",
+    color: "#C72C5B",
+  },
+  {
+    number: '04',
+    icon: Users,
+    title: 'Social Media',
+    description: 'Expert social media management. Content strategy, community management, paid social & analytics.',
+    category: "Social",
+    slug: 'social-media',
     videoSrc: "/videos/social-preview-wetrends.mp4",
     color: "#0F0F0F",
   },
   {
     number: '05',
-    icon: Cpu,
-    title: 'Tech Consulting',
-    description: 'Strategic technology guidance to streamline operations and accelerate growth.',
-    category: "Consulting",
+    icon: Zap,
+    title: 'Animation',
+    description: 'Creative animation & motion graphics. 2D animation, explainers, logo animation & micro-interactions.',
+    category: "Animation",
+    slug: 'animation',
     videoSrc: "/videos/animations-preview-wetrends.mp4",
     color: "#C72C5B",
   },
   {
     number: '06',
-    icon: Zap,
-    title: 'Animation & Motion',
-    description: 'Motion design that brings brands to life with dynamic storytelling.',
-    category: "Animation",
+    icon: PenTool,
+    title: 'Content Strategy',
+    description: 'Strategic content creation. SEO content, copywriting, editorial & storytelling that converts.',
+    category: "Content",
+    slug: 'content-strategy',
     videoSrc: "/videos/design-preview-wetrends.mp4",
     color: "#0F0F0F",
   },
@@ -111,7 +117,7 @@ export function Services() {
                   animate={isInView ? { opacity: 1, x: 0 } : {}}
                   transition={{ duration: 0.6, delay: 0.3 + index * 0.1 }}
                 >
-                  <Link href={`/services/${service.title.toLowerCase().replace(' ', '-')}/`}>
+                  <Link href={`/services/${service.slug}/`}>
                     <motion.div
                       className="group relative cursor-pointer"
                       onMouseEnter={() => setHoveredIndex(index)}
