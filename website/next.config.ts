@@ -1,6 +1,29 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Duplicate blog posts were unpublished (topic re-spins); 301 the dead
+  // slugs to the surviving article so indexed URLs keep their equity.
+  async redirects() {
+    const dupes: Record<string, string> = {
+      'scaling-revenue-beyond-meta-ads-surrey-smbs': 'scaling-smbs-beyond-meta-ads',
+      '30-day-linkedin-authority-sprint-consultants': '30-day-linkedin-authority-sprint-london-consultants',
+      '30-day-linkedin-sprint-for-consultants': '30-day-linkedin-authority-sprint-london-consultants',
+      '30-day-linkedin-sprint-london-consultants': '30-day-linkedin-authority-sprint-london-consultants',
+      'why-surrey-smbs-should-ditch-meta-lead-forms': 'scaling-surrey-smbs-crm-funnels-vs-meta-lead-forms',
+      'beyond-meta-lead-forms-surrey-smb': 'scaling-surrey-smbs-crm-funnels-vs-meta-lead-forms',
+      'scaling-past-lead-forms-surrey-smb': 'scaling-surrey-smbs-crm-funnels-vs-meta-lead-forms',
+      'beyond-meta-lead-forms-surrey-smbs': 'scaling-surrey-smbs-crm-funnels-vs-meta-lead-forms',
+      'meta-lead-forms-vs-landing-pages-growth': 'why-landing-pages-outperform-meta-lead-forms',
+      'founder-content-system-3-hour-weekly-growth-strategy': 'founder-content-system-london-consultants',
+      'winning-the-guildford-search-local-seo-strategy': 'winning-the-guildford-search-local-seo',
+      'winning-the-guildford-search': 'winning-the-guildford-search-local-seo',
+    };
+    return Object.entries(dupes).map(([from, to]) => ({
+      source: `/blogs/${from}/`,
+      destination: `/blogs/${to}/`,
+      permanent: true,
+    }));
+  },
   // Proxy PostHog through our own domain so ad blockers don't drop analytics
   // (PostHog's documented reverse-proxy path convention).
   async rewrites() {
@@ -20,14 +43,6 @@ const nextConfig: NextConfig = {
   skipTrailingSlashRedirect: true,
   images: {
     remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "res.cloudinary.com",
-      },
-      {
-        protocol: "https",
-        hostname: "*.cloudinary.com",
-      },
       {
         protocol: "https",
         hostname: "images.unsplash.com",

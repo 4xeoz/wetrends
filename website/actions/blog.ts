@@ -56,7 +56,7 @@ export async function getAllPosts() {
 export async function getPostBySlug(slug: string) {
   try {
     const post = await prisma.blogPost.findUnique({
-      where: { slug },
+      where: { slug, published: true },
       include: {
         category: true,
         author: {
@@ -82,6 +82,43 @@ export async function getPostBySlug(slug: string) {
   } catch (error) {
     console.error('Error fetching post:', error);
     return { success: false, message: 'Failed to fetch post' };
+  }
+}
+
+// Get related posts for interlinking: same category first, then keyword
+// overlap, backfilled with most recent.
+export async function getRelatedPosts(postId: string, categoryId: string | null, keywords: string[], limit = 3) {
+  try {
+    const candidates = await prisma.blogPost.findMany({
+      where: { published: true, id: { not: postId } },
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        excerpt: true,
+        keywords: true,
+        publishedAt: true,
+        categoryId: true,
+        category: { select: { name: true, slug: true } },
+      },
+      orderBy: { publishedAt: 'desc' },
+      take: 60,
+    });
+
+    const keywordSet = new Set(keywords.map((k) => k.toLowerCase()));
+    const scored = candidates
+      .map((post) => {
+        let score = 0;
+        if (categoryId && post.categoryId === categoryId) score += 2;
+        score += post.keywords.filter((k) => keywordSet.has(k.toLowerCase())).length;
+        return { post, score };
+      })
+      .sort((a, b) => b.score - a.score || (b.post.publishedAt?.getTime() ?? 0) - (a.post.publishedAt?.getTime() ?? 0));
+
+    return { success: true, posts: scored.slice(0, limit).map((s) => s.post) };
+  } catch (error) {
+    console.error('Error fetching related posts:', error);
+    return { success: false, posts: [] };
   }
 }
 

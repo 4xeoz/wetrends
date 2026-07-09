@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { getPostBySlug, getPublishedPosts } from '@/actions/blog';
+import { getPostBySlug, getPublishedPosts, getRelatedPosts } from '@/actions/blog';
+import { enrichBlogContent, pickServiceCta } from '@/lib/blog-content';
 import { BlogPostContent } from '@/app/_component/blogs/blog-post-content';
 
 interface BlogPostPageProps {
@@ -72,6 +73,11 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const post = result.post;
   const url = `https://wetrends.co.uk/blogs/${post.slug}/`;
 
+  const { html, toc } = enrichBlogContent(post.content);
+  const serviceCta = pickServiceCta(post.title, post.keywords, post.category?.name);
+  const relatedResult = await getRelatedPosts(post.id, post.category?.id ?? null, post.keywords);
+  const relatedPosts = relatedResult.posts ?? [];
+
   const blogPostingSchema = {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
@@ -120,7 +126,13 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
-      <BlogPostContent post={post} />
+      <BlogPostContent
+        post={post}
+        html={html}
+        toc={toc}
+        relatedPosts={relatedPosts}
+        serviceCta={serviceCta}
+      />
     </>
   );
 }
