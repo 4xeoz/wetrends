@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ImageUpload } from '@/components/ui/image-upload';
+import { ImageUrlInput } from '@/components/ui/image-url-input';
 import { Loader2, Plus, X } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useSession } from 'next-auth/react';
@@ -257,10 +257,9 @@ export default function EditBlogPostPage() {
                 />
               </div>
 
-              <ImageUpload
+              <ImageUrlInput
                 value={formData.featuredImage || ''}
                 onChange={(url) => setFormData({ ...formData, featuredImage: url })}
-                folder="blog"
                 label="Featured Image"
               />
 

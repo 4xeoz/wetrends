@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { ImageUpload } from '@/components/ui/image-upload';
+import { ImageUrlInput } from '@/components/ui/image-url-input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Loader2, Plus, X } from 'lucide-react';
@@ -203,10 +203,9 @@ export default function CreateBlogPostPage() {
                 />
               </div>
 
-              <ImageUpload
+              <ImageUrlInput
                 value={formData.featuredImage}
                 onChange={(url) => setFormData({ ...formData, featuredImage: url })}
-                folder="blog"
                 label="Featured Image"
               />
 

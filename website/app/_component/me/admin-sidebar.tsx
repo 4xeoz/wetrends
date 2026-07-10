@@ -6,7 +6,6 @@ import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard,
   FileText,
-  Ticket,
   MessageSquare,
   Settings,
   ChevronDown,
@@ -59,21 +58,6 @@ const navSections: NavSection[] = [
         label: 'Categories',
         href: '/me/blog/categories',
         icon: <FileText className="h-5 w-5" />,
-      },
-    ],
-  },
-  {
-    title: 'Promotions',
-    items: [
-      {
-        label: 'Vouchers',
-        href: '/me/vouchers',
-        icon: <Ticket className="h-5 w-5" />,
-      },
-      {
-        label: 'Scan Voucher',
-        href: '/voucher/scan',
-        icon: <Ticket className="h-5 w-5" />,
       },
     ],
   },

@@ -83,9 +83,11 @@ export const metadata: Metadata = {
     description: "Guildford's creative agency for digital marketing, video production & branding. Local expertise, national results.",
     images: ["/images/og-image.png"],
   },
-  verification: {
-    google: "your-google-verification-code", // TODO: Add your Google Search Console code here
-  },
+  ...(process.env.GOOGLE_SITE_VERIFICATION && {
+    verification: {
+      google: process.env.GOOGLE_SITE_VERIFICATION,
+    },
+  }),
   metadataBase: new URL('https://wetrends.co.uk'),
 };
 

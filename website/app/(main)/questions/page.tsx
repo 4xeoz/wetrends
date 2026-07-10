@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { faqs } from '@/lib/faq-data';
 import QuestionsPage from './questions-page';
 
 export const metadata: Metadata = {
@@ -17,6 +18,27 @@ export const metadata: Metadata = {
   },
 };
 
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((faq) => ({
+    '@type': 'Question',
+    name: faq.question,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: faq.answer,
+    },
+  })),
+};
+
 export default function Page() {
-  return <QuestionsPage />;
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
+      <QuestionsPage />
+    </>
+  );
 }
