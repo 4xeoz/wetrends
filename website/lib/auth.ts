@@ -11,6 +11,42 @@ const credentialsSchema = z.object({
   password: z.string().min(1),
 });
 
+const MAX_LOGIN_ATTEMPTS = 5;
+const LOCKOUT_DURATION_MS = 15 * 60 * 1000; // 15 minutes
+
+async function isLockedOut(identifier: string): Promise<boolean> {
+  const record = await prisma.loginAttempt.findUnique({ where: { identifier } });
+  if (!record?.lockedUntil) return false;
+
+  if (record.lockedUntil > new Date()) return true;
+
+  // Lock has expired — give the identifier a clean slate.
+  await prisma.loginAttempt.update({
+    where: { identifier },
+    data: { attempts: 0, lockedUntil: null },
+  });
+  return false;
+}
+
+async function recordFailedAttempt(identifier: string): Promise<void> {
+  const record = await prisma.loginAttempt.upsert({
+    where: { identifier },
+    create: { identifier, attempts: 1 },
+    update: { attempts: { increment: 1 } },
+  });
+
+  if (record.attempts >= MAX_LOGIN_ATTEMPTS) {
+    await prisma.loginAttempt.update({
+      where: { identifier },
+      data: { lockedUntil: new Date(Date.now() + LOCKOUT_DURATION_MS) },
+    });
+  }
+}
+
+async function clearFailedAttempts(identifier: string): Promise<void> {
+  await prisma.loginAttempt.deleteMany({ where: { identifier } });
+}
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt" },
@@ -25,13 +61,26 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const parsed = credentialsSchema.safeParse(credentials);
         if (!parsed.success) return null;
 
-        const { email, password } = parsed.data;
+        const { password } = parsed.data;
+        const identifier = parsed.data.email.toLowerCase().trim();
 
-        const user = await prisma.user.findUnique({ where: { email } });
-        if (!user?.password) return null;
+        // Checked before touching the user record or comparing a password,
+        // so a locked-out identifier can't be used to keep probing passwords.
+        if (await isLockedOut(identifier)) return null;
+
+        const user = await prisma.user.findUnique({ where: { email: identifier } });
+        if (!user?.password) {
+          await recordFailedAttempt(identifier);
+          return null;
+        }
 
         const valid = await bcrypt.compare(password, user.password);
-        if (!valid) return null;
+        if (!valid) {
+          await recordFailedAttempt(identifier);
+          return null;
+        }
+
+        await clearFailedAttempts(identifier);
 
         return {
           id: user.id,
