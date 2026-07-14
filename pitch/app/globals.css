@@ -1,0 +1,123 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  background-color: #ffffff;
+}
+
+/* Deliberate deviation from the main site's GSAP/Framer motion system —
+   this page is required to stay minimal-JS, so the only entrance motion is
+   a native CSS fade using the same signature easing curve, for visual
+   consistency without pulling in any animation library. */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.fade-delay-1 {
+  animation-delay: 0.1s;
+}
+.fade-delay-2 {
+  animation-delay: 0.2s;
+}
+.fade-delay-3 {
+  animation-delay: 0.35s;
+}
+
+/* Slow ambient drift on the background gradient — CSS-only stand-in for the
+   main site's aurora-orb motion, no animation library needed. */
+@keyframes bg-drift {
+  from {
+    transform: scale(1) translate(0, 0);
+  }
+  to {
+    transform: scale(1.12) translate(-1.5%, 1.5%);
+  }
+}
+
+.animate-bg-drift {
+  animation: bg-drift 24s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+/* Intro title-sequence steps: rise in, hold, fade out. Duration must match
+   STEP_MS in components/intro-sequence.tsx. */
+@keyframes intro-step {
+  0% {
+    opacity: 0;
+    transform: translateY(18px) scale(0.98);
+  }
+  22% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  80% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-14px) scale(1);
+  }
+}
+
+.intro-step {
+  animation: intro-step 1s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Final step rises in and stays — the whole overlay slides away with it */
+@keyframes intro-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.intro-step-final {
+  animation: intro-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro-step,
+  .intro-step-final {
+    animation: none;
+  }
+}
+
+/* Seamless infinite marquee — content is rendered twice, track slides half
+   its own width, CSS only (the main site's marquee pattern without Framer). */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 26s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in,
+  .animate-bg-drift,
+  .animate-marquee {
+    animation: none;
+  }
+}
