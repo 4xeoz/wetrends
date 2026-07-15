@@ -98,7 +98,12 @@ export function BlogList({ posts, categories }: BlogListProps) {
                 <Link href={`/blogs/${post.slug}`} className="flex flex-col h-full">
                   {/* Cover */}
                   <div className="relative aspect-[16/10] overflow-hidden transition-transform duration-500 group-hover:scale-[1.02]">
-                    <BlogCover title={post.title} category={post.category?.name} index={index} />
+                    <BlogCover
+                      title={post.title}
+                      category={post.category?.name}
+                      slug={post.slug}
+                      index={index}
+                    />
                   </div>
 
                   {/* Content */}

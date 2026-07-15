@@ -1,53 +1,90 @@
 import Image from 'next/image';
+import type { ReactNode } from 'react';
+
+const COVER_IMAGES = [
+  '/images/hero_background.webp',
+  '/images/footer_background.webp',
+];
 
 const GRADIENTS = [
-  'from-[#0F0F0F] via-[#1a1a1a] to-[#C72C5B]/30',
-  'from-[#17101a] via-[#0F0F0F] to-purple-900/40',
-  'from-[#0F0F0F] via-[#2a0f18] to-[#C72C5B]/40',
-  'from-[#0F0F0F] via-[#161320] to-indigo-900/30',
+  'from-[#0F0F0F]/90 via-[#0F0F0F]/60 to-transparent',
+  'from-[#050505]/90 via-[#050505]/55 to-transparent',
 ];
 
 interface BlogCoverProps {
   title: string;
   category?: string | null;
   index?: number;
+  slug?: string;
   size?: 'card' | 'hero';
+  meta?: ReactNode;
   className?: string;
 }
 
+function getImageIndex(index: number | undefined, slug: string | undefined): number {
+  if (index !== undefined) return index;
+  if (!slug) return 0;
+  let hash = 0;
+  for (let i = 0; i < slug.length; i++) {
+    hash = slug.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return Math.abs(hash) % COVER_IMAGES.length;
+}
+
 /**
- * Typographic cover art for blog posts — the title itself is the visual,
- * so there's no dependency on a featured-image URL that may be missing or broken.
+ * Editorial cover art for blog posts.
+ *
+ * Alternates between two wetrends background images — hero_background.webp and
+ * footer_background.webp — based on the post index or slug. A dark gradient
+ * overlay keeps the title readable regardless of the image behind it.
  */
-export function BlogCover({ title, category, index = 0, size = 'card', className = '' }: BlogCoverProps) {
-  const gradient = GRADIENTS[index % GRADIENTS.length];
+export function BlogCover({
+  title,
+  category,
+  index,
+  slug,
+  size = 'card',
+  meta,
+  className = '',
+}: BlogCoverProps) {
+  const imageIndex = getImageIndex(index, slug);
+  const image = COVER_IMAGES[imageIndex % COVER_IMAGES.length];
+  const gradient = GRADIENTS[imageIndex % GRADIENTS.length];
   const isHero = size === 'hero';
 
   return (
-    <div
-      className={`relative flex h-full w-full items-center overflow-hidden bg-gradient-to-br ${gradient} ${className}`}
-    >
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-[#C72C5B]/20 blur-3xl"
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -bottom-12 -left-12 h-36 w-36 rounded-full bg-purple-500/10 blur-3xl"
-      />
+    <div className={`group relative h-full w-full overflow-hidden ${className}`}>
+      {/* Background image */}
       <Image
-        src="/images/logo-transparent.svg"
+        src={image}
         alt=""
-        aria-hidden
-        width={isHero ? 200 : 100}
-        height={isHero ? 200 : 100}
-        className="pointer-events-none absolute -bottom-6 -right-6 opacity-[0.07]"
+        fill
+        sizes={isHero ? '100vw' : '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'}
+        className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+        priority={isHero}
       />
 
-      <div className={`relative z-10 w-full ${isHero ? 'px-8 py-14 sm:px-14 sm:py-20' : 'px-5 py-5 sm:px-6 sm:py-6'}`}>
+      {/* Gradient overlay */}
+      <div
+        aria-hidden
+        className={`absolute inset-0 bg-gradient-to-br ${gradient}`}
+      />
+
+      {/* Vignette */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_40%,rgba(0,0,0,0.4)_100%)]"
+      />
+
+      {/* Content */}
+      <div
+        className={`relative z-10 flex h-full w-full flex-col justify-end ${
+          isHero ? 'px-6 py-10 sm:px-12 sm:py-16 md:px-16 md:py-20' : 'p-5 sm:p-6'
+        }`}
+      >
         {category && (
           <span
-            className={`mb-3 inline-block font-bold uppercase tracking-widest text-[#C72C5B] ${
+            className={`mb-3 inline-block w-fit rounded-full border border-white/20 bg-white/10 px-3 py-1 font-bold uppercase tracking-widest text-white backdrop-blur-sm ${
               isHero ? 'text-xs sm:text-sm' : 'text-[10px]'
             }`}
           >
@@ -55,14 +92,20 @@ export function BlogCover({ title, category, index = 0, size = 'card', className
           </span>
         )}
         <p
-          className={`font-bold leading-tight text-white ${
+          className={`font-bold leading-[1.1] text-white ${
             isHero
-              ? 'line-clamp-4 text-2xl sm:text-4xl md:text-5xl'
-              : 'line-clamp-3 text-base sm:text-lg'
+              ? 'line-clamp-4 text-3xl sm:text-5xl md:text-6xl lg:text-7xl'
+              : 'line-clamp-3 text-lg sm:text-xl'
           }`}
         >
           {title}
         </p>
+
+        {isHero && meta && (
+          <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-white/80">
+            {meta}
+          </div>
+        )}
       </div>
     </div>
   );

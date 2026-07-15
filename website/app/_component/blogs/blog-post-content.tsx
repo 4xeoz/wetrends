@@ -180,23 +180,51 @@ export function BlogPostContent({ post, html, toc, relatedPosts, serviceCta }: B
     <article className="min-h-[100svh] bg-white">
       <ReadingProgress />
 
-      {/* Navigation */}
-      <div className="border-b border-gray-100">
-        <div className="mx-auto max-w-[720px] px-5 py-4 sm:px-6">
+      {/* Hero Section */}
+      <section className="relative min-h-[55vh] w-full overflow-hidden sm:min-h-[60vh] lg:min-h-[65vh]">
+        <BlogCover
+          title={post.title}
+          category={post.category?.name}
+          slug={post.slug}
+          size="hero"
+          className="absolute inset-0"
+          meta={
+            <>
+              <span className="flex items-center gap-2">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10">
+                  <User className="h-4 w-4 text-white" />
+                </div>
+                <span className="font-medium text-white">{post.author?.name || 'WeTrends'}</span>
+              </span>
+              <span className="flex items-center gap-1.5">
+                <Calendar className="h-4 w-4" />
+                {post.publishedAt ? (
+                  <time dateTime={new Date(post.publishedAt).toISOString()}>
+                    {format(new Date(post.publishedAt), 'MMMM d, yyyy')}
+                  </time>
+                ) : (
+                  'Draft'
+                )}
+              </span>
+              <span className="flex items-center gap-1.5">
+                <Clock className="h-4 w-4" />
+                {Math.ceil(post.content.split(' ').length / 200)} min read
+              </span>
+            </>
+          }
+        />
+
+        {/* Back link */}
+        <div className="absolute left-0 right-0 top-0 z-20 px-5 py-5 sm:px-8 sm:py-6">
           <Link
             href="/blogs"
-            className="inline-flex items-center gap-2 text-sm font-medium text-gray-500 transition-colors hover:text-[#C72C5B]"
+            className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-black/20 px-4 py-2 text-sm font-medium text-white backdrop-blur-sm transition-colors hover:bg-white/10"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to Blog
           </Link>
         </div>
-      </div>
-
-      {/* Hero Cover */}
-      <div className="relative aspect-[21/9] w-full overflow-hidden">
-        <BlogCover title={post.title} category={post.category?.name} size="hero" />
-      </div>
+      </section>
 
       {/* Content */}
       <div className="mx-auto max-w-[720px] px-5 py-12 sm:px-6 sm:py-16">
@@ -205,49 +233,8 @@ export function BlogPostContent({ post, html, toc, relatedPosts, serviceCta }: B
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          {/* Category */}
-          {post.category && (
-            <Link
-              href={`/blogs?category=${post.category.slug}`}
-              className="mb-5 inline-block rounded-full bg-[#C72C5B]/10 px-4 py-1.5 text-sm font-semibold text-[#C72C5B] transition-colors hover:bg-[#C72C5B]/20"
-            >
-              {post.category.name}
-            </Link>
-          )}
-
-          {/* Title */}
-          <h1 className="mb-6 text-[1.75rem] font-extrabold leading-[1.2] tracking-tight text-gray-900 sm:text-[2.25rem] md:text-[2.75rem]">
-            {post.title}
-          </h1>
-
-          {/* Meta */}
-          <div className="mb-10 flex flex-wrap items-center gap-x-6 gap-y-3 border-b border-gray-100 pb-8 text-sm text-gray-500">
-            <div className="flex items-center gap-2.5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-100">
-                <User className="h-4 w-4 text-gray-500" />
-              </div>
-              <span className="font-medium text-gray-700">
-                {post.author?.name || 'WeTrends'}
-              </span>
-            </div>
-            <span className="flex items-center gap-1.5">
-              <Calendar className="h-4 w-4" />
-              {post.publishedAt ? (
-                <time dateTime={new Date(post.publishedAt).toISOString()}>
-                  {format(new Date(post.publishedAt), 'MMMM d, yyyy')}
-                </time>
-              ) : (
-                'Draft'
-              )}
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Clock className="h-4 w-4" />
-              {Math.ceil(post.content.split(' ').length / 200)} min read
-            </span>
-          </div>
-
           {/* Excerpt */}
-          <p className="mb-10 text-lg font-medium leading-relaxed text-gray-600 sm:text-xl">
+          <p className="mb-10 text-xl font-medium leading-relaxed text-gray-700 sm:text-2xl">
             {post.excerpt}
           </p>
 
@@ -350,7 +337,12 @@ export function BlogPostContent({ post, html, toc, relatedPosts, serviceCta }: B
                 <Link key={related.id} href={`/blogs/${related.slug}/`} className="group block">
                   <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white transition-all hover:border-[#C72C5B]/40 hover:shadow-md">
                     <div className="relative aspect-[16/9] overflow-hidden">
-                      <BlogCover title={related.title} category={related.category?.name} index={index} />
+                      <BlogCover
+                        title={related.title}
+                        category={related.category?.name}
+                        slug={related.slug}
+                        index={index}
+                      />
                     </div>
                     <div className="flex flex-1 flex-col p-6">
                       {related.category && (

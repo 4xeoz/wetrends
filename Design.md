@@ -22,7 +22,7 @@ The **admin dashboard** (`/me/*`) intentionally breaks from this — it's a plai
 
 | Layer | Choice |
 |---|---|
-| Framework | Next.js 15 (App Router, React 19, TypeScript) |
+| Framework | Next.js 15 (App Router, React 19, TypeScript) — main site in `/website/`, pitch subdomain in `/pitch/` |
 | Styling | Tailwind CSS 3.4 + `tailwindcss-animate` + `@tailwindcss/typography` |
 | UI primitives | shadcn/ui (`new-york` style) — used as-is in `/me/*`, hand-styled everywhere on the marketing site |
 | Animation | Framer Motion (imported as `motion/react`) + GSAP 3 `ScrollTrigger` + Lenis (smooth scroll) |
@@ -166,9 +166,9 @@ Added when the blog reading experience was rebuilt. Same spring-physics approach
 - **Every other page** (`/blogs`, `/services`, `/questions`, `/who/[id]`, etc.): always light — `isLight = !isHomePage || isScrolled`. No transparent state, no delay (`0.3s` fade-in). This is deliberate: sub-pages don't have a full-bleed dark hero to sit on top of.
 - Nav links get an underline wipe on hover (`h-0.5 bg-[#C72C5B]`, `width: 0 → 100%`).
 
-### 5.5 Typographic blog cover art (new — replaces missing featured images)
+### 5.5 Editorial blog cover art
 
-`app/_component/blogs/blog-cover.tsx`. Since posts are AI-generated via n8n and don't always have a real featured image, every post gets a generated cover instead: a dark gradient (rotates through 4 presets keyed by post index), two blurred color orbs, a faint watermark logo, and the post title itself rendered as large bold white type. Category name appears as a small uppercase pink label above the title. Same component powers both the compact card size (blog list, related posts) and the hero size (post detail page) via a `size="card" | "hero"` prop.
+`app/_component/blogs/blog-cover.tsx`. Since posts are AI-generated via n8n and don't always have a real featured image, every post gets an editorial cover instead: one of two wetrends background images (`hero_background.webp` or `footer_background.webp`) selected deterministically by post index/slug, a dark gradient overlay for readability, a subtle vignette, and the post title rendered as large bold white type anchored to the bottom. Category name appears as a small uppercase label with a glass-morphism treatment above the title. The same component powers both the compact card size (blog list, related posts) and the hero size (post detail page) via a `size="card" | "hero"` prop. The hero variant accepts an optional `meta` slot for author/date/read-time.
 
 ### 5.6 Blog post reading experience (rebuilt)
 
@@ -239,12 +239,20 @@ Infinite linear-scroll strip of giant alternating bold/serif-italic text at the 
 | `/cinematography` | Booking-oriented page with its own `Event`-style schema |
 | `/me/*` | Admin dashboard — shadcn/ui defaults, sidebar layout, no marketing styling |
 
+### Pitch subdomain (`pitch.wetrends.co.uk`)
+
+| Route | Pattern notes |
+|---|---|
+| `/thai-terrace` | One-to-one outreach pitch page: cinematic intro, personal video, email/WhatsApp CTAs, PostHog email tracking |
+
 ---
 
 ## 8. Asset Strategy
 
 - Photos: `.webp` where possible, `object-cover` for full-bleed backgrounds, stored in `/public/images/`.
 - Video: short looping `.mp4` (5–10s) in `/public/videos/`, always `muted loop playsInline autoPlay`.
+- **Blog covers** use `hero_background.webp` and `footer_background.webp` as full-bleed editorial backgrounds, alternating by post index/slug so existing and future posts get visual variety without manual image selection.
+- **Pitch videos** (e.g., `/thai-terrace`) are hosted on **Cloudinary** and configured via `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` and `NEXT_PUBLIC_CLOUDINARY_VIDEO_PUBLIC_ID`. The delivery URL applies `f_auto,q_auto` for automatic format/quality optimization.
 - Blog posts have no reliable featured-image pipeline (AI-generated content) — the typographic cover (§5.5) is the real fallback, not an edge case.
 - Blog images elsewhere are URL-based (`components/ui/image-url-input.tsx`) — Cloudinary/upload was removed in favor of pasting a hosted URL.
 
@@ -268,3 +276,31 @@ Infinite linear-scroll strip of giant alternating bold/serif-italic text at the 
 - [ ] New marketing pages alternate dark/light sections; new admin pages use shadcn defaults, not marketing tokens.
 - [ ] If the page can render user/AI-generated content without images, does it need a typographic-cover-style fallback like §5.5?
 - [ ] New content types get their own JSON-LD block (see `/blogs`, `/questions`, `/who`, `/services` for the pattern) — every content page in this codebase has one.
+
+## 11. Pitch Subdomain (`pitch.wetrends.co.uk`)
+
+The pitch app is a separate Next.js 15 deployment in `/pitch/`, built for one-to-one outreach pages. It shares the wetrends brand tokens but uses a darker, more cinematic treatment than the main marketing site.
+
+### Tech stack
+- Next.js 15 App Router, React 19, TypeScript
+- Tailwind CSS 3.4
+- PostHog for analytics (first-party proxy via `/ingest` rewrites)
+- Cloudinary for video delivery
+
+### Component patterns
+- `IntroSequence`: cinematic logo → "Hey" → recipient name → "I made this for you" → slide up to reveal the page.
+- `StreamPlayer`: Cloudinary-backed `<video>` with `f_auto,q_auto` optimization; falls back to "Video coming soon" when env vars are missing.
+- `EmailIdentifier`: reads `?email=` or `?ref=` from the URL, calls `posthog.identify()`, and fires `email_pitch_link_clicked`.
+- `EmailCta`: mailto CTA.
+- Full-bleed gradient background with film grain + vignette overlay; glass-morphism card for the video.
+
+### Analytics
+- PostHog `person_profiles: "identified_only"` — profiles are only created once `identify()` is called.
+- UTM params are captured automatically on `$pageview`.
+- Manual events: `email_pitch_link_clicked`, `video_played`.
+- Email link format: `https://pitch.wetrends.co.uk/thai-terrace?email=owner@thaiterrace.co.uk&utm_source=email&utm_campaign=thai-terrace`.
+
+### Deployment
+- Deployed separately from the main site via Vercel, rooted at `/pitch/`.
+- Custom domain `pitch.wetrends.co.uk` is configured in Vercel and pointed to via a Cloudflare CNAME (`cname.vercel-dns.com`, DNS only / grey cloud).
+- Environment variables are managed in Vercel; `.env.local` is gitignored and never committed.

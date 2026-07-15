@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { EmailCta } from "@/components/email-cta";
 import { EmailIdentifier } from "@/components/email-identifier";
 import { IntroSequence } from "@/components/intro-sequence";
-import { StreamPlayer } from "@/components/stream-player";
+import { VideoPlayer } from "@/components/video-player";
 
 export const metadata: Metadata = {
   title: "Hey Thai Terrace — a quick word from WeTrends",
@@ -149,7 +149,7 @@ export default function ThaiTerracePage() {
         {/* The film */}
         <div className="animate-fade-in fade-delay-2">
           <div className="rounded-[1.75rem] bg-white/10 p-1.5 shadow-2xl shadow-[#400b1a]/50 ring-1 ring-white/25 backdrop-blur-md">
-            <StreamPlayer />
+            <VideoPlayer />
           </div>
           <p className="mt-4 text-center font-mono text-[11px] font-bold uppercase tracking-[0.25em] text-white/60">
             Sound on 🔊 — it&apos;s short
