@@ -5,12 +5,20 @@ import { posthog } from "@/lib/analytics/posthog";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 
 /**
- * Reads `?email=` or `?ref=` from the URL and identifies the visitor in PostHog.
+ * Reads `?ref=` from the URL and identifies the visitor in PostHog by that
+ * opaque reference — never by raw email address.
  *
  * Use this when sending the pitch link via email:
- *   https://pitch.wetrends.co.uk/thai-terrace?email=owner@thaiterrace.co.uk&utm_source=email&utm_campaign=thai-terrace
+ *   https://<pitch-domain>/thai-terrace?ref=thai-terrace-owner&utm_source=email&utm_campaign=thai-terrace
  *
- * PostHog will then tie every pageview, video play, and CTA click to that person.
+ * Deliberately not `?email=owner@business.co.uk`: putting a recipient's raw
+ * email address in a link sent via cold outreach is the same technical
+ * signature as a spear-phishing tracking link, and gets reported/flagged as
+ * such by mail providers and Safe Browsing scanners even when the page
+ * itself is benign. `ref` gives the same per-recipient attribution in
+ * PostHog without that risk.
+ *
+ * PostHog will then tie every pageview, video play, and CTA click to that ref.
  */
 export function EmailIdentifier() {
   useEffect(() => {
@@ -22,36 +30,30 @@ export function EmailIdentifier() {
       }
 
       const params = new URLSearchParams(window.location.search);
-      const email = params.get("email");
       const ref = params.get("ref");
       const utmSource = params.get("utm_source");
       const utmCampaign = params.get("utm_campaign");
 
-      const identifier = email || ref;
-      if (!identifier) {
+      if (!ref) {
         // Nothing to identify, but we're done waiting.
         return true;
       }
 
-      posthog.identify(identifier, {
-        email: email || undefined,
-        ref: ref || undefined,
+      posthog.identify(ref, {
+        ref,
         utm_source: utmSource || undefined,
         utm_campaign: utmCampaign || undefined,
         pitch_page: "thai-terrace",
       });
 
       posthog.capture(ANALYTICS_EVENTS.emailPitchLinkClicked, {
-        email: email || undefined,
-        ref: ref || undefined,
+        ref,
         utm_source: utmSource || undefined,
         utm_campaign: utmCampaign || undefined,
       });
 
       // eslint-disable-next-line no-console
       console.log("[EmailIdentifier] identified and captured:", {
-        identifier,
-        email,
         ref,
         utmSource,
         utmCampaign,

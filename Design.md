@@ -277,9 +277,11 @@ Infinite linear-scroll strip of giant alternating bold/serif-italic text at the 
 - [ ] If the page can render user/AI-generated content without images, does it need a typographic-cover-style fallback like §5.5?
 - [ ] New content types get their own JSON-LD block (see `/blogs`, `/questions`, `/who`, `/services` for the pattern) — every content page in this codebase has one.
 
-## 11. Pitch Subdomain (`pitch.wetrends.co.uk`)
+## 11. Pitch Subdomain
 
 The pitch app is a separate Next.js 15 deployment in `/pitch/`, built for one-to-one outreach pages. It shares the wetrends brand tokens but uses a darker, more cinematic treatment than the main marketing site.
+
+**Deliberately not hosted on a `wetrends.co.uk` subdomain** (see Security note below) — use a separate, unrelated domain or the Vercel-provided `*.vercel.app` URL.
 
 ### Tech stack
 - Next.js 15 App Router, React 19, TypeScript
@@ -290,7 +292,7 @@ The pitch app is a separate Next.js 15 deployment in `/pitch/`, built for one-to
 ### Component patterns
 - `IntroSequence`: cinematic logo → "Hey" → recipient name → "I made this for you" → slide up to reveal the page.
 - `StreamPlayer`: Cloudinary-backed `<video>` with `f_auto,q_auto` optimization; falls back to "Video coming soon" when env vars are missing.
-- `EmailIdentifier`: reads `?email=` or `?ref=` from the URL, calls `posthog.identify()`, and fires `email_pitch_link_clicked`.
+- `EmailIdentifier`: reads `?ref=` from the URL (an opaque per-recipient slug, never a raw email address) and calls `posthog.identify()`, firing `email_pitch_link_clicked`.
 - `EmailCta`: mailto CTA.
 - Full-bleed gradient background with film grain + vignette overlay; glass-morphism card for the video.
 
@@ -298,9 +300,13 @@ The pitch app is a separate Next.js 15 deployment in `/pitch/`, built for one-to
 - PostHog `person_profiles: "identified_only"` — profiles are only created once `identify()` is called.
 - UTM params are captured automatically on `$pageview`.
 - Manual events: `email_pitch_link_clicked`, `video_played`.
-- Email link format: `https://pitch.wetrends.co.uk/thai-terrace?email=owner@thaiterrace.co.uk&utm_source=email&utm_campaign=thai-terrace`.
+- Email link format: `https://<pitch-domain>/thai-terrace?ref=thai-terrace-owner&utm_source=email&utm_campaign=thai-terrace` — `ref` is a slug you choose per recipient, not their email address.
 
 ### Deployment
 - Deployed separately from the main site via Vercel, rooted at `/pitch/`.
-- Custom domain `pitch.wetrends.co.uk` is configured in Vercel and pointed to via a Cloudflare CNAME (`cname.vercel-dns.com`, DNS only / grey cloud).
 - Environment variables are managed in Vercel; `.env.local` is gitignored and never committed.
+- `robots.txt` disallows all crawling and `metadata.robots` is `{ index: false, follow: false }` — these pages should never be indexed.
+
+### Security note — do not put this on a `wetrends.co.uk` subdomain
+This app was previously deployed at `pitch.wetrends.co.uk`. A personalized landing page ("Hey Thai Terrace") sent cold via email, with a raw recipient email address in the link (`?email=owner@thaiterrace.co.uk`), is technically identical to a spear-phishing tracking link — both to automated Safe Browsing classifiers and to a recipient deciding whether to hit "Report phishing." That combination got the domain flagged under Search Console's Security Issues report as serving "Deceptive pages."
+Fix applied: `ref` (an opaque slug) replaced raw email in the identify flow — see `EmailIdentifier` above. The domain itself must also move off any `wetrends.co.uk` subdomain (a flagged subdomain drags down the whole domain's security status), onto its own unrelated domain or the default `*.vercel.app` URL, so a false-positive report on an outreach page can never again affect the main site's Safe Browsing status.
