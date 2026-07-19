@@ -5,35 +5,21 @@ import { motion, useInView, AnimatePresence } from 'motion/react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowUpRight, ArrowRight } from 'lucide-react';
+import { caseStudies as allCaseStudies } from '@/lib/case-studies-data';
 
-const caseStudies = [
-  {
-    id: '01',
-    client: 'Nopeca',
-    service: 'Web Design',
-    year: '2024',
-    metric: '+180%',
-    metricLabel: 'Enquiries',
-    description: "A website that gives parents confidence before they even step through the door.",
-    href: '/case-studies/nopeca/',
-    image: '/images/nopeca-mockup.webp',
-    color: '#C72C5B',
-    featured: true,
-  },
-  {
-    id: '02',
-    client: 'Savana Lounge',
-    service: 'Brand Identity',
-    year: '2024',
-    metric: '+320%',
-    metricLabel: 'Direct bookings',
-    description: 'A brand that makes people choose Savana before they even check the menu.',
-    href: '/case-studies/savana-lounge/',
-    image: '/images/savana-mockup.png',
-    color: '#0F0F0F',
-    featured: false,
-  },
-];
+// Single source of truth — the home showcase mirrors the full portfolio.
+const caseStudies = allCaseStudies.map((s) => ({
+  id: s.number,
+  client: s.client,
+  service: s.service,
+  year: s.year,
+  metric: s.metric,
+  metricLabel: s.metricLabel,
+  description: s.tagline,
+  href: `/case-studies/${s.slug}/`,
+  image: s.image,
+  color: s.accentColor,
+}));
 
 export function CaseStudies() {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -109,17 +95,25 @@ export function CaseStudies() {
                     className="absolute inset-0"
                   >
                     {/* Image */}
-                    <div 
+                    <div
                       className="absolute inset-0 transition-transform duration-700 group-hover:scale-105"
                       style={{ backgroundColor: activeStudy.color }}
                     >
-                      <Image
-                        src={activeStudy.image}
-                        alt={`${activeStudy.client} ${activeStudy.service.toLowerCase()} mockup by WeTrends, a creative agency in Guildford, Surrey`}
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 1024px) 100vw, 50vw"
-                      />
+                      {activeStudy.image ? (
+                        <Image
+                          src={activeStudy.image}
+                          alt={`${activeStudy.client} ${activeStudy.service.toLowerCase()} mockup by WeTrends, a creative agency in Guildford, Surrey`}
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 1024px) 100vw, 50vw"
+                        />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center p-8">
+                          <span className="text-center text-5xl font-black uppercase leading-none tracking-tight text-white md:text-7xl">
+                            {activeStudy.client}
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </motion.div>
                 </AnimatePresence>
@@ -303,10 +297,10 @@ export function CaseStudies() {
             className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-4"
           >
             <Link
-              href="/services/"
+              href="/case-studies/"
               className="inline-flex items-center gap-3 rounded-full bg-[#0F0F0F] px-8 py-4 text-base font-bold text-white transition-all hover:bg-[#C72C5B] group"
             >
-              Explore All Services
+              View All Work
               <ArrowUpRight className="w-5 h-5 group-hover:rotate-45 transition-transform" />
             </Link>
             <Link

@@ -28,6 +28,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.9,
     },
     {
+      // Portfolio in the nav — url stays /case-studies/ to preserve existing links/indexing.
       url: `${baseUrl}/case-studies/`,
       lastModified: new Date(),
       changeFrequency: 'monthly' as const,
@@ -55,12 +56,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.9,
   }));
 
-  // Case studies
+  // Portfolio (case study) detail pages
   const caseStudyPages: MetadataRoute.Sitemap = getAllCaseStudySlugs().map((slug) => ({
     url: `${baseUrl}/case-studies/${slug}/`,
     lastModified: new Date(),
     changeFrequency: 'monthly' as const,
-    priority: 0.7,
+    priority: 0.8,
   }));
 
   // Dynamic blog posts

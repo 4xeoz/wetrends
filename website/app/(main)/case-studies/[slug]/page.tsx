@@ -1,6 +1,10 @@
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import { getCaseStudyBySlug, getAllCaseStudySlugs } from '@/lib/case-studies-data';
+import {
+  getCaseStudyBySlug,
+  getAllCaseStudySlugs,
+  getNextCaseStudy,
+} from '@/lib/case-studies-data';
 import CaseStudyDetail from './case-study-detail';
 
 export async function generateStaticParams() {
@@ -15,9 +19,22 @@ export async function generateMetadata({
   const { slug } = await params;
   const study = getCaseStudyBySlug(slug);
   if (!study) return {};
+  const url = `https://wetrends.co.uk/case-studies/${study.slug}/`;
+  const title = `${study.client} Case Study | WeTrends`;
   return {
-    title: `${study.client} Case Study | WeTrends`,
+    title,
     description: study.description,
+    alternates: {
+      canonical: url,
+    },
+    openGraph: {
+      title,
+      description: study.description,
+      url,
+      type: 'article',
+      locale: 'en_GB',
+      siteName: 'WeTrends',
+    },
   };
 }
 
@@ -29,5 +46,6 @@ export default async function CaseStudyPage({
   const { slug } = await params;
   const study = getCaseStudyBySlug(slug);
   if (!study) notFound();
-  return <CaseStudyDetail study={study} />;
+  const next = getNextCaseStudy(slug);
+  return <CaseStudyDetail study={study} next={next} />;
 }

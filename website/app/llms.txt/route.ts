@@ -1,6 +1,7 @@
 import { getPublishedPosts } from '@/actions/blog';
 import { servicesData } from '@/lib/services-data';
 import { faqs } from '@/lib/faq-data';
+import { caseStudies } from '@/lib/case-studies-data';
 
 // Regenerate at most hourly so new blog posts show up without a redeploy.
 export const revalidate = 3600;
@@ -31,6 +32,13 @@ export async function GET() {
     .map((faq) => `### ${faq.question}\n\n${faq.answer}`)
     .join('\n\n');
 
+  const portfolio = caseStudies
+    .map(
+      (study) =>
+        `- [${study.client}](${baseUrl}/case-studies/${study.slug}/): ${study.tagline} — ${study.metric} ${study.metricLabel.toLowerCase()}.`
+    )
+    .join('\n');
+
   const content = `# WeTrends
 
 > WeTrends is a creative digital agency in Guildford, Surrey, UK. We help small businesses build uncopyable brands through web design, brand identity, video production, social media management, animation, and content strategy. We serve Guildford, Woking, Farnham, Dorking, Reigate, wider Surrey, London, and the UK.
@@ -45,10 +53,14 @@ ${services}
 
 - [Home](${baseUrl}/): Agency overview, portfolio, and contact form
 - [Services](${baseUrl}/services/): All services with details and pricing guidance
-- [Case Studies](${baseUrl}/case-studies/): Real projects and proven results
+- [Portfolio](${baseUrl}/case-studies/): Real client projects and proven results
 - [Blog](${baseUrl}/blogs/): Articles on branding, marketing, and growing a small business
 - [Questions](${baseUrl}/questions/): Direct answers to common questions about web design, branding, and digital marketing
 - [Cinematography](${baseUrl}/cinematography/): Cinematography and film production booking
+
+## Portfolio
+
+${portfolio}
 
 ## Blog Posts
 
