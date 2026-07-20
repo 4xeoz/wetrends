@@ -43,7 +43,7 @@ export const caseStudies: CaseStudy[] = [
     tagline: 'A website that gives parents confidence before they even visit',
     metric: '+180%',
     metricLabel: 'Increase in enquiries',
-    accentColor: '#C72C5B',
+    accentColor: '#1E3A8A',
     image: '/images/nopeca-mockup.webp',
     deliverables: ['UX Strategy', 'Web Design', 'Next.js Build', 'SEO'],
     description:

@@ -6,7 +6,6 @@ import { CaseStudies } from '../_component/home/case-studies';
 import { Team } from '../_component/home/team';
 import { Services } from '../_component/home/services';
 import { BlogPreview } from '../_component/home/blog-preview';
-import { HomeFaq } from '../_component/home/faq';
 import Contact from '../_component/home/contact';
 import { getPublishedPosts } from '@/actions/blog';
 
@@ -35,7 +34,6 @@ export default async function Home() {
       <Hero/> 
       <SubHero/>
       <CaseStudies />
-      <HomeFaq />
       <Team />
       <Services />
       <BlogPreview posts={posts} />

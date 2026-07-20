@@ -84,6 +84,14 @@ export default function Contact() {
               Drop us a note. One of our founders will reply within 24 hours and show you how WeTrends can plug straight into your brand.
             </p>
 
+            <Link
+              href="/questions"
+              className="inline-flex items-center gap-2 text-sm font-medium text-[#C72C5B] transition-colors hover:text-white"
+            >
+              Got questions? View our FAQs
+              <ArrowUpRight className="h-4 w-4" />
+            </Link>
+
             {/* Contact Cards */}
             <div className="space-y-3 sm:space-y-4">
               {contactInfo.map((item, index) => (

@@ -32,7 +32,7 @@ export default function CaseStudiesPage() {
   };
 
   return (
-    <main className="bg-white">
+    <main className="bg-[#0B0B0C]">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionSchema) }}
@@ -50,10 +50,10 @@ export default function CaseStudiesPage() {
           <span className="font-mono text-[11px] uppercase tracking-[0.35em] text-white/40">
             Your project, next
           </span>
-          <h2 className="mt-6 text-[clamp(2.5rem,7vw,5rem)] font-black uppercase leading-[0.9] text-white">
+          <h2 className="mt-6 text-3xl font-bold leading-[0.95] text-white sm:text-4xl md:text-5xl">
             Ready to write
             <br />
-            <span className="font-serif font-normal italic normal-case text-[#C72C5B]">
+            <span className="font-serif font-normal italic text-[#C72C5B]">
               your story?
             </span>
           </h2>

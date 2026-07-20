@@ -1,13 +1,12 @@
 'use client';
 
-import { useState, useRef } from 'react';
-import { motion, useInView, AnimatePresence } from 'motion/react';
+import { useRef } from 'react';
+import { motion, useInView } from 'motion/react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowUpRight, ArrowRight } from 'lucide-react';
 import { caseStudies as allCaseStudies } from '@/lib/case-studies-data';
 
-// Single source of truth — the home showcase mirrors the full portfolio.
 const caseStudies = allCaseStudies.map((s) => ({
   id: s.number,
   client: s.client,
@@ -22,296 +21,197 @@ const caseStudies = allCaseStudies.map((s) => ({
 }));
 
 export function CaseStudies() {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [isHovering, setIsHovering] = useState(false);
-  const containerRef = useRef(null);
-  const isInView = useInView(containerRef, { once: true, margin: "-100px" });
-
-  const activeStudy = caseStudies[activeIndex];
+  const headerRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(headerRef, { once: true, margin: '-100px' });
 
   return (
-    <section id="case-studies" ref={containerRef} className="relative bg-white overflow-hidden">
+    <section id="case-studies" className="relative bg-white">
+      {/* ── Header ─────────────────────────────────────────── */}
+      <div
+        ref={headerRef}
+        className="relative mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8 lg:py-32"
+      >
+        <motion.span
+          initial={{ opacity: 0, x: -20 }}
+          animate={isInView ? { opacity: 1, x: 0 } : {}}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="mb-4 inline-flex items-center gap-2 text-sm font-medium text-[#C72C5B]"
+        >
+          <span className="h-px w-8 bg-[#C72C5B]" />
+          Selected Work
+        </motion.span>
 
+        <motion.div
+          initial={{ opacity: 0, y: 60 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between"
+        >
+          <h2 className="text-4xl font-bold leading-[0.95] text-[#0F0F0F] sm:text-5xl md:text-6xl lg:text-7xl">
+            Work That
+            <br />
+            <span className="font-serif italic text-[#C72C5B]">Speaks</span>
+          </h2>
+
+          <p className="max-w-md text-lg text-gray-500 lg:text-right">
+            Real results for ambitious brands. Scroll down to see the stories stack up.
+          </p>
+        </motion.div>
+      </div>
+
+      {/* ── Stacked cards ──────────────────────────────────── */}
       <div className="relative">
-        {/* Header Section */}
-        <div className="px-4 sm:px-6 lg:px-8 xl:px-12 pt-24 pb-12">
-          <div className="max-w-7xl mx-auto">
-            <motion.div
-              initial={{ opacity: 0, y: 60 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-              className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8"
+        {caseStudies.map((study, index) => (
+          <StudyCard key={study.id} study={study} index={index} />
+        ))}
+      </div>
+
+      {/* ── Bottom CTA ─────────────────────────────────────── */}
+      <div className="relative z-50 bg-white px-4 py-24 sm:px-6 lg:px-8">
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="mx-auto flex max-w-7xl flex-col items-center justify-center gap-4 sm:flex-row"
+        >
+          <Link
+            href="/case-studies/"
+            className="group inline-flex items-center gap-3 rounded-full bg-[#0F0F0F] px-8 py-4 text-base font-bold text-white transition-all hover:bg-[#C72C5B]"
+          >
+            View All Work
+            <ArrowUpRight className="h-5 w-5 transition-transform group-hover:rotate-45" />
+          </Link>
+          <Link
+            href="/#contact"
+            className="inline-flex items-center gap-3 rounded-full border-2 border-gray-200 px-8 py-4 text-base font-bold text-[#0F0F0F] transition-all hover:border-[#0F0F0F] hover:bg-[#0F0F0F] hover:text-white"
+          >
+            Start Your Project
+          </Link>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+function StudyCard({
+  study,
+  index,
+}: {
+  study: (typeof caseStudies)[number];
+  index: number;
+}) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(cardRef, { once: true, margin: '-20% 0px' });
+
+  return (
+    <div
+      ref={cardRef}
+      className="sticky h-screen"
+      style={{
+        top: `${index * 40}px`,
+        zIndex: index + 10,
+      }}
+    >
+      <Link
+        href={study.href}
+        className="group relative block h-full w-full overflow-hidden"
+      >
+        {/* Background image */}
+        <motion.div
+          initial={{ scale: 1.1 }}
+          animate={isInView ? { scale: 1 } : {}}
+          transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+          className="absolute inset-0"
+        >
+          {study.image ? (
+            <Image
+              src={study.image}
+              alt={`${study.client} project by WeTrends`}
+              fill
+              className="object-cover object-center transition-transform duration-700 group-hover:scale-105"
+              sizes="100vw"
+              priority={index < 2}
+            />
+          ) : (
+            <div
+              className="flex h-full w-full items-center justify-center"
+              style={{ backgroundColor: study.color }}
             >
-              <div>
-                <motion.span 
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={isInView ? { opacity: 1, x: 0 } : {}}
-                  transition={{ duration: 0.6, delay: 0.2 }}
-                  className="inline-flex items-center gap-2 text-sm font-medium text-[#C72C5B] mb-4"
+              <span className="text-center text-6xl font-black uppercase leading-none tracking-tight text-white md:text-8xl">
+                {study.client}
+              </span>
+            </div>
+          )}
+        </motion.div>
+
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0B0B0C] via-[#0B0B0C]/60 to-transparent" />
+
+        {/* Content */}
+        <div className="absolute inset-0 flex flex-col justify-between p-6 pb-24 sm:p-10 sm:pb-32 lg:p-16 lg:pb-40">
+          {/* Top: number + service badge */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="flex items-center justify-between"
+          >
+            <span
+              className="text-6xl font-black leading-none text-white/20 md:text-8xl"
+              style={{ textShadow: `0 0 60px ${study.color}40` }}
+            >
+              {study.id}
+            </span>
+            <div className="flex items-center gap-3">
+              <span className="rounded-full bg-white px-4 py-1.5 text-xs font-bold text-[#0F0F0F]">
+                {study.service}
+              </span>
+              <span className="rounded-full bg-white/20 px-3 py-1.5 text-xs text-white backdrop-blur-sm">
+                {study.year}
+              </span>
+            </div>
+          </motion.div>
+
+          {/* Bottom: client info */}
+          <div className="max-w-4xl">
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <div className="flex items-baseline gap-4">
+                <h3 className="text-4xl font-bold leading-[0.95] text-white sm:text-5xl md:text-6xl lg:text-7xl">
+                  {study.client}
+                </h3>
+                <span
+                  className="hidden text-3xl font-bold sm:block md:text-4xl"
+                  style={{ color: study.color }}
                 >
-                  <span className="w-8 h-px bg-[#C72C5B]" />
-                  Selected Work
-                </motion.span>
-                <h2 className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold text-[#0F0F0F] leading-[0.9]">
-                  Work That
-                  <br />
-                  <span className="font-serif italic text-[#C72C5B]">Speaks</span>
-                </h2>
+                  {study.metric}
+                </span>
               </div>
-              
-              <motion.p 
-                initial={{ opacity: 0, y: 20 }}
-                animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.6, delay: 0.3 }}
-                className="text-lg text-gray-500 max-w-md lg:text-right"
-              >
-                Real results for ambitious brands. Each project tells a story of transformation.
-              </motion.p>
+
+              <p className="mt-4 max-w-xl text-lg text-white/70 md:text-xl">
+                {study.description}
+              </p>
+
+              <div className="mt-8 flex flex-wrap items-center gap-6">
+                <span className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-white transition-colors group-hover:text-white/80">
+                  View Case Study
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </span>
+                <span
+                  className="text-sm font-semibold uppercase tracking-wide text-white/50"
+                  style={{ color: study.color }}
+                >
+                  {study.metric} {study.metricLabel}
+                </span>
+              </div>
             </motion.div>
           </div>
         </div>
-
-        {/* Main Showcase Area */}
-        <div className="px-4 sm:px-6 lg:px-8 xl:px-12 py-12">
-          <div className="max-w-7xl mx-auto">
-            <div className="grid lg:grid-cols-2 gap-8 lg:gap-16">
-              
-              {/* Left: Large Featured Image */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={isInView ? { opacity: 1, scale: 1 } : {}}
-                transition={{ duration: 0.8, delay: 0.2 }}
-                className="relative aspect-[4/3] lg:aspect-square rounded-3xl overflow-hidden group"
-                onMouseEnter={() => setIsHovering(true)}
-                onMouseLeave={() => setIsHovering(false)}
-              >
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={activeIndex}
-                    initial={{ opacity: 0, scale: 1.1 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    transition={{ duration: 0.5 }}
-                    className="absolute inset-0"
-                  >
-                    {/* Image */}
-                    <div
-                      className="absolute inset-0 transition-transform duration-700 group-hover:scale-105"
-                      style={{ backgroundColor: activeStudy.color }}
-                    >
-                      {activeStudy.image ? (
-                        <Image
-                          src={activeStudy.image}
-                          alt={`${activeStudy.client} ${activeStudy.service.toLowerCase()} mockup by WeTrends, a creative agency in Guildford, Surrey`}
-                          fill
-                          className="object-cover"
-                          sizes="(max-width: 1024px) 100vw, 50vw"
-                        />
-                      ) : (
-                        <div className="flex h-full w-full items-center justify-center p-8">
-                          <span className="text-center text-5xl font-black uppercase leading-none tracking-tight text-white md:text-7xl">
-                            {activeStudy.client}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  </motion.div>
-                </AnimatePresence>
-
-                {/* Dark overlay on image */}
-                <div className="absolute inset-0 bg-black/30 pointer-events-none" />
-
-                {/* Overlay Gradient */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-
-                {/* Floating Badge */}
-                <motion.div 
-                  className="absolute top-6 left-6 flex items-center gap-3"
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
-                >
-                  <span className="px-4 py-1.5 rounded-full bg-white text-[#0F0F0F] text-xs font-bold">
-                    {activeStudy.service}
-                  </span>
-                  <span className="px-3 py-1.5 rounded-full bg-white/20 backdrop-blur-sm text-white text-xs">
-                    {activeStudy.year}
-                  </span>
-                </motion.div>
-
-                {/* View Button */}
-                <Link href={activeStudy.href}>
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: isHovering ? 1 : 0, scale: isHovering ? 1 : 0.8 }}
-                    className="absolute inset-0 flex items-center justify-center"
-                  >
-                    <div className="w-24 h-24 rounded-full bg-white flex items-center justify-center">
-                      <ArrowUpRight className="w-8 h-8 text-[#0F0F0F]" />
-                    </div>
-                  </motion.div>
-                </Link>
-
-                {/* Bottom Info */}
-                <div className="absolute bottom-6 left-6 right-6">
-                  <AnimatePresence mode="wait">
-                    <motion.div
-                      key={activeIndex}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -20 }}
-                    >
-                      <h3 className="text-3xl md:text-4xl font-bold text-white mb-2">
-                        {activeStudy.client}
-                      </h3>
-                      <p className="text-white/80 text-sm max-w-sm">
-                        {activeStudy.description}
-                      </p>
-                    </motion.div>
-                  </AnimatePresence>
-                </div>
-              </motion.div>
-
-              {/* Right: Case Study List */}
-              <div className="flex flex-col justify-center">
-                <div className="space-y-2">
-                  {caseStudies.map((study, index) => (
-                    <motion.div
-                      key={study.id}
-                      initial={{ opacity: 0, x: 40 }}
-                      animate={isInView ? { opacity: 1, x: 0 } : {}}
-                      transition={{ duration: 0.6, delay: 0.3 + index * 0.1 }}
-                    >
-                      <button
-                        onClick={() => setActiveIndex(index)}
-                        className={`w-full text-left p-6 rounded-2xl transition-all duration-300 group ${
-                          activeIndex === index 
-                            ? 'bg-gray-50 border border-gray-100' 
-                            : 'bg-transparent hover:bg-gray-50/50 border border-transparent'
-                        }`}
-                      >
-                        <div className="flex items-start justify-between gap-4">
-                          <div className="flex items-center gap-4">
-                            <span className={`text-sm font-mono transition-colors ${
-                              activeIndex === index ? 'text-[#C72C5B]' : 'text-gray-300'
-                            }`}>
-                              {study.id}
-                            </span>
-                            <div>
-                              <h4 className={`text-xl font-bold transition-colors ${
-                                activeIndex === index ? 'text-[#0F0F0F]' : 'text-gray-400'
-                              }`}>
-                                {study.client}
-                              </h4>
-                              <p className="text-sm text-gray-400">{study.service}</p>
-                            </div>
-                          </div>
-                          
-                          {/* Metric */}
-                          <div className={`text-right transition-all ${
-                            activeIndex === index ? 'opacity-100' : 'opacity-0'
-                          }`}>
-                            <span className="block text-3xl font-bold text-[#C72C5B]">
-                              {study.metric}
-                            </span>
-                            <span className="text-xs text-gray-400">{study.metricLabel}</span>
-                          </div>
-                        </div>
-
-                        {/* Progress Bar */}
-                        <div className="mt-4 h-0.5 bg-gray-100 rounded-full overflow-hidden">
-                          <motion.div 
-                            className="h-full bg-[#C72C5B]"
-                            initial={{ width: 0 }}
-                            animate={{ width: activeIndex === index ? '100%' : '0%' }}
-                            transition={{ duration: 0.5 }}
-                          />
-                        </div>
-                      </button>
-                    </motion.div>
-                  ))}
-                </div>
-
-                {/* Navigation */}
-                <motion.div 
-                  initial={{ opacity: 0 }}
-                  animate={isInView ? { opacity: 1 } : {}}
-                  transition={{ delay: 0.6 }}
-                  className="mt-8 flex items-center justify-between"
-                >
-                  <div className="flex items-center gap-2">
-                    {caseStudies.map((_, index) => (
-                      <button
-                        key={index}
-                        onClick={() => setActiveIndex(index)}
-                        className={`h-2 rounded-full transition-all ${
-                          activeIndex === index 
-                            ? 'w-8 bg-[#C72C5B]' 
-                            : 'w-2 bg-gray-200 hover:bg-gray-300'
-                        }`}
-                      />
-                    ))}
-                  </div>
-
-                  <Link 
-                    href={activeStudy.href}
-                    className="flex items-center gap-2 text-[#0F0F0F] hover:text-[#C72C5B] transition-colors group"
-                  >
-                    <span className="text-sm font-medium">View Case Study</span>
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </Link>
-                </motion.div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Bottom Marquee */}
-        <div className="py-12 border-t border-gray-100 overflow-hidden">
-          <motion.div 
-            className="flex whitespace-nowrap"
-            animate={{ x: [0, -1000] }}
-            transition={{ 
-              repeat: Infinity, 
-              duration: 20, 
-              ease: "linear" 
-            }}
-          >
-            {[...Array(4)].map((_, i) => (
-              <div key={i} className="flex items-center gap-8 mx-8">
-                <span className="text-6xl md:text-8xl font-bold text-black">WORK</span>
-                <span className="w-4 h-4 rounded-full bg-[#C72C5B]" />
-                <span className="text-6xl md:text-8xl font-serif italic text-black">Speaks</span>
-                <span className="w-4 h-4 rounded-full bg-black" />
-              </div>
-            ))}
-          </motion.div>
-        </div>
-
-        {/* Bottom CTA */}
-        <div className="px-4 sm:px-6 lg:px-8 xl:px-12 pb-24">
-          <motion.div 
-            initial={{ opacity: 0, y: 40 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.7 }}
-            className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-4"
-          >
-            <Link
-              href="/case-studies/"
-              className="inline-flex items-center gap-3 rounded-full bg-[#0F0F0F] px-8 py-4 text-base font-bold text-white transition-all hover:bg-[#C72C5B] group"
-            >
-              View All Work
-              <ArrowUpRight className="w-5 h-5 group-hover:rotate-45 transition-transform" />
-            </Link>
-            <Link
-              href="/#contact"
-              className="inline-flex items-center gap-3 rounded-full border-2 border-gray-200 px-8 py-4 text-base font-bold text-[#0F0F0F] transition-all hover:border-[#0F0F0F] hover:bg-[#0F0F0F] hover:text-white"
-            >
-              Start Your Project
-            </Link>
-          </motion.div>
-        </div>
-      </div>
-    </section>
+      </Link>
+    </div>
   );
 }
