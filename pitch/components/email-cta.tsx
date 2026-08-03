@@ -1,6 +1,8 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { trackEvent } from "@/lib/analytics/posthog";
+import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 
 const EMAIL = "eddy.c@wetrends.co.uk";
 
@@ -9,11 +11,12 @@ const EMAIL = "eddy.c@wetrends.co.uk";
  * this button also copies the address and confirms it visibly — there's
  * always feedback, whether or not a mail client opens.
  */
-export function EmailCta() {
+export function EmailCta({ client }: { client: string }) {
   const [copied, setCopied] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleClick = () => {
+    trackEvent(ANALYTICS_EVENTS.pitchCtaClicked, { client, cta: "email" });
     // Don't preventDefault — let devices with a mail app open it natively.
     navigator.clipboard?.writeText(EMAIL).then(() => {
       setCopied(true);
@@ -26,12 +29,12 @@ export function EmailCta() {
     <a
       href={`mailto:${EMAIL}`}
       onClick={handleClick}
-      className="group inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-bold text-[#C72C5B] shadow-xl shadow-[#400b1a]/40 transition-transform hover:scale-105"
+      className="group inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-bold text-[var(--pitch-accent)] shadow-xl shadow-black/40 transition-transform hover:scale-105"
     >
       {copied ? (
         <>
           {EMAIL} — copied!
-          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#C72C5B] text-white">
+          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--pitch-accent)] text-white">
             <svg
               viewBox="0 0 24 24"
               fill="none"
@@ -48,7 +51,7 @@ export function EmailCta() {
       ) : (
         <>
           Email us
-          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#C72C5B] text-white transition-transform group-hover:rotate-45">
+          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--pitch-accent)] text-white transition-transform group-hover:rotate-45">
             <svg
               viewBox="0 0 24 24"
               fill="none"

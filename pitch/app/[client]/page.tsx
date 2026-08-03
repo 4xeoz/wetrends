@@ -1,27 +1,34 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { EmailCta } from "@/components/email-cta";
-import { EmailIdentifier } from "@/components/email-identifier";
+import { InternalBadge } from "@/components/internal-badge";
 import { IntroSequence } from "@/components/intro-sequence";
+import { PitchTracker } from "@/components/pitch-tracker";
 import { VideoPlayer } from "@/components/video-player";
-
-export const metadata: Metadata = {
-  title: "Hey Thai Terrace — a quick word from WeTrends",
-};
+import { PITCH_CLIENTS, getPitchClient } from "@/lib/clients";
+import { posterUrl, videoUrl } from "@/lib/cloudinary";
 
 // WhatsApp number in international format, digits only (07444 311490 → 44...)
 const WHATSAPP_NUMBER = "447444311490";
 
-const marqueeItems = [
-  "Made for The Thai Terrace",
-  "From WeTrends in Guildford",
-  "One video, no strings",
-  "Reply if you like it",
-];
+export function generateStaticParams() {
+  return PITCH_CLIENTS.map((c) => ({ client: c.slug }));
+}
 
-function MarqueeContent() {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ client: string }>;
+}): Promise<Metadata> {
+  const { client } = await params;
+  const pitch = getPitchClient(client);
+  return { title: pitch?.metaTitle ?? "A message from WeTrends" };
+}
+
+function MarqueeContent({ items }: { items: string[] }) {
   return (
     <>
-      {marqueeItems.map((item) => (
+      {items.map((item) => (
         <span key={item} className="mx-6 inline-flex items-center gap-6">
           {item}
           <span className="text-white/40">✦</span>
@@ -31,28 +38,48 @@ function MarqueeContent() {
   );
 }
 
-export default function ThaiTerracePage() {
+export default async function PitchPage({ params }: { params: Promise<{ client: string }> }) {
+  const { client } = await params;
+  const pitch = getPitchClient(client);
+  if (!pitch) notFound();
+
+  const { accent, shade } = pitch.theme;
+
   return (
-    <main className="relative flex min-h-[100svh] flex-col overflow-hidden">
-      {/* Cinematic title sequence: logo → Hey → Thai Terrace → I made this
-          for you → slide up to reveal the page. Tap to skip. */}
-      <IntroSequence />
+    <main
+      className="relative flex min-h-[100svh] flex-col overflow-hidden"
+      // Per-client colours travel as CSS variables rather than Tailwind classes,
+      // because Tailwind can only see class strings that exist at build time —
+      // `bg-[${accent}]` would silently generate nothing.
+      style={
+        {
+          "--pitch-accent": accent,
+          "--pitch-shade": shade,
+        } as React.CSSProperties
+      }
+    >
+      {/* Cinematic title sequence: logo → Hey → client → I made this for you →
+          slide up to reveal the page. Tap to skip. */}
+      <IntroSequence displayName={pitch.displayName} />
 
-      {/* Identify the visitor when they arrive via an email link (?email=...). */}
-      <EmailIdentifier />
+      {/* Identify the visitor from the link they followed (?ref/?aud). */}
+      <PitchTracker slug={pitch.slug} />
+      <InternalBadge slug={pitch.slug} />
 
-      {/* Full-bleed brand gradient with slow ambient drift */}
-      {/* eslint-disable-next-line @next/next/no-img-element -- tiny 23KB
-          static webp, not worth next/image's runtime for a background */}
-      <img
-        src="/images/hero_background.webp"
-        alt=""
-        aria-hidden="true"
-        fetchPriority="high"
-        className="animate-bg-drift pointer-events-none absolute inset-0 h-full w-full object-cover"
+      {/* Full-bleed background, drawn rather than photographed so it can take
+          each client's colour — the old hero webp was a fixed wine gradient
+          and left every page but Thai Terrace's fighting its own accent. */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 bg-[var(--pitch-shade)]" />
+      <div
+        aria-hidden
+        className="animate-bg-drift pointer-events-none absolute inset-0 opacity-[0.55]"
+        style={{
+          backgroundImage: [
+            "radial-gradient(75% 65% at 18% 22%, var(--pitch-accent) 0%, transparent 62%)",
+            "radial-gradient(65% 60% at 84% 80%, var(--pitch-accent) 0%, transparent 58%)",
+          ].join(","),
+        }}
       />
-      {/* Soft wine tint so white type pops without dulling the colour */}
-      <div aria-hidden className="pointer-events-none absolute inset-0 bg-[#400b1a]/20" />
       {/* Film grain */}
       <div
         aria-hidden
@@ -64,7 +91,7 @@ export default function ThaiTerracePage() {
       {/* Edge vignette */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_50%,rgba(64,11,26,0.45)_100%)]"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_50%,var(--pitch-shade)_100%)] opacity-70"
       />
 
       {/* Top bar */}
@@ -97,19 +124,19 @@ export default function ThaiTerracePage() {
           <h1 className="animate-fade-in fade-delay-1 mt-5 text-5xl font-bold leading-[0.9] tracking-tight text-white sm:text-6xl xl:text-7xl">
             Hey
             <br />
-            <span className="font-serif italic">Thai Terrace</span>{" "}
+            <span className="font-serif italic">{pitch.contactFirstName ?? pitch.displayName}</span>{" "}
             <span className="inline-block origin-[70%_70%] transition-transform duration-300 hover:rotate-12">
               👋
             </span>
           </h1>
 
           <p className="animate-fade-in fade-delay-2 mx-auto mt-6 max-w-md text-base leading-relaxed text-white/75 sm:text-lg lg:mx-0">
-            Made this for you in a few minutes — take a look and let me know what you think.
+            {pitch.subhead}
           </p>
 
           {/* CTAs */}
           <div className="animate-fade-in fade-delay-3 mt-8 flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center lg:justify-start">
-            <EmailCta />
+            <EmailCta client={pitch.slug} />
 
             <a
               href={`https://wa.me/${WHATSAPP_NUMBER}`}
@@ -127,7 +154,7 @@ export default function ThaiTerracePage() {
               href="https://wetrends.co.uk"
               target="_blank"
               rel="noopener noreferrer"
-              className="group inline-flex items-center justify-center gap-2 rounded-full border border-white/30 bg-white/10 px-6 py-3.5 text-sm font-bold text-white backdrop-blur-md transition-all hover:bg-white hover:text-[#C72C5B]"
+              className="group inline-flex items-center justify-center gap-2 rounded-full border border-white/30 bg-white/10 px-6 py-3.5 text-sm font-bold text-white backdrop-blur-md transition-all hover:bg-white hover:text-[var(--pitch-accent)]"
             >
               wetrends.co.uk
               <svg
@@ -146,10 +173,16 @@ export default function ThaiTerracePage() {
           </div>
         </div>
 
-        {/* The film */}
-        <div className="animate-fade-in fade-delay-2">
-          <div className="rounded-[1.75rem] bg-white/10 p-1.5 shadow-2xl shadow-[#400b1a]/50 ring-1 ring-white/25 backdrop-blur-md">
-            <VideoPlayer />
+        {/* The film. On a phone it goes above the type: the whole email exists
+            to get one press of play, and three CTAs stacked full-width push the
+            player off the bottom of the screen otherwise. */}
+        <div className="animate-fade-in fade-delay-2 order-first lg:order-none">
+          <div className="rounded-[1.75rem] bg-white/10 p-1.5 shadow-2xl shadow-black/50 ring-1 ring-white/25 backdrop-blur-md">
+            <VideoPlayer
+              src={videoUrl(pitch.video)}
+              poster={posterUrl(pitch.video, pitch.posterTime)}
+              client={pitch.slug}
+            />
           </div>
           <p className="mt-4 text-center font-mono text-[11px] font-bold uppercase tracking-[0.25em] text-white/60">
             Sound on 🔊 — it&apos;s short
@@ -160,8 +193,8 @@ export default function ThaiTerracePage() {
       {/* Bottom marquee */}
       <div className="relative z-10 overflow-hidden border-t border-white/15 bg-white/5 py-3 backdrop-blur-sm">
         <div className="animate-marquee flex w-max whitespace-nowrap font-mono text-[11px] font-bold uppercase tracking-[0.25em] text-white/70">
-          <MarqueeContent />
-          <MarqueeContent />
+          <MarqueeContent items={pitch.marqueeItems} />
+          <MarqueeContent items={pitch.marqueeItems} />
         </div>
       </div>
     </main>

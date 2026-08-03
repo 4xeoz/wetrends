@@ -10,3 +10,9 @@ npm-debug.log*
 .vercel
 *.tsbuildinfo
 next-env.d.ts
+
+# Outreach collateral. The generated emails and the build scripts carry
+# prospect addresses, subject lines and per-client pitch angles, and this
+# repo is public — they stay on the machine that sends them.
+/emails/
+/scripts/

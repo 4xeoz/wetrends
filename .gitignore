@@ -1,3 +1,6 @@
 # n8n workflow exports may contain live API keys — never commit
 /n8n-blog-workflow.json
 /n8n-topic-workflow.json
+.vercel
+.env*
+.DS_Store

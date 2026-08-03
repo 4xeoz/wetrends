@@ -7,10 +7,16 @@ import { useEffect, useState } from "react";
 const STEP_MS = 1000;
 const EXIT_MS = 750;
 
-// null = the logo card
-const steps: (string | null)[] = [null, "Hey", "Thai Terrace", "I made this for you"];
+export function IntroSequence({
+  displayName,
+  closingLine = "I made this for you",
+}: {
+  displayName: string;
+  closingLine?: string;
+}) {
+  // null = the logo card
+  const steps: (string | null)[] = [null, "Hey", displayName, closingLine];
 
-export function IntroSequence() {
   const [step, setStep] = useState(0);
   const [exiting, setExiting] = useState(false);
   const [gone, setGone] = useState(false);
@@ -61,9 +67,9 @@ export function IntroSequence() {
             alt=""
             className="h-16 w-auto brightness-0 invert sm:h-20"
           />
-        ) : content === "Thai Terrace" ? (
-          <span className="font-serif text-5xl italic leading-tight text-[#C72C5B] sm:text-7xl">
-            Thai Terrace
+        ) : content === displayName ? (
+          <span className="font-serif text-5xl italic leading-tight text-[var(--pitch-accent)] sm:text-7xl">
+            {displayName}
           </span>
         ) : (
           <span className="text-5xl font-bold tracking-tight text-white sm:text-7xl">{content}</span>
