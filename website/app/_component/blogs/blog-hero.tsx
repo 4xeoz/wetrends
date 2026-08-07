@@ -17,7 +17,7 @@ const line = (delay: number) => ({
 
 export function BlogHero() {
   return (
-    <section className="relative flex min-h-[80svh] flex-col justify-end overflow-hidden pb-12 pt-32 md:min-h-[85svh] md:pb-16 md:pt-40">
+    <section className="relative flex min-h-[80svh] flex-col justify-center overflow-hidden bg-[#F4F4F5] pb-12 pt-32 md:min-h-[85svh] md:pb-16 md:pt-40">
       {/* Soft light wash + blurred diagonal streaks, so the flat paper reads as
           lit rather than painted. */}
       <div
@@ -30,21 +30,33 @@ export function BlogHero() {
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute -top-40 left-3/4 h-[42rem] w-16 -rotate-[25deg] bg-black/20 blur-2xl"
+        className="pointer-events-none absolute -top-40 left-3/4 h-[100svh] w-16 -rotate-[25deg] bg-black/20 blur-2xl"
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute -top-40 left-1/2 h-[42rem] w-24 -rotate-[25deg] bg-black/20 blur-3xl"
+        className="pointer-events-none absolute -top-40 left-[95%] h-[120svh] w-16 -rotate-[25deg] bg-white blur-2xl"
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute -top-40 left-[10%] h-[42rem] w-24 -rotate-[25deg] bg-black/20 blur-3xl"
+        className="pointer-events-none absolute -top-40 left-[30%] h-[120svh] w-24 -rotate-[25deg] bg-white md:blur-2xl blur-md"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -top-40 left-1/2 h-[100svh] w-24 -rotate-[25deg] bg-black/20 blur-3xl"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -top-40 left-[60%] h-[100svh] w-8 -rotate-[25deg] bg-black/20 blur-2xl"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -top-40 left-[10%] h-[100svh] w-24 -rotate-[25deg] bg-black/20 blur-3xl"
       />
 
       {/* Content sits bottom-left in a max-w-7xl rail, matching the services
           hero (app/(main)/services/page.tsx): small tracked label, one oversized
           clamp headline at leading-[0.85], second line in serif italic accent. */}
-      <div className="relative z-10 mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="relative z-10 mx-auto w-full px-4 sm:px-6 lg:px-8 text-center">
         <motion.p
           {...line(0.05)}
           className="mb-4 text-sm font-medium uppercase tracking-[0.3em] text-[#C72C5B]"
@@ -52,8 +64,8 @@ export function BlogHero() {
           Insights &amp; Ideas
         </motion.p>
 
-        <h1 className="max-w-5xl text-[clamp(2.5rem,9vw,8rem)] font-bold leading-[0.95] tracking-tight text-[#0F0F0F]">
-          <motion.span {...line(0.15)} className="block">
+        <h1 className="text-[clamp(2.5rem,9vw,8rem)] font-bold leading-[0.95] tracking-tight text-[#0F0F0F]">
+          <motion.span {...line(0.15)} className="block [text-shadow:3px_8px_10px_rgba(0,0,0,0.3)] font-bold text-slate-800">
             Notes from
           </motion.span>
 
