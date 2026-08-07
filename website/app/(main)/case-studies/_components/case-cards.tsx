@@ -32,9 +32,11 @@ export default function CaseCards({ studies }: { studies: CaseStudy[] }) {
                 href={`/case-studies/${study.slug}/`}
                 className="group block overflow-hidden rounded-2xl border border-gray-200 bg-[#F4F4F5] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(15,15,15,0.10)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C72C5B] focus-visible:ring-offset-2"
               >
-                <div className="relative aspect-[16/10] overflow-hidden">
+                {/* Square: the brand mockups are 1:1 collages, so a wider frame
+                    would crop items out of the composition. */}
+                <div className="relative aspect-square overflow-hidden">
                   <Image
-                    src={study.image || '/images/nopeca-mockup.webp'}
+                    src={study.image || '/images/nopeca-mockup.png'}
                     alt={`${study.client} project by WeTrends`}
                     fill
                     sizes="(max-width: 768px) 100vw, 50vw"

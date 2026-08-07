@@ -11,8 +11,6 @@ import {
   PenTool,
   ArrowUpRight,
   ArrowLeft,
-  CheckCircle2,
-  MapPin,
   Sparkles,
   ArrowDownRight,
   Play,
@@ -197,11 +195,15 @@ export default function ServiceDetail({ slug }: { slug: string }) {
   };
 
   return (
-    <main className="min-h-[100svh] bg-white">
+    <main className="min-h-[100svh] bg-white pt-[72px]">
       {/* Full-Bleed Video Hero */}
       <section className="relative flex min-h-[85svh] flex-col justify-end pb-12 pt-32 md:min-h-[90svh] md:pb-16 md:pt-40">
-        {/* Background Video */}
-        <div className="absolute inset-0 -z-10 overflow-hidden">
+        {/* Background Video.
+            z-0, not -z-10: <main> paints a solid bg-white, and this section is
+            `relative` with z-index auto so it creates no stacking context. At a
+            negative z-index this layer would paint before <main>'s background
+            and be covered by it. Content is z-10, back-nav z-50, pause z-40. */}
+        <div className="absolute inset-0 z-0 overflow-hidden">
           <video
             ref={videoRef}
             src={service.video}
@@ -238,7 +240,7 @@ export default function ServiceDetail({ slug }: { slug: string }) {
 
         {/* Content */}
         <div className="relative z-10 mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-          <AnimatedContent direction="vertical" distance={60} duration={1} delay={0.1} ease="power3.out">
+          <AnimatedContent direction="vertical" distance={60} duration={1} delay={0.1}>
             <div className="mb-6 inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-4 py-2 backdrop-blur-sm">
               <Icon className="h-4 w-4 text-[#C72C5B]" />
               <span className="text-sm font-medium uppercase tracking-widest text-[#C72C5B]">
@@ -247,7 +249,7 @@ export default function ServiceDetail({ slug }: { slug: string }) {
             </div>
           </AnimatedContent>
 
-          <AnimatedContent direction="vertical" distance={80} duration={1.2} delay={0.2} ease="power3.out">
+          <AnimatedContent direction="vertical" distance={80} duration={1.2} delay={0.2}>
             <h1 className="max-w-4xl text-[clamp(2.5rem,7vw,6rem)] font-bold leading-[0.9] tracking-tight text-white">
               {service.headline.split(' ').slice(0, -2).join(' ')}
               <br />
@@ -257,13 +259,13 @@ export default function ServiceDetail({ slug }: { slug: string }) {
             </h1>
           </AnimatedContent>
 
-          <AnimatedContent direction="vertical" distance={40} duration={1} delay={0.4} ease="power3.out">
+          <AnimatedContent direction="vertical" distance={40} duration={1} delay={0.4}>
             <p className="mt-6 max-w-2xl text-base leading-relaxed text-white/60 md:mt-8 md:text-lg">
               {service.description}
             </p>
           </AnimatedContent>
 
-          <AnimatedContent direction="vertical" distance={40} duration={1} delay={0.5} ease="power3.out">
+          <AnimatedContent direction="vertical" distance={40} duration={1} delay={0.5}>
             <div className="mt-8 flex flex-wrap items-center gap-4">
               <motion.a
                 href="/#contact"
@@ -274,10 +276,7 @@ export default function ServiceDetail({ slug }: { slug: string }) {
                 Get a Quote
                 <ArrowUpRight className="h-4 w-4 transition-transform group-hover:rotate-45" />
               </motion.a>
-              <div className="flex items-center gap-2 text-sm text-white/50">
-                <MapPin className="h-4 w-4 text-[#C72C5B]" />
-                Guildford, Surrey
-              </div>
+              
             </div>
           </AnimatedContent>
         </div>
@@ -287,7 +286,7 @@ export default function ServiceDetail({ slug }: { slug: string }) {
       <section className="bg-white py-24 md:py-32">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-16 md:mb-20">
-            <AnimatedContent direction="vertical" distance={60} duration={1} ease="power3.out">
+            <AnimatedContent direction="vertical" distance={60} duration={1}>
               <span className="mb-4 inline-flex items-center gap-2 text-sm font-medium text-[#C72C5B]">
                 <span className="h-px w-8 bg-[#C72C5B]" />
                 Capabilities
@@ -306,7 +305,6 @@ export default function ServiceDetail({ slug }: { slug: string }) {
                 distance={40}
                 duration={0.8}
                 delay={0.05 * index}
-                ease="power3.out"
               >
                 <motion.div
                   whileHover={{ y: -4 }}
@@ -327,7 +325,7 @@ export default function ServiceDetail({ slug }: { slug: string }) {
       <section className="bg-[#050505] py-24 md:py-32">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-16 text-center md:mb-20">
-            <AnimatedContent direction="vertical" distance={60} duration={1} ease="power3.out">
+            <AnimatedContent direction="vertical" distance={60} duration={1}>
               <span className="mb-4 inline-flex items-center justify-center gap-2 text-sm font-medium text-[#C72C5B]">
                 <span className="h-px w-8 bg-[#C72C5B]" />
                 Our Process
@@ -347,7 +345,6 @@ export default function ServiceDetail({ slug }: { slug: string }) {
                 distance={60}
                 duration={0.8}
                 delay={0.1 * index}
-                ease="power3.out"
               >
                 <div className="relative h-full rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm md:p-8">
                   <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-[#C72C5B] text-sm font-bold text-white">
@@ -366,109 +363,11 @@ export default function ServiceDetail({ slug }: { slug: string }) {
           </div>
         </div>
       </section>
-
-      {/* Benefits */}
-      <section className="bg-white py-24 md:py-32">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-16 md:mb-20">
-            <AnimatedContent direction="vertical" distance={60} duration={1} ease="power3.out">
-              <span className="mb-4 inline-flex items-center gap-2 text-sm font-medium text-[#C72C5B]">
-                <span className="h-px w-8 bg-[#C72C5B]" />
-                Why It Works
-              </span>
-              <h2 className="text-4xl font-bold text-[#0F0F0F] md:text-5xl lg:text-6xl">
-                Results That <span className="font-serif italic text-[#C72C5B]">Matter</span>
-              </h2>
-            </AnimatedContent>
-          </div>
-
-          <div className="grid gap-6 md:grid-cols-2">
-            {service.benefits.map((benefit, index) => (
-              <AnimatedContent
-                key={benefit.title}
-                direction="horizontal"
-                distance={40}
-                duration={0.8}
-                delay={0.1 * index}
-                ease="power3.out"
-              >
-                <motion.div
-                  whileHover={{ x: 6 }}
-                  className="flex gap-5 rounded-2xl border border-gray-200 bg-white p-6 transition-shadow hover:shadow-lg md:p-8"
-                >
-                  <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-[#C72C5B]/10">
-                    <CheckCircle2 className="h-6 w-6 text-[#C72C5B]" />
-                  </div>
-                  <div>
-                    <h3 className="mb-1 text-lg font-bold text-[#0F0F0F]">{benefit.title}</h3>
-                    <p className="text-gray-600">{benefit.description}</p>
-                  </div>
-                </motion.div>
-              </AnimatedContent>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Local Focus */}
-      <section className="bg-gray-50 py-24 md:py-32">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="rounded-3xl border border-gray-200 bg-white p-8 md:p-12 lg:p-16">
-            <div className="grid gap-8 lg:grid-cols-2 lg:items-center">
-              <div>
-                <AnimatedContent direction="vertical" distance={60} duration={1} ease="power3.out">
-                  <div className="mb-4 inline-flex items-center gap-2">
-                    <MapPin className="h-5 w-5 text-[#C72C5B]" />
-                    <span className="text-sm font-medium text-gray-500">Local Service</span>
-                  </div>
-                  <h2 className="mb-4 text-3xl font-bold text-[#0F0F0F] md:text-4xl lg:text-5xl">
-                    Proudly Serving
-                    <br />
-                    <span className="font-serif italic text-[#C72C5B]">Guildford & Surrey</span>
-                  </h2>
-                  <p className="text-gray-600">{service.localFocus}</p>
-                </AnimatedContent>
-              </div>
-
-              <AnimatedContent direction="vertical" distance={60} duration={1} delay={0.2} ease="power3.out">
-                <div className="flex flex-wrap gap-3">
-                  {['Guildford', 'Woking', 'Farnham', 'Dorking', 'Reigate', 'Cobham', 'Esher', 'Leatherhead'].map((town) => (
-                    <span
-                      key={town}
-                      className="rounded-full border border-gray-200 bg-gray-50 px-4 py-2 text-sm text-gray-700 transition-colors hover:border-[#C72C5B]/30 hover:bg-[#C72C5B]/5"
-                    >
-                      {town}
-                    </span>
-                  ))}
-                </div>
-              </AnimatedContent>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonial */}
-      <section className="bg-[#050505] py-24 md:py-32">
-        <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
-          <AnimatedContent direction="vertical" distance={60} duration={1} ease="power3.out">
-            <div className="mx-auto mb-8 flex h-16 w-16 items-center justify-center rounded-2xl bg-white/5">
-              <span className="text-3xl text-[#C72C5B]">&ldquo;</span>
-            </div>
-            <blockquote className="mb-8 text-2xl font-medium leading-relaxed text-white md:text-3xl">
-              {service.testimonial.quote}
-            </blockquote>
-            <div>
-              <div className="font-semibold text-white">{service.testimonial.author}</div>
-              <div className="text-sm text-[#C72C5B]">{service.testimonial.role}</div>
-            </div>
-          </AnimatedContent>
-        </div>
-      </section>
-
+      
       {/* CTA */}
       <section className="bg-[#C72C5B] py-24 md:py-32">
         <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
-          <AnimatedContent direction="vertical" distance={60} duration={1} ease="power3.out">
+          <AnimatedContent direction="vertical" distance={60} duration={1}>
             <h2 className="mb-6 text-4xl font-bold text-white md:text-5xl lg:text-6xl">
               Ready to Get Started?
             </h2>

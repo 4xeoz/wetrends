@@ -131,7 +131,7 @@ export default function CinematographyBookingForm() {
         <div className="grid gap-16 lg:grid-cols-2 lg:gap-24">
 
           {/* Left — heading & reassurance */}
-          <AnimatedContent direction="vertical" distance={60} duration={1} ease="power3.out" threshold={0.1}>
+          <AnimatedContent direction="vertical" distance={60} duration={1} threshold={0.1}>
             <span className="mb-4 inline-flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-[#C72C5B]">
               <span className="h-px w-8 bg-[#C72C5B]" />
               Book Your Shoot
@@ -183,7 +183,7 @@ export default function CinematographyBookingForm() {
           </AnimatedContent>
 
           {/* Right — form */}
-          <AnimatedContent direction="vertical" distance={40} duration={1} delay={0.15} ease="power3.out" threshold={0.1}>
+          <AnimatedContent direction="vertical" distance={40} duration={1} delay={0.15} threshold={0.1}>
             {submitted ? (
               /* Success */
               <div className="flex h-full flex-col items-center justify-center rounded-3xl border border-green-100 bg-green-50 px-8 py-16 text-center">

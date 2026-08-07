@@ -109,6 +109,10 @@ export default function CategoriesPage() {
         <p className="mt-1 text-gray-600">Manage blog categories</p>
       </div>
 
+      {error && (
+        <p className="mb-6 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
+      )}
+
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader>

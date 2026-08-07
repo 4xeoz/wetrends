@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { SessionProvider } from "next-auth/react";
-import { SmoothScrollProvider } from "@/components/providers/smooth-scroll";
 import { PostHogProvider } from "@/components/providers/posthog-provider";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
@@ -172,11 +171,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <PostHogProvider>
-          <SmoothScrollProvider>
-            <SessionProvider>
-              {children}
-            </SessionProvider>
-          </SmoothScrollProvider>
+          <SessionProvider>
+            {children}
+          </SessionProvider>
         </PostHogProvider>
       </body>
     </html>

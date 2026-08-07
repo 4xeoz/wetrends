@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { AlertCircle, ArrowRight, Lock, Mail, Eye, EyeOff, Sparkles, Shield } from "lucide-react";
+import { AlertCircle, ArrowRight, Lock, Mail, Eye, EyeOff, Shield } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { login } from "@/actions/auth";
 
@@ -49,8 +49,7 @@ function SignInForm() {
 
     try {
       const result = await login(formData);
-      console.log("[Login Client] Result:", result);
-      
+
       if (result && result.success) {
         router.push(callbackUrl);
         router.refresh();

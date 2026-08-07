@@ -12,7 +12,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { ImageUrlInput } from '@/components/ui/image-url-input';
 import { Loader2, Plus, X } from 'lucide-react';
-import { motion } from 'motion/react';
 import { useSession } from 'next-auth/react';
 
 interface Category {
@@ -44,7 +43,6 @@ export default function EditBlogPostPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [isLoadingCategories, setIsLoadingCategories] = useState(true);
   const [newCategoryName, setNewCategoryName] = useState('');
   const [isAddingCategory, setIsAddingCategory] = useState(false);
   
@@ -64,9 +62,12 @@ export default function EditBlogPostPage() {
   
   const [keywordInput, setKeywordInput] = useState('');
 
+  // Load once per post. Re-running on every render would refetch the form out
+  // from under whoever is editing it.
   useEffect(() => {
     fetchCategories();
     fetchPost();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [postId]);
 
   const fetchPost = async () => {
@@ -108,8 +109,6 @@ export default function EditBlogPostPage() {
       }
     } catch (error) {
       console.error('Error fetching categories:', error);
-    } finally {
-      setIsLoadingCategories(false);
     }
   };
 

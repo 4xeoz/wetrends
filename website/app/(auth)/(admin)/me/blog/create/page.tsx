@@ -12,7 +12,6 @@ import { ImageUrlInput } from '@/components/ui/image-url-input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Loader2, Plus, X } from 'lucide-react';
-import { motion } from 'motion/react';
 import { useSession } from 'next-auth/react';
 
 interface Category {
@@ -27,7 +26,6 @@ export default function CreateBlogPostPage() {
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [isLoadingCategories, setIsLoadingCategories] = useState(true);
   const [newCategoryName, setNewCategoryName] = useState('');
   const [isAddingCategory, setIsAddingCategory] = useState(false);
   
@@ -58,8 +56,6 @@ export default function CreateBlogPostPage() {
       }
     } catch (error) {
       console.error('Error fetching categories:', error);
-    } finally {
-      setIsLoadingCategories(false);
     }
   };
 

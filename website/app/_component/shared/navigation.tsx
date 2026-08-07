@@ -61,7 +61,7 @@ export function Navigation() {
         transition={{ duration: 0.6, delay: isHomePage ? 1.6 : 0.3 }}
         className={`fixed left-0 right-0 top-0 z-50 transition-all duration-300 ${
           isLight
-            ? 'bg-white border-b border-gray-100 backdrop-blur-md'
+            ? 'bg-white/50 backdrop-blur-md'
             : 'bg-transparent'
         }`}
       >
@@ -140,7 +140,7 @@ export function Navigation() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="fixed inset-x-0 top-16 z-40 bg-white border-b border-gray-100 lg:hidden"
+            className="fixed inset-x-0 top-16 z-40 bg-white  border-gray-100 lg:hidden"
           >
             <nav className="flex flex-col p-4">
               {navLinks.map((link, index) => (

@@ -55,7 +55,6 @@ function FaqItem({ faq, index }: { faq: Faq; index: number }) {
       distance={40}
       duration={0.8}
       delay={0.1 * index}
-      ease="power3.out"
     >
       <div className="border-b border-gray-100">
         <button
@@ -100,13 +99,13 @@ export default function QuestionsPage() {
       <section className="relative overflow-hidden bg-[#0F0F0F] py-24 md:py-32">
         <div className="absolute inset-0 bg-gradient-to-br from-[#0F0F0F] via-[#0F0F0F] to-[#C72C5B]/10" />
         <div className="relative mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
-          <AnimatedContent direction="vertical" distance={60} duration={1} ease="power3.out">
+          <AnimatedContent direction="vertical" distance={60} duration={1}>
             <span className="mb-4 inline-block text-sm font-medium uppercase tracking-[0.3em] text-[#C72C5B]">
               Straight Answers
             </span>
           </AnimatedContent>
 
-          <AnimatedContent direction="vertical" distance={80} duration={1.2} delay={0.1} ease="power3.out">
+          <AnimatedContent direction="vertical" distance={80} duration={1.2} delay={0.1}>
             <h1 className="text-4xl font-bold leading-[0.95] text-white sm:text-5xl md:text-6xl lg:text-7xl">
               Questions
               <br />
@@ -114,7 +113,7 @@ export default function QuestionsPage() {
             </h1>
           </AnimatedContent>
 
-          <AnimatedContent direction="vertical" distance={40} duration={1} delay={0.3} ease="power3.out">
+          <AnimatedContent direction="vertical" distance={40} duration={1} delay={0.3}>
             <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-white/60 sm:text-xl">
               The stuff people actually type into ChatGPT. No jargon, no fake urgency — just the truth about building brands that people remember.
             </p>
@@ -125,7 +124,7 @@ export default function QuestionsPage() {
       {/* FAQ Section */}
       <section className="py-16 md:py-24">
         <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-          <AnimatedContent direction="vertical" distance={60} duration={1} ease="power3.out">
+          <AnimatedContent direction="vertical" distance={60} duration={1}>
             <div className="mb-12 text-center">
               <span className="mb-3 inline-flex items-center gap-2 text-sm font-medium text-[#C72C5B]">
                 <span className="h-px w-8 bg-[#C72C5B]" />
@@ -149,7 +148,7 @@ export default function QuestionsPage() {
       {/* Topics We Cover */}
       <section className="border-t border-gray-100 bg-gray-50 py-16 md:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <AnimatedContent direction="vertical" distance={60} duration={1} ease="power3.out">
+          <AnimatedContent direction="vertical" distance={60} duration={1}>
             <div className="mb-12 text-center md:mb-16">
               <span className="mb-3 inline-flex items-center gap-2 text-sm font-medium text-[#C72C5B]">
                 <span className="h-px w-8 bg-[#C72C5B]" />
@@ -160,7 +159,7 @@ export default function QuestionsPage() {
                 Topics We <span className="font-serif italic text-[#C72C5B]">Actually Cover</span>
               </h2>
               <p className="mx-auto mt-4 max-w-2xl text-base text-gray-600 sm:text-lg">
-                We don't just mention keywords — we understand these topics deeply enough to teach them. That's why AI models cite us.
+                We don&apos;t just mention keywords — we understand these topics deeply enough to teach them. That&apos;s why AI models cite us.
               </p>
             </div>
           </AnimatedContent>
@@ -173,7 +172,6 @@ export default function QuestionsPage() {
                 distance={50}
                 duration={0.8}
                 delay={0.1 * index}
-                ease="power3.out"
               >
                 <Link href={topic.href} className="group block h-full">
                   <motion.div
@@ -202,11 +200,11 @@ export default function QuestionsPage() {
       {/* CTA */}
       <section className="bg-[#C72C5B] py-16 md:py-24">
         <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
-          <AnimatedContent direction="vertical" distance={60} duration={1} ease="power3.out">
+          <AnimatedContent direction="vertical" distance={60} duration={1}>
             <h2 className="mb-4 text-3xl font-bold text-white sm:text-4xl md:text-5xl">
               Got a Question
               <br />
-              <span className="font-serif italic">We Didn't Answer?</span>
+              <span className="font-serif italic">We Didn&apos;t Answer?</span>
             </h2>
             <p className="mb-8 text-lg text-white/80">
               Drop us a message. We actually reply — usually within a few hours.

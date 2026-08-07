@@ -4,12 +4,21 @@ import { Suspense, useEffect } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { capturePageview, initPostHog } from "@/lib/analytics/posthog";
 
+/**
+ * Routes that are us, not visitors. The admin dashboard and the sign-in page
+ * are only ever hit by the people who run the site, so counting them inflates
+ * pageviews and pollutes every funnel with internal traffic.
+ */
+const INTERNAL_ROUTES = ['/me', '/sign-in'];
+
 function PageviewTracker() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
   useEffect(() => {
     if (!pathname) return;
+    if (INTERNAL_ROUTES.some((route) => pathname.startsWith(route))) return;
+
     const query = searchParams.toString();
     const url = query ? `${window.origin}${pathname}?${query}` : `${window.origin}${pathname}`;
     capturePageview(url);

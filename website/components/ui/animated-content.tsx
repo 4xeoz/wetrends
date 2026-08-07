@@ -1,92 +1,42 @@
 'use client';
-import React, { useRef, useEffect, ReactNode } from "react";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-gsap.registerPlugin(ScrollTrigger);
+import { motion } from 'motion/react';
+import type { ReactNode } from 'react';
 
-interface AnimatedContentProps {
-  children: ReactNode;
-  distance?: number;
-  direction?: "vertical" | "horizontal";
-  reverse?: boolean;
-  duration?: number;
-  ease?: string | ((progress: number) => number);
-  initialOpacity?: number;
-  animateOpacity?: boolean;
-  scale?: number;
-  threshold?: number;
-  delay?: number;
-  onComplete?: () => void;
-  className?: string;
-}
-
-const AnimatedContent: React.FC<AnimatedContentProps> = ({
+/**
+ * Scroll-reveal wrapper: fades and slides its children in the first time they
+ * enter the viewport. Built on Motion's `whileInView` so each instance owns its
+ * own observer — no global animation registry to leak or tear down.
+ */
+export default function AnimatedContent({
   children,
   distance = 100,
-  direction = "vertical",
-  reverse = false,
+  direction = 'vertical',
   duration = 0.8,
-  ease = "power3.out",
-  initialOpacity = 0,
-  animateOpacity = true,
-  scale = 1,
-  threshold = 0.1,
   delay = 0,
-  onComplete,
-  className = "",
-}) => {
-  const ref = useRef<HTMLDivElement>(null);
+  threshold = 0.1,
+  className,
+}: {
+  children: ReactNode;
+  distance?: number;
+  direction?: 'vertical' | 'horizontal';
+  duration?: number;
+  delay?: number;
+  /** Fraction of the element that must be visible before it animates. */
+  threshold?: number;
+  className?: string;
+}) {
+  const axis = direction === 'horizontal' ? 'x' : 'y';
 
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    const axis = direction === "horizontal" ? "x" : "y";
-    const offset = reverse ? -distance : distance;
-    const startPct = (1 - threshold) * 100;
-
-    gsap.set(el, {
-      [axis]: offset,
-      scale,
-      opacity: animateOpacity ? initialOpacity : 1,
-    });
-
-    gsap.to(el, {
-      [axis]: 0,
-      scale: 1,
-      opacity: 1,
-      duration,
-      ease,
-      delay,
-      onComplete,
-      scrollTrigger: {
-        trigger: el,
-        start: `top ${startPct}%`,
-        toggleActions: "play none none none",
-        once: true,
-      },
-    });
-
-    return () => {
-      ScrollTrigger.getAll().forEach((t) => t.kill());
-      gsap.killTweensOf(el);
-    };
-  }, [
-    distance,
-    direction,
-    reverse,
-    duration,
-    ease,
-    initialOpacity,
-    animateOpacity,
-    scale,
-    threshold,
-    delay,
-    onComplete,
-  ]);
-
-  return <div ref={ref} className={className}>{children}</div>;
-};
-
-export default AnimatedContent;
+  return (
+    <motion.div
+      className={className}
+      initial={{ opacity: 0, [axis]: distance }}
+      whileInView={{ opacity: 1, [axis]: 0 }}
+      viewport={{ once: true, amount: threshold }}
+      transition={{ duration, delay, ease: [0.22, 1, 0.36, 1] }}
+    >
+      {children}
+    </motion.div>
+  );
+}

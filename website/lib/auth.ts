@@ -1,5 +1,4 @@
 import NextAuth from "next-auth";
-import { PrismaAdapter } from "@auth/prisma-adapter";
 import Credentials from "next-auth/providers/credentials";
 import { authConfig } from "@/lib/auth.config";
 import { prisma } from "@/prisma/prisma";
@@ -47,8 +46,10 @@ async function clearFailedAttempts(identifier: string): Promise<void> {
   await prisma.loginAttempt.deleteMany({ where: { identifier } });
 }
 
+// No database adapter: sessions are JWTs and the only provider is Credentials,
+// which reads the User record directly. Nothing here needs Auth.js' Account /
+// Session / VerificationToken tables.
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt" },
   ...authConfig,
   providers: [

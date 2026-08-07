@@ -9,7 +9,6 @@ import {
   Globe,
   Clock,
   ExternalLink,
-  Copy,
 } from 'lucide-react';
 import { getQrLinkWithScans } from '@/actions/qr';
 import CopyButton from './copy-button';

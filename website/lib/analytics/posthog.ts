@@ -24,13 +24,21 @@ export function initPostHog() {
     // App Router does full client-side route transitions without a real
     // page load, so we capture pageviews manually on route change instead.
     capture_pageview: false,
+
+    // Off deliberately. Autocapture fires an event for every click, change and
+    // submit anywhere on the site — thousands of `$autocapture` rows a week that
+    // nobody queries, on a site where the handful of actions that actually
+    // matter are already tracked explicitly in `events.ts`. Turn it back on only
+    // to answer a specific question, then turn it off again.
+    autocapture: false,
+
+    // Same reasoning: recording every visitor is the definition of capturing
+    // everything, and replays are the fastest way through a PostHog quota.
+    // Flip to `false` and restore the session_recording block below to re-enable.
+    disable_session_recording: true,
+
+    // Bounce rate and time-on-page need this, and it is one event per visit.
     capture_pageleave: true,
-
-    autocapture: true,
-
-    session_recording: {
-      maskAllInputs: true,
-    },
 
     // Anonymous visitors stay event-only; a profile is only created once
     // someone is identified (e.g. after submitting a form), which keeps

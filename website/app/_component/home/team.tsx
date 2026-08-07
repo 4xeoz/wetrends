@@ -3,8 +3,6 @@
 import { useRef } from 'react';
 import { motion, useInView } from 'motion/react';
 import Image from 'next/image';
-import Link from 'next/link';
-import { ArrowUpRight } from 'lucide-react';
 
 export function Team() {
   const sectionRef = useRef<HTMLDivElement>(null);

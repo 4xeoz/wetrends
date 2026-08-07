@@ -2,10 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { getContactMessages } from '@/actions/contact';
-import { DashboardContent } from '@/app/_component/me/dashboard/dashboard-content';
-import { Message } from '@/app/_component/me/dashboard/message-list';
+import { DashboardContent, type Message } from '@/app/_component/me/dashboard/dashboard-content';
 import { motion } from 'motion/react';
-import { Loader2 } from 'lucide-react';
 
 export default function AdminDashboardPage() {
   const [messages, setMessages] = useState<Message[]>([]);

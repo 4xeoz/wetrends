@@ -1,13 +1,7 @@
 import Link from 'next/link';
-import { QrCode, Plus, ExternalLink, Monitor, Smartphone, Tablet, Globe } from 'lucide-react';
+import { QrCode, Plus, ExternalLink, Globe } from 'lucide-react';
 import { getAllQrLinks } from '@/actions/qr';
 import QrDeleteButton from './delete-button';
-
-function DeviceIcon({ device }: { device?: string | null }) {
-  if (device === 'Mobile') return <Smartphone className="h-3 w-3" />;
-  if (device === 'Tablet') return <Tablet className="h-3 w-3" />;
-  return <Monitor className="h-3 w-3" />;
-}
 
 export default async function QrAdminPage() {
   const links = await getAllQrLinks();

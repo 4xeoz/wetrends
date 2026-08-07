@@ -88,13 +88,12 @@ function ServiceCard({ service, index }: { service: typeof services[0]; index: n
       distance={60}
       duration={0.8}
       delay={0.08 * index}
-      ease="power3.out"
     >
-      <Link href={`/services/${service.slug}/`} className="block">
+      <Link href={`/services/${service.slug}/`} className="block ">
         <motion.div
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
-          className="group relative aspect-[4/3] overflow-hidden rounded-2xl border border-white/10 bg-[#0F0F0F] md:aspect-[16/10] lg:aspect-[16/9]"
+          className="group relative aspect-[4/3] overflow-hidden rounded-2xl border border-gray-200 bg-[#0F0F0F] shadow-sm md:aspect-[16/10] lg:aspect-[16/9]"
         >
           {/* Video background */}
           <video
@@ -175,11 +174,19 @@ export default function ServicesPage() {
   }, []);
 
   return (
-    <main className="min-h-[100svh] bg-[#050505]">
-      {/* Hero — Video Crossfade Background */}
+    <main className="min-h-[100svh] bg-white pt-[72px]">
+      {/* Hero — Video Crossfade Background.
+          The scrim stays dark on an otherwise light page: the footage is dark,
+          and white type over a dark wash is the only combination that stays
+          legible across six different clips. Same pairing as the individual
+          service pages (`./[slug]/service-detail.tsx`), which are also white
+          below a dark video hero. */}
       <section className="relative flex min-h-[85svh] flex-col justify-end pb-12 pt-32 md:min-h-[90svh] md:pb-16 md:pt-40">
-        {/* Background videos crossfade */}
-        <div className="absolute inset-0 -z-10 overflow-hidden">
+        {/* z-0, not -z-10: <main> paints a solid background and this section is
+            `relative` with z-index auto, so it creates no stacking context. At a
+            negative z-index this layer would paint before <main>'s background
+            and be covered by it. The hero content below is z-10. */}
+        <div className="absolute inset-0 z-0 overflow-hidden">
           <AnimatePresence mode="sync">
             <motion.div
               key={activeVideo}
@@ -204,27 +211,27 @@ export default function ServicesPage() {
 
         {/* Content */}
         <div className="relative z-10 mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-          <AnimatedContent direction="vertical" distance={60} duration={1} delay={0.1} ease="power3.out">
+          <AnimatedContent direction="vertical" distance={60} duration={1} delay={0.1}>
             <p className="mb-4 text-sm font-medium uppercase tracking-[0.3em] text-[#C72C5B]">
               What We Do
             </p>
           </AnimatedContent>
 
-          <AnimatedContent direction="vertical" distance={80} duration={1.2} delay={0.2} ease="power3.out">
+          <AnimatedContent direction="vertical" distance={80} duration={1.2} delay={0.2}>
             <h1 className="max-w-4xl text-[clamp(3rem,9vw,8rem)] font-bold leading-[0.85] tracking-tight text-white">
               <span className="block">Services</span>
               <span className="block font-serif italic text-[#C72C5B]">In Motion.</span>
             </h1>
           </AnimatedContent>
 
-          <AnimatedContent direction="vertical" distance={40} duration={1} delay={0.4} ease="power3.out">
+          <AnimatedContent direction="vertical" distance={40} duration={1} delay={0.4}>
             <p className="mt-6 max-w-xl text-base leading-relaxed text-white/60 md:mt-8 md:text-lg">
               Six creative disciplines. One unified team. Scroll down to see what we can build together.
             </p>
           </AnimatedContent>
 
           {/* Video indicators */}
-          <AnimatedContent direction="vertical" distance={30} duration={0.8} delay={0.5} ease="power3.out">
+          <AnimatedContent direction="vertical" distance={30} duration={0.8} delay={0.5}>
             <div className="mt-8 flex items-center gap-3">
               {services.map((s, i) => (
                 <button
@@ -244,12 +251,12 @@ export default function ServicesPage() {
       {/* Video Grid */}
       <section className="py-16 md:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <AnimatedContent direction="vertical" distance={60} duration={1} ease="power3.out" className="mb-12">
+          <AnimatedContent direction="vertical" distance={60} duration={1} className="mb-12">
             <div className="flex items-end justify-between gap-4">
-              <h2 className="text-3xl font-bold text-white md:text-4xl lg:text-5xl">
+              <h2 className="text-3xl font-bold text-[#0F0F0F] md:text-4xl lg:text-5xl">
                 Browse Our <span className="font-serif italic text-[#C72C5B]">Work</span>
               </h2>
-              <span className="hidden text-sm text-white/50 md:block">
+              <span className="hidden text-sm text-gray-500 md:block">
                 Hover to preview
               </span>
             </div>
@@ -263,53 +270,11 @@ export default function ServicesPage() {
         </div>
       </section>
 
-      {/* Dark Process */}
-      <section className="border-t border-white/10 bg-[#050505] py-24 md:py-32">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-16 md:mb-20">
-            <AnimatedContent direction="vertical" distance={60} duration={1} ease="power3.out">
-              <span className="mb-4 inline-flex items-center gap-2 text-sm font-medium text-[#C72C5B]">
-                <span className="h-px w-8 bg-[#C72C5B]" />
-                How We Work
-              </span>
-              <h2 className="text-4xl font-bold text-white md:text-5xl lg:text-6xl">
-                From Brief to <span className="font-serif italic text-[#C72C5B]"> brilliance.</span>
-              </h2>
-            </AnimatedContent>
-          </div>
-
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-            {[
-              { step: '01', title: 'Discover', desc: 'We dive deep into your brand, goals, and audience.' },
-              { step: '02', title: 'Design', desc: 'We craft concepts that bring your vision to life.' },
-              { step: '03', title: 'Develop', desc: 'We build, film, animate, and write with precision.' },
-              { step: '04', title: 'Deliver', desc: 'We launch, optimize, and support your growth.' },
-            ].map((item, index) => (
-              <AnimatedContent
-                key={item.step}
-                direction="vertical"
-                distance={50}
-                duration={0.8}
-                delay={0.1 * index}
-                ease="power3.out"
-              >
-                <div className="group relative h-full rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm transition-colors hover:border-[#C72C5B]/50 md:p-8">
-                  <span className="text-xs font-bold uppercase tracking-widest text-[#C72C5B]">
-                    {item.step}
-                  </span>
-                  <h3 className="mt-3 text-xl font-bold text-white md:text-2xl">{item.title}</h3>
-                  <p className="mt-2 text-sm text-white/60">{item.desc}</p>
-                </div>
-              </AnimatedContent>
-            ))}
-          </div>
-        </div>
-      </section>
-
+      
       {/* CTA */}
       <section className="bg-[#C72C5B] py-24 md:py-32">
         <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
-          <AnimatedContent direction="vertical" distance={60} duration={1} ease="power3.out">
+          <AnimatedContent direction="vertical" distance={60} duration={1}>
             <h2 className="mb-6 text-4xl font-bold text-white md:text-5xl lg:text-6xl">
               Ready to Create?
             </h2>

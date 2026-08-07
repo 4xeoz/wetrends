@@ -42,39 +42,8 @@ export function BlogList({ posts, categories }: BlogListProps) {
     : posts;
 
   return (
-    <section className="py-16 md:py-24">
+    <section className="py-16 md:py-24 bg-[#e9e9e9]">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Category Filter */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-12 flex flex-wrap items-center justify-center gap-3"
-        >
-          <button
-            onClick={() => setSelectedCategory(null)}
-            className={`rounded-full px-5 py-2.5 text-sm font-semibold transition-all ${
-              selectedCategory === null
-                ? 'bg-[#C72C5B] text-white shadow-lg shadow-[#C72C5B]/20'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-            }`}
-          >
-            All
-          </button>
-          {categories.map((category) => (
-            <button
-              key={category.id}
-              onClick={() => setSelectedCategory(category.slug)}
-              className={`rounded-full px-5 py-2.5 text-sm font-semibold transition-all ${
-                selectedCategory === category.slug
-                  ? 'bg-[#C72C5B] text-white shadow-lg shadow-[#C72C5B]/20'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-            >
-              {category.name}
-              <span className="ml-1.5 opacity-60">({category._count?.posts ?? 0})</span>
-            </button>
-          ))}
-        </motion.div>
 
         {/* Posts Grid */}
         <AnimatePresence mode="wait">

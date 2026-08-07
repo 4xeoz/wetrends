@@ -8,7 +8,7 @@ import { motion } from 'motion/react';
 
 const Hero = () => {
   return (
-    <section className="relative -mt-[72px] flex h-[100svh] min-h-[600px] w-full flex-col overflow-hidden pt-[72px]">
+    <section className="relative flex h-[100svh] min-h-[600px] w-full flex-col overflow-hidden pt-[72px]">
       {/* Background Image */}
       <motion.div 
         initial={{ scale: 1.1, opacity: 0 }}
@@ -98,7 +98,7 @@ const Hero = () => {
             }}
             className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-white/90 sm:text-base md:mt-6 md:text-lg"
           >
-            Software development, brand strategy, and creative execution — we're the technical partner that helps businesses solve problems and scale.
+            Software development, brand strategy, and creative execution — we&apos;re the technical partner that helps businesses solve problems and scale.
           </motion.p>
 
           {/* Buttons with elastic stagger */}

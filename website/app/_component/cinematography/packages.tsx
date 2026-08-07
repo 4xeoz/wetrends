@@ -50,7 +50,7 @@ export default function CinematographyPackages() {
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 
         {/* Header */}
-        <AnimatedContent direction="vertical" distance={60} duration={1} ease="power3.out" className="mb-12 md:mb-16">
+        <AnimatedContent direction="vertical" distance={60} duration={1} className="mb-12 md:mb-16">
           <span className="mb-4 block text-sm font-bold uppercase tracking-widest text-[#C72C5B]">
             Transparent Pricing
           </span>
@@ -61,7 +61,7 @@ export default function CinematographyPackages() {
           </h2>
         </AnimatedContent>
 
-        <AnimatedContent direction="vertical" distance={40} duration={1} delay={0.1} ease="power3.out" className="mb-10 md:mb-14">
+        <AnimatedContent direction="vertical" distance={40} duration={1} delay={0.1} className="mb-10 md:mb-14">
           <p className="max-w-xl text-lg leading-relaxed text-gray-600">
             No hidden fees, no complex add-ons. Choose your package, book your
             date, and receive stunning memories in 48 hours.
@@ -77,7 +77,6 @@ export default function CinematographyPackages() {
               distance={50}
               duration={0.8}
               delay={0.15 * index}
-              ease="power3.out"
             >
               <div
                 className={`group relative flex h-full flex-col overflow-hidden rounded-3xl border p-8 transition-all duration-300 md:p-10 ${
@@ -150,7 +149,7 @@ export default function CinematographyPackages() {
         </div>
 
         {/* Reassurance */}
-        <AnimatedContent direction="vertical" distance={30} duration={0.8} delay={0.35} ease="power3.out" className="mt-8">
+        <AnimatedContent direction="vertical" distance={30} duration={0.8} delay={0.35} className="mt-8">
           <p className="text-center text-sm text-gray-400">
             Both packages include professional colour grading &amp; full digital delivery.
             Shoots at the University of Surrey campus or nearby Guildford locations.

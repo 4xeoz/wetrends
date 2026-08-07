@@ -55,18 +55,11 @@ const nextConfig: NextConfig = {
     serverActions: {
       bodySizeLimit: "5mb",
     },
-    optimizePackageImports: [
-      "lucide-react",
-      "framer-motion",
-      "@radix-ui/react-icons",
-      "gsap",
-    ],
+    optimizePackageImports: ["lucide-react", "motion", "gsap"],
   },
   reactStrictMode: true,
   staticPageGenerationTimeout: 120,
   trailingSlash: true,
-  distDir: ".next",
-  compress: true,
   async headers() {
     return [
       {
@@ -86,7 +79,7 @@ const nextConfig: NextConfig = {
           },
           {
             key: "Cache-Control",
-            value: "public, max-age=3600, must-revalidate",
+            value: "public, max-age=0, must-revalidate",
           },
         ],
       },
@@ -100,28 +93,6 @@ const nextConfig: NextConfig = {
         ],
       },
     ];
-  },
-  webpack: (config, { isServer }) => {
-    config.module.rules.push({
-      test: /\.(woff|woff2|eot|ttf|otf)$/i,
-      type: 'asset/resource',
-    });
-
-    config.module.rules.push({
-      test: /\.wasm$/,
-      type: 'asset/resource',
-    });
-
-    if (!isServer) {
-      config.resolve.fallback = {
-        ...config.resolve.fallback,
-        'fs': false,
-        'net': false,
-        'tls': false,
-      };
-    }
-
-    return config;
   },
 };
 

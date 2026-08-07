@@ -111,7 +111,7 @@ function StudyCard({
     >
       <Link
         href={`/case-studies/${study.slug}/`}
-        className="group relative flex aspect-[4/3] flex-col overflow-hidden rounded-3xl p-6 md:p-8"
+        className="group relative flex aspect-square flex-col overflow-hidden rounded-3xl p-6 md:p-8"
         style={{ backgroundColor: dark ? '#0F0F0F' : '#EDEEF0' }}
       >
         {/* A wash of the client's own colour under the mockup, so the four cards
@@ -151,7 +151,7 @@ function StudyCard({
             in the card and the title never lands on top of busy artwork. */}
         <div className="relative z-10 mt-5 flex-1 overflow-hidden rounded-xl shadow-2xl">
           <Image
-            src={study.image || '/images/nopeca-mockup.webp'}
+            src={study.image || '/images/nopeca-mockup.png'}
             alt={`${study.client} project by WeTrends`}
             fill
             sizes="(max-width: 768px) 100vw, 50vw"

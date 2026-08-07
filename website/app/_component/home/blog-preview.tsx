@@ -45,7 +45,6 @@ export function BlogPreview({ posts }: BlogPreviewProps) {
               direction="vertical"
               distance={40}
               duration={1}
-              ease="power3.out"
             >
               <span className="mb-2 inline-block rounded-full bg-[#C72C5B]/10 px-3 py-1 text-xs font-medium text-[#C72C5B] sm:mb-3 sm:px-4 sm:py-1.5 sm:text-sm">
                 From The Blog
@@ -57,7 +56,6 @@ export function BlogPreview({ posts }: BlogPreviewProps) {
               distance={60}
               duration={1.2}
               delay={0.1}
-              ease="power3.out"
             >
               <h2 className="text-3xl font-bold leading-none text-[#0F0F0F] sm:text-4xl md:text-5xl lg:text-6xl">
                 Latest
@@ -70,7 +68,6 @@ export function BlogPreview({ posts }: BlogPreviewProps) {
               distance={40}
               duration={1.2}
               delay={0.2}
-              ease="power3.out"
             >
               <p className="mt-2 max-w-lg text-sm text-gray-600 sm:mt-3 sm:text-base md:mt-4 md:text-lg">
                 Expert tips, industry trends, and creative inspiration from our team.
@@ -83,7 +80,6 @@ export function BlogPreview({ posts }: BlogPreviewProps) {
             distance={40}
             duration={1}
             delay={0.3}
-            ease="power3.out"
           >
             <Link
               href="/blogs"
@@ -104,7 +100,6 @@ export function BlogPreview({ posts }: BlogPreviewProps) {
               distance={50}
               duration={0.8}
               delay={0.1 * index}
-              ease="power3.out"
             >
               <motion.article
                 whileHover={{ y: -6 }}
@@ -193,7 +188,6 @@ export function BlogPreview({ posts }: BlogPreviewProps) {
           distance={40}
           duration={1}
           delay={0.5}
-          ease="power3.out"
           className="mt-10 sm:mt-14 md:mt-16"
         >
           <div className="relative overflow-hidden rounded-2xl bg-[#0F0F0F] p-5 sm:rounded-3xl sm:p-8 md:p-12">

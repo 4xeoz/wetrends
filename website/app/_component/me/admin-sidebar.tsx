@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -8,8 +7,6 @@ import {
   FileText,
   MessageSquare,
   Settings,
-  ChevronDown,
-  LogOut,
   Clapperboard,
   QrCode,
 } from 'lucide-react';
@@ -146,8 +143,6 @@ function NavSection({
   section: NavSection;
   pathname: string;
 }) {
-  const [isOpen, setIsOpen] = useState(true);
-
   return (
     <div key={section.title} className="space-y-2">
       <h3 className="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">

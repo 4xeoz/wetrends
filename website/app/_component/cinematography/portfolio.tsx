@@ -42,7 +42,7 @@ export default function CinematographyPortfolio() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 
         {/* Header */}
-        <AnimatedContent direction="vertical" distance={60} duration={1} ease="power3.out" className="mb-12 md:mb-16">
+        <AnimatedContent direction="vertical" distance={60} duration={1} className="mb-12 md:mb-16">
           <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
             <div>
               <span className="mb-4 inline-flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-[#C72C5B]">
@@ -71,7 +71,6 @@ export default function CinematographyPortfolio() {
               distance={40}
               duration={0.7}
               delay={i * 0.07}
-              ease="power3.out"
               className={img.tall ? 'row-span-2' : ''}
             >
               <div className="group relative h-full overflow-hidden rounded-3xl bg-gray-100">

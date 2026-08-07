@@ -11,7 +11,6 @@ export function AppSidebar() {
     email: string;
     image?: string;
   } | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function fetchUserData() {
@@ -27,8 +26,6 @@ export function AppSidebar() {
         }
       } catch (error) {
         console.error('[Sidebar] Failed to fetch user:', error);
-      } finally {
-        setIsLoading(false);
       }
     }
 

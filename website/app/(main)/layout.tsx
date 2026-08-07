@@ -6,7 +6,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         <div className='relative'>
             <Navigation />
             {/* Add top padding to account for fixed header - all pages get this padding */}
-            <main className="pt-[72px]">
+            <main className="">
                 {children}
             </main>
         </div>

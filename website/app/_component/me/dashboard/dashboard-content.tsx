@@ -1,12 +1,20 @@
 'use client';
 
 import { motion } from 'motion/react';
-import { Mail, Users, Eye, TrendingUp, RefreshCw } from 'lucide-react';
+import { Mail, Users, Eye, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { StatsCard } from './stats-card';
 import { ActivityChart } from './activity-chart';
 import { QuickActions } from './quick-actions';
-import { Message } from './message-list';
+
+export interface Message {
+  id: string;
+  name: string;
+  email: string;
+  message: string;
+  createdAt: string;
+  isRead: boolean;
+}
 
 interface DashboardContentProps {
   messages: Message[];

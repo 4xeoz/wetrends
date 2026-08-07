@@ -4,7 +4,7 @@ import { motion } from 'motion/react';
 import type { ReactNode } from 'react';
 
 /**
- * A single, declarative scroll-reveal primitive built on framer-motion's
+ * A single, declarative scroll-reveal primitive built on Motion's
  * whileInView. Everything on the case-study pages animates through this so the
  * motion language stays consistent and decoupled from GSAP.
  */

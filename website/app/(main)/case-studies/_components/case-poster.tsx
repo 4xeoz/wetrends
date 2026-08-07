@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import { Lock } from 'lucide-react';
 
 /**
  * The visual for a case study, framed as a browser window so it reads as
@@ -12,18 +11,14 @@ export default function CasePoster({
   client,
   industry,
   accentColor,
-  domain,
   priority = false,
 }: {
   image?: string;
   client: string;
   industry: string;
   accentColor: string;
-  domain?: string;
   priority?: boolean;
 }) {
-  const url = domain ?? `${client.toLowerCase().replace(/[^a-z0-9]/g, '')}.co.uk`;
-
   return (
     <div className="overflow-hidden rounded-xl border border-white/10 bg-[#141416] shadow-2xl shadow-black/40 ring-1 ring-black/5">
       {/* Browser chrome */}
@@ -31,10 +26,8 @@ export default function CasePoster({
         <span className="h-3 w-3 rounded-full bg-[#ff5f57]" />
         <span className="h-3 w-3 rounded-full bg-[#febc2e]" />
         <span className="h-3 w-3 rounded-full bg-[#28c840]" />
-        <div className="ml-3 flex flex-1 items-center gap-1.5 truncate rounded-md bg-black/40 px-3 py-1 text-[11px] text-white/50">
-          <Lock className="h-3 w-3 shrink-0" />
-          <span className="truncate">{url}</span>
-        </div>
+        {/* Empty address bar — client URLs are deliberately not published. */}
+        <div className="ml-3 h-6 flex-1 rounded-md bg-black/40" />
       </div>
 
       {/* Body */}
@@ -80,9 +73,8 @@ export default function CasePoster({
               />
             </div>
 
-            <div className="flex items-end justify-between font-mono text-[10px] uppercase tracking-[0.25em] text-white/40">
-              <span>Train / Compete / Repeat</span>
-              <span>{url}</span>
+            <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-white/40">
+              {industry}
             </div>
           </div>
         )}

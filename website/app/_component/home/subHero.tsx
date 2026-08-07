@@ -138,20 +138,20 @@ const SubHero = () => {
 
             {/* Main Headline */}
             <div className="relative mx-auto max-w-6xl">
-              <AnimatedContent direction="vertical" distance={60} duration={1} delay={0.1} ease="power3.out">
+              <AnimatedContent direction="vertical" distance={60} duration={1} delay={0.1}>
                 <p className="mb-4 text-sm font-medium uppercase tracking-[0.3em] text-[#C72C5B] sm:text-base">
                   The Manifesto
                 </p>
               </AnimatedContent>
 
-              <AnimatedContent direction="vertical" distance={80} duration={1.2} delay={0.2} ease="power3.out">
+              <AnimatedContent direction="vertical" distance={80} duration={1.2} delay={0.2}>
                 <h2 className="text-[clamp(2.5rem,8vw,7rem)] font-bold leading-[0.9] tracking-tight">
                   <span className="block text-white">Engineered</span>
                   <span className="block font-serif italic text-[#C72C5B]">to Stand Out.</span>
                 </h2>
               </AnimatedContent>
 
-              <AnimatedContent direction="vertical" distance={40} duration={1} delay={0.4} ease="power3.out">
+              <AnimatedContent direction="vertical" distance={40} duration={1} delay={0.4}>
                 <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-white/60 sm:text-lg md:mt-8 md:text-xl">
                   In a sea of templates and copy-paste strategies, we craft bespoke digital experiences that command attention, spark emotion, and drive unstoppable growth.
                 </p>

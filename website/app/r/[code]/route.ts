@@ -42,7 +42,9 @@ export async function GET(
         referer,
       },
     })
-    .catch(() => {});
+    .catch(() => {
+      // Scan logging is best-effort; never fail the redirect over it.
+    });
 
   return NextResponse.redirect(qrLink.destination, { status: 302 });
 }
