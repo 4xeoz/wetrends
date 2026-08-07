@@ -7,15 +7,13 @@ import { ArrowDownRight } from 'lucide-react';
 import { motion } from 'motion/react';
 
 const Hero = () => {
-  const baseDelay = 2.5; // 2.3s + 0.2s offset
-
   return (
     <section className="relative -mt-[72px] flex h-[100svh] min-h-[600px] w-full flex-col overflow-hidden pt-[72px]">
       {/* Background Image */}
       <motion.div 
         initial={{ scale: 1.1, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 1.5, delay: baseDelay - 0.5, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 1.5, delay: 0, ease: [0.22, 1, 0.36, 1] }}
         className="absolute inset-0 -z-10"
       >
         <Image
@@ -33,7 +31,7 @@ const Hero = () => {
       <motion.div 
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 1.2, delay: baseDelay, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 1.2, delay: 0, ease: [0.22, 1, 0.36, 1] }}
         className="pointer-events-none absolute left-1/2 top-1/3 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-white/10 blur-3xl" 
       />
 
@@ -45,13 +43,13 @@ const Hero = () => {
           <motion.h1
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.3, delay: baseDelay + 0.25 }}
+            transition={{ duration: 0.3, delay: 0.25 }}
             className="text-4xl font-bold leading-[0.95] text-white sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl"
           >
             <motion.span
               initial={{ y: 60, opacity: 0, rotateX: -80 }}
               animate={{ y: 0, opacity: 1, rotateX: 0 }}
-              transition={{ duration: 0.8, delay: baseDelay + 0.3, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
               className="inline-block"
             >
               We build{' '}
@@ -59,7 +57,7 @@ const Hero = () => {
             <motion.span
               initial={{ y: 60, opacity: 0, rotateX: -80 }}
               animate={{ y: 0, opacity: 1, rotateX: 0 }}
-              transition={{ duration: 0.8, delay: baseDelay + 0.4, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.8, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
               className=" font-serif italic font-thin"
             >
                {' '}brands
@@ -68,7 +66,7 @@ const Hero = () => {
             <motion.span
               initial={{ y: 60, opacity: 0, rotateX: -80 }}
               animate={{ y: 0, opacity: 1, rotateX: 0 }}
-              transition={{ duration: 0.8, delay: baseDelay + 0.5, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.8, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
               className="font-serif italic font-thin"
             >
               that refuse to
@@ -76,14 +74,14 @@ const Hero = () => {
             <motion.span
               initial={{ y: 60, opacity: 0, rotateX: -80, scale: 0.8 }}
               animate={{ y: 0, opacity: 1, rotateX: 0, scale: 1 }}
-              transition={{ duration: 0.9, delay: baseDelay + 0.6, ease: [0.34, 1.56, 0.64, 1] }}
+              transition={{ duration: 0.9, delay: 0.6, ease: [0.34, 1.56, 0.64, 1] }}
               className="inline-block relative"
             >
               blend in
               <motion.span
                 initial={{ scaleX: 0 }}
                 animate={{ scaleX: 1 }}
-                transition={{ duration: 0.6, delay: baseDelay + 1.0, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ duration: 0.6, delay: 1.0, ease: [0.22, 1, 0.36, 1] }}
                 className="absolute -bottom-2 left-0 right-0 h-1 bg-white/30 origin-left"
               />
             </motion.span>
@@ -95,7 +93,7 @@ const Hero = () => {
             animate={{ opacity: 1, filter: 'blur(0px)', y: 0 }}
             transition={{ 
               duration: 0.9, 
-              delay: baseDelay + 0.7, 
+              delay: 0.7, 
               ease: [0.22, 1, 0.36, 1]
             }}
             className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-white/90 sm:text-base md:mt-6 md:text-lg"
@@ -107,7 +105,7 @@ const Hero = () => {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.3, delay: baseDelay + 0.8 }}
+            transition={{ duration: 0.3, delay: 0.8 }}
             className="mt-6 flex flex-wrap items-center justify-center gap-3 sm:mt-8 sm:gap-4"
           >
             <motion.div
@@ -117,7 +115,7 @@ const Hero = () => {
                 type: "spring",
                 stiffness: 300,
                 damping: 20,
-                delay: baseDelay + 0.85 
+                delay: 0.85 
               }}
             >
               <Link
@@ -140,7 +138,7 @@ const Hero = () => {
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: baseDelay + 1.1, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 0.8, delay: 1.1, ease: [0.22, 1, 0.36, 1] }}
         className="relative z-10 flex justify-center pb-6"
       >
         <motion.div
@@ -154,7 +152,7 @@ const Hero = () => {
             <motion.span 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: baseDelay + 1.3 }}
+              transition={{ delay: 1.3 }}
               className="text-[10px] uppercase tracking-widest sm:text-xs"
             >
               Scroll
@@ -166,7 +164,7 @@ const Hero = () => {
                 type: "spring",
                 stiffness: 400,
                 damping: 15,
-                delay: baseDelay + 1.2 
+                delay: 1.2 
               }}
               className="flex h-9 w-9 items-center justify-center rounded-full border border-white/30 sm:h-10 sm:w-10"
             >

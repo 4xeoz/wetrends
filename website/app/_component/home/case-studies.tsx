@@ -4,21 +4,27 @@ import { useRef } from 'react';
 import { motion, useInView } from 'motion/react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowUpRight, ArrowRight } from 'lucide-react';
-import { caseStudies as allCaseStudies } from '@/lib/case-studies-data';
+import { ArrowUpRight } from 'lucide-react';
+import { caseStudies } from '@/lib/case-studies-data';
+import { reels } from '@/lib/reels-data';
+import ReelWall from '@/components/reels/reel-wall';
 
-const caseStudies = allCaseStudies.map((s) => ({
-  id: s.number,
-  client: s.client,
-  service: s.service,
-  year: s.year,
-  metric: s.metric,
-  metricLabel: s.metricLabel,
-  description: s.tagline,
-  href: `/case-studies/${s.slug}/`,
-  image: s.image,
-  color: s.accentColor,
-}));
+/**
+ * Home "selected work": a full-bleed band of autoplaying reels, then four case
+ * studies as large 2x2 cards.
+ *
+ * This replaces the previous five full-height sticky-stacked panels, which cost
+ * five screens of scroll to say what the grid says in one.
+ *
+ * The cards deliberately do not repeat the portfolio's card (image on top,
+ * white text footer). Here the copy sits *inside* the card over a flat
+ * background with the mockup inset beneath it, so both pages can show the same
+ * work without looking like the same component.
+ *
+ * Four, not five — a 2x2 grid with a lone fifth reads as a bug, and this
+ * section exists to send people to /case-studies rather than replace it.
+ */
+const featured = caseStudies.slice(0, 4);
 
 export function CaseStudies() {
   const headerRef = useRef<HTMLDivElement>(null);
@@ -26,10 +32,9 @@ export function CaseStudies() {
 
   return (
     <section id="case-studies" className="relative bg-white">
-      {/* ── Header ─────────────────────────────────────────── */}
       <div
         ref={headerRef}
-        className="relative mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8 lg:py-32"
+        className="mx-auto max-w-7xl px-4 pb-12 pt-24 sm:px-6 lg:px-8 lg:pb-16 lg:pt-32"
       >
         <motion.span
           initial={{ opacity: 0, x: -20 }}
@@ -54,27 +59,23 @@ export function CaseStudies() {
           </h2>
 
           <p className="max-w-md text-lg text-gray-500 lg:text-right">
-            Real results for ambitious brands. Scroll down to see the stories stack up.
+            Brands we&apos;ve built, films we&apos;ve shot, and the numbers that
+            came out of them.
           </p>
         </motion.div>
       </div>
 
-      {/* ── Stacked cards ──────────────────────────────────── */}
-      <div className="relative">
-        {caseStudies.map((study, index) => (
-          <StudyCard key={study.id} study={study} index={index} />
-        ))}
-      </div>
+      {/* Full-bleed reel band — the same component the portfolio uses, one row. */}
+      <ReelWall reels={reels} rows={1} className="bg-white pb-14 md:pb-20" />
 
-      {/* ── Bottom CTA ─────────────────────────────────────── */}
-      <div className="relative z-50 bg-white px-4 py-24 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="mx-auto flex max-w-7xl flex-col items-center justify-center gap-4 sm:flex-row"
-        >
+      <div className="mx-auto max-w-7xl px-4 pb-24 sm:px-6 lg:px-8">
+        <div className="grid gap-5 md:grid-cols-2 md:gap-6">
+          {featured.map((study, i) => (
+            <StudyCard key={study.slug} study={study} dark={i % 2 === 1} />
+          ))}
+        </div>
+
+        <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
           <Link
             href="/case-studies/"
             className="group inline-flex items-center gap-3 rounded-full bg-[#0F0F0F] px-8 py-4 text-base font-bold text-white transition-all hover:bg-[#C72C5B]"
@@ -88,7 +89,7 @@ export function CaseStudies() {
           >
             Start Your Project
           </Link>
-        </motion.div>
+        </div>
       </div>
     </section>
   );
@@ -96,122 +97,68 @@ export function CaseStudies() {
 
 function StudyCard({
   study,
-  index,
+  dark,
 }: {
   study: (typeof caseStudies)[number];
-  index: number;
+  dark: boolean;
 }) {
-  const cardRef = useRef<HTMLDivElement>(null);
-  const isInView = useInView(cardRef, { once: true, margin: '-20% 0px' });
-
   return (
-    <div
-      ref={cardRef}
-      className="sticky h-screen"
-      style={{
-        top: `${index * 40}px`,
-        zIndex: index + 10,
-      }}
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-80px' }}
+      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
     >
       <Link
-        href={study.href}
-        className="group relative block h-full w-full overflow-hidden"
+        href={`/case-studies/${study.slug}/`}
+        className="group relative flex aspect-[4/3] flex-col overflow-hidden rounded-3xl p-6 md:p-8"
+        style={{ backgroundColor: dark ? '#0F0F0F' : '#EDEEF0' }}
       >
-        {/* Background image */}
-        <motion.div
-          initial={{ scale: 1.1 }}
-          animate={isInView ? { scale: 1 } : {}}
-          transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-          className="absolute inset-0"
-        >
-          {study.image ? (
-            <Image
-              src={study.image}
-              alt={`${study.client} project by WeTrends`}
-              fill
-              className="object-cover object-center transition-transform duration-700 group-hover:scale-105"
-              sizes="100vw"
-              priority={index < 2}
-            />
-          ) : (
-            <div
-              className="flex h-full w-full items-center justify-center"
-              style={{ backgroundColor: study.color }}
+        {/* A wash of the client's own colour under the mockup, so the four cards
+            are lit by their brands rather than all sharing one grey. */}
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-2/3 opacity-40 blur-3xl transition-opacity duration-500 group-hover:opacity-60"
+          style={{
+            background: `radial-gradient(60% 80% at 50% 100%, ${study.accentColor}, transparent 70%)`,
+          }}
+        />
+
+        <div className="relative z-10 flex items-start justify-between gap-4">
+          <div>
+            <h3
+              className={`text-2xl font-bold tracking-tight md:text-3xl ${
+                dark ? 'text-white' : 'text-[#0F0F0F]'
+              }`}
             >
-              <span className="text-center text-6xl font-black uppercase leading-none tracking-tight text-white md:text-8xl">
-                {study.client}
-              </span>
-            </div>
-          )}
-        </motion.div>
-
-        {/* Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0B0B0C] via-[#0B0B0C]/60 to-transparent" />
-
-        {/* Content */}
-        <div className="absolute inset-0 flex flex-col justify-between p-6 pb-24 sm:p-10 sm:pb-32 lg:p-16 lg:pb-40">
-          {/* Top: number + service badge */}
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="flex items-center justify-between"
-          >
-            <span
-              className="text-6xl font-black leading-none text-white/20 md:text-8xl"
-              style={{ textShadow: `0 0 60px ${study.color}40` }}
+              {study.client}
+            </h3>
+            <p
+              className={`mt-1.5 max-w-xs text-sm leading-snug ${
+                dark ? 'text-white/60' : 'text-gray-500'
+              }`}
             >
-              {study.id}
-            </span>
-            <div className="flex items-center gap-3">
-              <span className="rounded-full bg-white px-4 py-1.5 text-xs font-bold text-[#0F0F0F]">
-                {study.service}
-              </span>
-              <span className="rounded-full bg-white/20 px-3 py-1.5 text-xs text-white backdrop-blur-sm">
-                {study.year}
-              </span>
-            </div>
-          </motion.div>
-
-          {/* Bottom: client info */}
-          <div className="max-w-4xl">
-            <motion.div
-              initial={{ opacity: 0, y: 40 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <div className="flex items-baseline gap-4">
-                <h3 className="text-4xl font-bold leading-[0.95] text-white sm:text-5xl md:text-6xl lg:text-7xl">
-                  {study.client}
-                </h3>
-                <span
-                  className="hidden text-3xl font-bold sm:block md:text-4xl"
-                  style={{ color: study.color }}
-                >
-                  {study.metric}
-                </span>
-              </div>
-
-              <p className="mt-4 max-w-xl text-lg text-white/70 md:text-xl">
-                {study.description}
-              </p>
-
-              <div className="mt-8 flex flex-wrap items-center gap-6">
-                <span className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-white transition-colors group-hover:text-white/80">
-                  View Case Study
-                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                </span>
-                <span
-                  className="text-sm font-semibold uppercase tracking-wide text-white/50"
-                  style={{ color: study.color }}
-                >
-                  {study.metric} {study.metricLabel}
-                </span>
-              </div>
-            </motion.div>
+              {study.tagline}
+            </p>
           </div>
+
+          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-white text-[#0F0F0F] shadow-sm transition-transform duration-300 group-hover:rotate-45 md:h-12 md:w-12">
+            <ArrowUpRight className="h-4 w-4 md:h-5 md:w-5" />
+          </span>
+        </div>
+
+        {/* Inset rather than full-bleed, so the mockup reads as an object placed
+            in the card and the title never lands on top of busy artwork. */}
+        <div className="relative z-10 mt-5 flex-1 overflow-hidden rounded-xl shadow-2xl">
+          <Image
+            src={study.image || '/images/nopeca-mockup.webp'}
+            alt={`${study.client} project by WeTrends`}
+            fill
+            sizes="(max-width: 768px) 100vw, 50vw"
+            className="object-cover object-top transition-transform duration-500 group-hover:scale-[1.04]"
+          />
         </div>
       </Link>
-    </div>
+    </motion.div>
   );
 }

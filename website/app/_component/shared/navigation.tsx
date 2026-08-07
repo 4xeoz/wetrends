@@ -8,15 +8,23 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
+/**
+ * Drives both the desktop bar and the mobile sheet.
+ *
+ * Graduation, Pricing, Team and Contact are hidden from the nav — their pages
+ * and sections still exist and are still reachable by URL, by in-page links,
+ * and (for contact) by the Get Started button. Restore a line here to bring one
+ * back:
+ *   { href: '/cinematography/', label: 'Graduation' },
+ *   { href: '/#pricing',        label: 'Pricing'    },
+ *   { href: '/#team',           label: 'Team'       },
+ *   { href: '/#contact',        label: 'Contact'    },
+ */
 const navLinks = [
   { href: '/', label: 'Home' },
   { href: '/services/', label: 'Services' },
-  { href: '/cinematography/', label: 'Graduation' },
   { href: '/case-studies/', label: 'Portfolio' },
-  { href: '/#pricing', label: 'Pricing' },
   { href: '/blogs/', label: 'Blog' },
-  { href: '/#team', label: 'Team' },
-  { href: '/#contact', label: 'Contact' },
 ];
 
 export function Navigation() {
@@ -49,7 +57,8 @@ export function Navigation() {
       <motion.header
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6, delay: isHomePage ? 2.5 : 0.3 }}
+        // Home drops the bar in as the logo aperture finishes opening (~1.9s).
+        transition={{ duration: 0.6, delay: isHomePage ? 1.6 : 0.3 }}
         className={`fixed left-0 right-0 top-0 z-50 transition-all duration-300 ${
           isLight
             ? 'bg-white border-b border-gray-100 backdrop-blur-md'
