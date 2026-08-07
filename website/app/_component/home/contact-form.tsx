@@ -184,7 +184,6 @@ export default function ContactForm() {
                 onChange={handleChange}
                 className={`${errors.name ? "border-red-400" : "border-white/20"} bg-white/5 text-white text-lg h-14 placeholder:text-white/40`}
                 placeholder="John Smith"
-                autoFocus
               />
               {errors.name && <p className="text-red-400 text-sm mt-2">{errors.name}</p>}
             </div>
