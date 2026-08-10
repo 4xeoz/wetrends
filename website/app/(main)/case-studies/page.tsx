@@ -1,8 +1,10 @@
 import type { Metadata } from 'next';
 import { caseStudies } from '@/lib/case-studies-data';
 import { reels } from '@/lib/reels-data';
+import { foodShoots } from '@/lib/food-photography-data';
 import WorkHero from './_components/work-hero';
 import CaseCards from './_components/case-cards';
+import FoodSection from './_components/food-section';
 import ReelWall from '@/components/reels/reel-wall';
 
 export const metadata: Metadata = {
@@ -42,6 +44,7 @@ export default function CaseStudiesPage() {
       <WorkHero />
       <ReelWall reels={reels} />
       <CaseCards studies={caseStudies} />
+      <FoodSection shoots={foodShoots} />
 
     </main>
   );

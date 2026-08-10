@@ -1,6 +1,12 @@
 # n8n workflow exports may contain live API keys — never commit
 /n8n-blog-workflow.json
 /n8n-topic-workflow.json
+
+# Unedited food-shoot masters. Their filenames carry client names and this repo
+# is public, so they stay local — the anonymised, renamed copies that actually
+# ship live in website/public/food. Also holds the frames withheld because the
+# client's logo is printed on the packaging in shot.
+/website/photo-source/
 .vercel
 .env*
 .DS_Store
