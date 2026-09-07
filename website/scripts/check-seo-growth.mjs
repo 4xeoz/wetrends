@@ -210,13 +210,18 @@ const automationStateJavaScript = ts.transpileModule(automationState, {
   compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 },
 }).outputText;
 const automationStateModule = await import(`data:text/javascript;base64,${Buffer.from(automationStateJavaScript).toString('base64')}`);
-const { getAutomationTransitionError, isCreatableAutomationState } = automationStateModule;
+const {
+  getAutomationTransitionError,
+  getPublishedAutomationDisposition,
+  isCreatableAutomationState,
+} = automationStateModule;
 const publishedAuditState = read('lib/published-content-audit.ts');
 const publishedAuditJavaScript = ts.transpileModule(publishedAuditState, {
   compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 },
 }).outputText;
 const publishedAuditModule = await import(`data:text/javascript;base64,${Buffer.from(publishedAuditJavaScript).toString('base64')}`);
 const provider = read('components/providers/posthog-provider.tsx');
+const posthogAnalytics = read('lib/analytics/posthog.ts');
 const eventWork = read('app/(main)/events/work/page.tsx');
 const privacyPage = read('app/(main)/privacy/page.tsx');
 const sitemap = read('app/sitemap.ts');
@@ -231,6 +236,11 @@ assert.match(createRoute, /cannot start in an approved, rejected or published st
 assert.match(createRoute, /evaluateBlogDraft/);
 assert.match(updateRoute, /explicit approved status in this request/);
 assert.match(updateRoute, /getAutomationTransitionError/);
+assert.match(updateRoute, /getPublishedAutomationDisposition/);
+assert.match(updateRoute, /Published posts are read-only through the automation API/);
+assert.match(updateRoute, /idempotent: true/);
+assert.match(updateRoute, /Published posts cannot be deleted through the automation API/);
+assert.match(updateRoute, /const session = await auth\(\)/);
 assert.match(automationState, /cannot unpublish an already-published post/);
 assert.match(automationState, /Only a review-ready draft can be rejected/);
 assert.match(automationState, /Only a review-ready draft can receive a regenerated cover/);
@@ -251,6 +261,14 @@ assert.match(provider, /NEXT_PUBLIC_GA_MEASUREMENT_ID/);
 assert.match(provider, /clearAnalyticsIdentifiers/);
 assert.match(provider, /next === "denied"/);
 assert.match(provider, /href="\/privacy\/"/);
+assert.match(posthogAnalytics, /autocapture: false/);
+assert.match(posthogAnalytics, /disable_session_recording: true/);
+assert.match(posthogAnalytics, /capture_heatmaps: false/);
+assert.match(posthogAnalytics, /capture_dead_clicks: false/);
+assert.match(posthogAnalytics, /capture_performance: false/);
+assert.match(posthogAnalytics, /capture_exceptions: false/);
+assert.match(posthogAnalytics, /disable_surveys: true/);
+assert.match(posthogAnalytics, /disable_product_tours: true/);
 assert.match(privacyPage, /team@wetrends\.co\.uk/);
 assert.match(privacyPage, /Google Analytics and PostHog/);
 assert.match(privacyPage, /Information Commissioner/);
@@ -272,6 +290,34 @@ assert.equal(getAutomationTransitionError({ published: false, automationStatus: 
 assert.equal(getAutomationTransitionError({ published: false, automationStatus: 'review_ready' }, { published: false, automationStatus: 'review_ready' }), null);
 assert.equal(getAutomationTransitionError({ published: false, automationStatus: 'review_ready' }, { published: false, automationStatus: 'approved' })?.status, 400);
 assert.equal(getAutomationTransitionError({ published: false, automationStatus: 'review_ready' }, { published: true, automationStatus: 'approved' }), null);
+assert.equal(
+  getPublishedAutomationDisposition(
+    { published: false, automationStatus: 'review_ready' },
+    { published: true, automationStatus: 'approved' },
+  ),
+  'mutable',
+);
+assert.equal(
+  getPublishedAutomationDisposition(
+    { published: true, automationStatus: 'published' },
+    { published: true, automationStatus: 'approved' },
+  ),
+  'idempotent',
+);
+assert.equal(
+  getPublishedAutomationDisposition(
+    { published: true, automationStatus: 'published' },
+    { published: true, automationStatus: 'approved', title: 'Mutated live title' },
+  ),
+  'blocked',
+);
+assert.equal(
+  getPublishedAutomationDisposition(
+    { published: true, automationStatus: 'published' },
+    { featuredImage: 'https://example.com/replacement.webp' },
+  ),
+  'blocked',
+);
 
 const samplePublishedAudit = publishedAuditModule.auditPublishedContent([
   {

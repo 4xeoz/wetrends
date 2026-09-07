@@ -10,8 +10,32 @@ type RequestedAutomationState = {
   automationStatus?: string;
 };
 
+export type PublishedAutomationDisposition = 'mutable' | 'idempotent' | 'blocked';
+
 export function isCreatableAutomationState(status?: string | null) {
   return CREATABLE_STATES.has(status || 'drafted');
+}
+
+/**
+ * Once a post is public, the automation credential must not be able to alter
+ * its copy, metadata or media. The one exception is an exact replay of the
+ * two-field approval request: n8n may retry after a network timeout even when
+ * the first request already succeeded, so that replay is a read-only success.
+ */
+export function getPublishedAutomationDisposition(
+  existing: ExistingAutomationState,
+  requested: RequestedAutomationState,
+): PublishedAutomationDisposition {
+  if (!existing.published && existing.automationStatus !== 'published') return 'mutable';
+
+  const requestedKeys = Object.keys(requested);
+  const isExactApprovalReplay =
+    requested.published === true &&
+    requested.automationStatus === 'approved' &&
+    requestedKeys.length === 2 &&
+    requestedKeys.every((key) => key === 'published' || key === 'automationStatus');
+
+  return isExactApprovalReplay ? 'idempotent' : 'blocked';
 }
 
 /**

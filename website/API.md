@@ -47,7 +47,8 @@ Content-Type: application/json
 ### Published Logic
 - `POST` always creates a draft and rejects `published: true`.
 - API publication uses `PATCH` with both `published: true` and `automationStatus: "approved"`.
-- Setting `published: false` sets `publishedAt` to `null`.
+- After publication, the post is read-only through the automation API. Repeating the exact two-field approval request is treated as an idempotent success; adding any content, metadata or image change is rejected.
+- `DELETE` is limited to unpublished drafts. Deliberate changes or deletion of live content use the session-authenticated admin interface.
 
 ---
 
@@ -191,13 +192,16 @@ curl -X PATCH http://localhost:3000/api/blog/6677a1b2c3d4e5f6g7h8i9j0/ \
   "success": true,
   "post": {
     "id": "6677a1b2c3d4e5f6g7h8i9j0",
-    "title": "How We Built the Rebrand (Updated)",
-    "published": false,
-    "publishedAt": null,
+    "title": "How We Built the Rebrand",
+    "published": true,
+    "automationStatus": "published",
+    "publishedAt": "2026-09-07T20:00:00.000Z",
     ...
   }
 }
 ```
+
+If the response to a successful approval is lost, the same two-field request can be retried. The API returns the existing post with `"idempotent": true` and does not update it again.
 
 #### Error Responses
 | Status | Message |
@@ -208,12 +212,13 @@ curl -X PATCH http://localhost:3000/api/blog/6677a1b2c3d4e5f6g7h8i9j0/ \
 | `401` | `"Unauthorized"` |
 | `404` | `"Post not found"` |
 | `409` | `"A post with this slug already exists"` |
+| `409` | `"Published posts are read-only through the automation API"` |
 
 ---
 
-### 3. Delete Post — `DELETE /api/blog/{id}/`
+### 3. Delete Unpublished Draft — `DELETE /api/blog/{id}/`
 
-Deletes a post permanently.
+Deletes an unpublished draft permanently. A published post returns `409`; live-content deletion is deliberately reserved for the authenticated admin interface.
 
 #### Path Parameters
 | Param | Type | Description |
@@ -239,6 +244,7 @@ curl -X DELETE http://localhost:3000/api/blog/6677a1b2c3d4e5f6g7h8i9j0/ \
 |--------|---------|
 | `401` | `"Unauthorized"` |
 | `404` | `"Post not found"` |
+| `409` | `"Published posts cannot be deleted through the automation API"` |
 
 ---
 

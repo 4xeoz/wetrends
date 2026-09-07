@@ -45,6 +45,18 @@ export function initPostHog() {
     // Flip to `false` and restore the session_recording block below to re-enable.
     disable_session_recording: true,
 
+    // These features may be enabled by remote PostHog project settings when
+    // their local values are left undefined. Keep this implementation limited
+    // to the deliberate conversion events below: no interaction maps, inferred
+    // frustration signals, performance telemetry or exception capture.
+    capture_heatmaps: false,
+    capture_dead_clicks: false,
+    capture_performance: false,
+    capture_exceptions: false,
+    disable_surveys: true,
+    disable_surveys_automatic_display: true,
+    disable_product_tours: true,
+
     // Bounce rate and time-on-page need this, and it is one event per visit.
     capture_pageleave: true,
 

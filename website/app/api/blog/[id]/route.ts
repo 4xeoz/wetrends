@@ -4,17 +4,25 @@ import { validateApiKey } from "@/lib/api-auth";
 import { createBlogPostSchema, updateBlogPostSchema } from "@/lib/zod/blog";
 import { revalidatePath } from "next/cache";
 import { evaluateBlogDraft } from "@/lib/blog-quality";
-import { getAutomationTransitionError } from "@/lib/blog-automation-state";
+import {
+  getAutomationTransitionError,
+  getPublishedAutomationDisposition,
+} from "@/lib/blog-automation-state";
+import { auth } from "@/lib/auth";
 
 // ─────────────────────────────────────────────
-// GET — API key required so draft content is never exposed publicly
+// GET — an authenticated admin session or API key is required so drafts are
+// never exposed publicly while the existing admin editor keeps working.
 // ─────────────────────────────────────────────
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const auth = validateApiKey(request);
-  if (!auth.authorized) return auth.response;
+  const session = await auth();
+  if (!session?.user?.id) {
+    const apiAuth = validateApiKey(request);
+    if (!apiAuth.authorized) return apiAuth.response;
+  }
 
   try {
     const { id } = await params;
@@ -98,6 +106,17 @@ export async function PATCH(
       return NextResponse.json(
         { success: false, message: "Post not found" },
         { status: 404 }
+      );
+    }
+
+    const publishedDisposition = getPublishedAutomationDisposition(existingPost, data);
+    if (publishedDisposition === 'idempotent') {
+      return NextResponse.json({ success: true, post: existingPost, idempotent: true });
+    }
+    if (publishedDisposition === 'blocked') {
+      return NextResponse.json(
+        { success: false, message: 'Published posts are read-only through the automation API' },
+        { status: 409 }
       );
     }
 
@@ -292,7 +311,15 @@ export async function DELETE(
       );
     }
 
-    // 3. Delete
+    if (post.published || post.automationStatus === 'published') {
+      return NextResponse.json(
+        { success: false, message: 'Published posts cannot be deleted through the automation API' },
+        { status: 409 }
+      );
+    }
+
+    // 3. Delete an unpublished draft only. Human administrators retain their
+    // separate session-authenticated delete action in actions/blog.ts.
     await prisma.blogPost.delete({
       where: { id },
     });
