@@ -6,6 +6,7 @@ import WorkHero from './_components/work-hero';
 import CaseCards from './_components/case-cards';
 import FoodSection from './_components/food-section';
 import ReelWall from '@/components/reels/reel-wall';
+import { DEFAULT_SOCIAL_IMAGE, DEFAULT_SOCIAL_IMAGE_PATH } from '@/lib/social-metadata';
 
 export const metadata: Metadata = {
   title: 'Case Studies | WeTrends Creative Technology Agency',
@@ -22,6 +23,13 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_GB',
     siteName: 'WeTrends',
+    images: [DEFAULT_SOCIAL_IMAGE],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Case Studies | WeTrends Creative Technology Agency',
+    description: 'Real projects and results across creative technology, production and digital growth.',
+    images: [DEFAULT_SOCIAL_IMAGE_PATH],
   },
 };
 

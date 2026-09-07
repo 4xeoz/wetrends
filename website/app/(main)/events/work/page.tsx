@@ -25,6 +25,12 @@ export const metadata: Metadata = {
       },
     ],
   },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Selected Event Work | WeTrends',
+    description: 'Illustrative event coverage directions for celebrations, conferences, launches and milestones.',
+    images: ['/images/events-celebration-toast.png'],
+  },
 };
 
 export default function EventWorkRoute() {

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { serviceSlugs } from '@/lib/services-data';
+import { DEFAULT_SOCIAL_IMAGE, DEFAULT_SOCIAL_IMAGE_PATH } from '@/lib/social-metadata';
 
 export const metadata: Metadata = {
   title: 'Creative Technology & Production Services London | WeTrends',
@@ -14,6 +15,13 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_GB',
     siteName: 'WeTrends',
+    images: [DEFAULT_SOCIAL_IMAGE],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Creative Technology & Production Services London | WeTrends',
+    description: 'Web, brand, production, social, animation and content services for London, Surrey and UK clients.',
+    images: [DEFAULT_SOCIAL_IMAGE_PATH],
   },
 };
 

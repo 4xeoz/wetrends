@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { faqs } from '@/lib/faq-data';
 import QuestionsPage from './questions-page';
+import { DEFAULT_SOCIAL_IMAGE, DEFAULT_SOCIAL_IMAGE_PATH } from '@/lib/social-metadata';
 
 export const metadata: Metadata = {
   title: "Questions About Web Design, Branding & Digital Marketing | WeTrends",
@@ -15,6 +16,13 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_GB",
     siteName: "WeTrends",
+    images: [DEFAULT_SOCIAL_IMAGE],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Questions About Web Design, Branding & Digital Marketing | WeTrends',
+    description: 'Straight answers about creative technology, production, events and photography.',
+    images: [DEFAULT_SOCIAL_IMAGE_PATH],
   },
 };
 

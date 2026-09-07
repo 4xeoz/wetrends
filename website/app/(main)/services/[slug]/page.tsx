@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { servicesData, serviceSlugs, type ServiceSlug } from '@/lib/services-data';
 import ServiceDetail from './service-detail';
+import { DEFAULT_SOCIAL_IMAGE, DEFAULT_SOCIAL_IMAGE_PATH } from '@/lib/social-metadata';
 
 export async function generateStaticParams() {
   return serviceSlugs.map((slug) => ({ slug }));
@@ -31,6 +32,13 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       type: 'article',
       locale: 'en_GB',
       siteName: 'WeTrends',
+      images: [DEFAULT_SOCIAL_IMAGE],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: service.title,
+      description: service.description,
+      images: [DEFAULT_SOCIAL_IMAGE_PATH],
     },
   };
 }

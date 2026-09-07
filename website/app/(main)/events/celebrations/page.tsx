@@ -24,6 +24,12 @@ export const metadata: Metadata = {
       },
     ],
   },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Celebration Photography & Film | WeTrends',
+    description: 'Candid coverage for birthdays, graduations and milestone celebrations.',
+    images: ['/images/events-celebration-toast.png'],
+  },
 };
 
 export default function CelebrationsRoute() {

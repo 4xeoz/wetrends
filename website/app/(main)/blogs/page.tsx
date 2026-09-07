@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { getPublishedPosts, getCategories } from '@/actions/blog';
 import { BlogList } from '@/app/_component/blogs/blog-list';
 import { BlogHero } from '@/app/_component/blogs/blog-hero';
+import { DEFAULT_SOCIAL_IMAGE, DEFAULT_SOCIAL_IMAGE_PATH } from '@/lib/social-metadata';
 
 export const metadata: Metadata = {
   title: 'Creative Technology & Production Insights | WeTrends',
@@ -16,6 +17,13 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_GB',
     siteName: 'WeTrends',
+    images: [DEFAULT_SOCIAL_IMAGE],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Creative Technology & Production Insights | WeTrends',
+    description: 'Practical insights for London, Surrey and UK teams across web, content, events, photography and production.',
+    images: [DEFAULT_SOCIAL_IMAGE_PATH],
   },
 };
 

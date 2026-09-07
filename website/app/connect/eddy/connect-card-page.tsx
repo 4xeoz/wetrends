@@ -180,7 +180,7 @@ export function ConnectCardPage({ variant }: { variant: CardVariant }) {
               <p className="max-w-[11rem] pt-1 text-right text-[10px] font-semibold leading-4 text-[#71666A] sm:max-w-none sm:text-xs">
                 Filmmaker &amp; Creative Director
                 <br />
-                Guildford · UK-wide
+                Serving London · Surrey
               </p>
             </div>
 

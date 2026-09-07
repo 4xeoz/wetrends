@@ -50,6 +50,7 @@ export const metadata: Metadata = {
     title: 'Graduation Photography & Cinematography Surrey | WeTrends',
     description:
       'Professional graduation photography and cinematography for University of Surrey students. From £35 with 48h delivery.',
+    images: ['/images/events-graduation.png'],
   },
 };
 

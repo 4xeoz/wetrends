@@ -48,6 +48,12 @@ export async function generateMetadata({ params }: Props) {
         }
       ] : undefined,
     },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${member.name} - ${member.role} | WeTrends`,
+      description: member.bio,
+      images: member.image ? [member.image] : undefined,
+    },
   };
 }
 
@@ -150,7 +156,7 @@ export default async function TeamMemberPage({ params }: Props) {
       {/* Skills & Achievements */}
       <section className="bg-gray-50 py-16 lg:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid gap-12 md:grid-cols-2 md:gap-20">
+          <div className={`grid gap-12 ${member.achievements.length > 0 ? 'md:grid-cols-2 md:gap-20' : ''}`}>
             {/* Skills */}
             <div>
               <h3 className="text-2xl font-bold md:text-3xl">Expertise</h3>
@@ -166,21 +172,22 @@ export default async function TeamMemberPage({ params }: Props) {
               </div>
             </div>
 
-            {/* Achievements */}
-            <div>
-              <h3 className="flex items-center gap-2 text-2xl font-bold md:text-3xl">
-                <Award className="h-6 w-6 text-[#C72C5B]" />
-                Key Achievements
-              </h3>
-              <ul className="mt-6 space-y-4">
-                {member.achievements.map((achievement, index) => (
-                  <li key={index} className="flex items-start gap-3 text-gray-600">
-                    <span className="mt-2 h-2 w-2 flex-shrink-0 rounded-full bg-[#C72C5B]" />
-                    <span className="text-lg">{achievement}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            {member.achievements.length > 0 && (
+              <div>
+                <h3 className="flex items-center gap-2 text-2xl font-bold md:text-3xl">
+                  <Award className="h-6 w-6 text-[#C72C5B]" />
+                  Key Achievements
+                </h3>
+                <ul className="mt-6 space-y-4">
+                  {member.achievements.map((achievement, index) => (
+                    <li key={index} className="flex items-start gap-3 text-gray-600">
+                      <span className="mt-2 h-2 w-2 flex-shrink-0 rounded-full bg-[#C72C5B]" />
+                      <span className="text-lg">{achievement}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
         </div>
       </section>

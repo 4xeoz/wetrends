@@ -8,6 +8,7 @@ import { Services } from '../_component/home/services';
 import { BlogPreview } from '../_component/home/blog-preview';
 import Contact from '../_component/home/contact';
 import { getPublishedPosts } from '@/actions/blog';
+import { DEFAULT_SOCIAL_IMAGE, DEFAULT_SOCIAL_IMAGE_PATH } from '@/lib/social-metadata';
 
 export const metadata: Metadata = {
   title: "Creative Technology & Production Agency London | WeTrends",
@@ -22,6 +23,13 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_GB",
     siteName: "WeTrends",
+    images: [DEFAULT_SOCIAL_IMAGE],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Creative Technology & Production Agency London | WeTrends',
+    description: 'Brand, web, production, social, event and photography work for London, Surrey and UK businesses.',
+    images: [DEFAULT_SOCIAL_IMAGE_PATH],
   },
 };
 

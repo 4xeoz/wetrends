@@ -6,6 +6,7 @@ import {
   getNextCaseStudy,
 } from '@/lib/case-studies-data';
 import CaseStudyDetail from './case-study-detail';
+import { DEFAULT_SOCIAL_IMAGE, DEFAULT_SOCIAL_IMAGE_PATH } from '@/lib/social-metadata';
 
 export async function generateStaticParams() {
   return getAllCaseStudySlugs().map((slug) => ({ slug }));
@@ -34,6 +35,15 @@ export async function generateMetadata({
       type: 'article',
       locale: 'en_GB',
       siteName: 'WeTrends',
+      images: study.image
+        ? [{ url: study.image, alt: `${study.client} case study by WeTrends` }]
+        : [DEFAULT_SOCIAL_IMAGE],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description: study.description,
+      images: [study.image || DEFAULT_SOCIAL_IMAGE_PATH],
     },
   };
 }

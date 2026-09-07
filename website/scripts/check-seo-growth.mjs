@@ -238,16 +238,24 @@ assert.equal(getAutomationTransitionError({ published: false, automationStatus: 
 
 const highRiskPublicFiles = [
   'app/layout.tsx',
+  'app/_component/home/team.tsx',
   'app/(main)/blogs/page.tsx',
   'app/(main)/case-studies/page.tsx',
   'app/(main)/services/[slug]/service-detail.tsx',
   'lib/faq-data.ts',
   'lib/site-profile.ts',
+  'lib/team-data.ts',
 ];
 for (const filename of highRiskPublicFiles) {
   const source = read(filename);
   assert.doesNotMatch(source, /based in Guildford|Guildford-based|Guildford studio|based in London|London-based|our London office|our London studio/i, `${filename} contains an unverified base claim`);
   assert.doesNotMatch(source, /\b(?:best|number one|#1|award[- ]winning)\b|leading (?:creative|digital|agency)/i, `${filename} contains an unsupported superlative`);
 }
+
+const teamData = read('lib/team-data.ts');
+assert.doesNotMatch(teamData, /Fortune 500|Creative Review Top|D&AD|Ogilvy|Pentagram|BBC|Channel 4|Sunday Times|Droga5|Wieden\+Kennedy|Staff Pick|\b\d+\+\b|\b\d+%\b/i, 'Team profiles contain an unverified authority claim');
+assert.doesNotMatch(teamData, /https:\/\/(?:www\.)?(?:linkedin|twitter)\.com\/(?:in\/)?(?:eddy|sarah|zack|meryem|ash|rebecca|jullia)\b/i, 'Team profiles contain placeholder social links');
+const teamSection = read('app/_component/home/team.tsx');
+assert.doesNotMatch(teamSection, />\s*(?:12|30\+|50\+)\s*</, 'Team section contains an unsupported numeric proof claim');
 
 console.log(`SEO/GEO growth contract passed: ${workflowFiles.length} workflows and website safety gates verified.`);

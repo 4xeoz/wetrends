@@ -16,6 +16,12 @@ Traffic is a diagnostic metric. The optimisation target is qualified leads and w
 
 WeTrends is transitioning from Guildford to London. Until a real London address and Google Business Profile are verified, public copy may say that WeTrends serves London, Surrey and UK clients, but must not claim a physical London office. The site must not publish London coordinates or a London postal address that has not been verified.
 
+The same rule applies to social-preview images and personal connect cards. Their current wording says that WeTrends serves London, Surrey and the UK; it does not imply a verified London office.
+
+## Public proof rule
+
+Team biographies, structured data and sales copy may contain only roles, experience and outcomes that the owner can substantiate. Placeholder awards, employers, revenue figures, social profiles and numeric proof are removed rather than indexed. Genuine credentials can be restored later with their source or owner confirmation.
+
 ## System flow
 
 ```text
@@ -163,7 +169,9 @@ Paid-link networks, automated guest-post blasts, reciprocal-link farms and irrel
 ## Known external prerequisites
 
 - GA4 property ID and web-stream measurement ID.
+- Owner acceptance of the Google Analytics service and data-processing terms.
 - Production Cloudinary server credentials.
 - Verified OpenAI API organisation access for GPT Image models.
 - n8n credentials for OpenAI, Google, Telegram, Tavily and the WeTrends API.
 - Genuine portfolio images and usage permission for proof-led case studies.
+- Confirmation of the controller's full legal/contact identity and a precise retention schedule before treating the privacy notice as legally final.

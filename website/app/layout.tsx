@@ -5,6 +5,7 @@ import { SessionProvider } from "next-auth/react";
 import { PostHogProvider } from "@/components/providers/posthog-provider";
 import { NavigationProgress } from "@/app/_component/shared/navigation-progress";
 import { organisationSchema, siteProfile } from "@/lib/site-profile";
+import { DEFAULT_SOCIAL_IMAGE, DEFAULT_SOCIAL_IMAGE_PATH } from "@/lib/social-metadata";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
@@ -52,20 +53,13 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_GB",
     siteName: "WeTrends",
-    images: [
-      {
-        url: "/images/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "WeTrends creative technology and production agency",
-      },
-    ],
+    images: [DEFAULT_SOCIAL_IMAGE],
   },
   twitter: {
     card: "summary_large_image",
     title: "WeTrends | Creative Technology & Production Agency London",
     description: siteProfile.description,
-    images: ["/images/og-image.png"],
+    images: [DEFAULT_SOCIAL_IMAGE_PATH],
   },
   ...(process.env.GOOGLE_SITE_VERIFICATION && {
     verification: {

@@ -24,6 +24,12 @@ export const metadata: Metadata = {
       },
     ],
   },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Corporate Event Photography & Video | WeTrends',
+    description: 'Fast, polished event content for press, teams and next-day social.',
+    images: ['/images/events-corporate-stage.png'],
+  },
 };
 
 export default function CorporateRoute() {

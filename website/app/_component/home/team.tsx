@@ -81,28 +81,21 @@ export function Team() {
             transition={{ duration: 0.6, delay: 0.8 }}
             className="text-lg md:text-xl text-white/80 max-w-md mb-10"
           >
-            Eight creative minds united by one mission: building brands that refuse to blend in.
+            A multidisciplinary team bringing strategy, design, production and content together around one clear brief.
           </motion.p>
 
-          {/* Stats */}
+          {/* Disciplines */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.9 }}
-            className="flex gap-10"
+            className="flex flex-wrap gap-3"
           >
-            <div>
-              <p className="text-5xl md:text-6xl font-black text-white">12</p>
-              <p className="text-sm text-white/60 uppercase tracking-wider">Creatives</p>
-            </div>
-            <div>
-              <p className="text-5xl md:text-6xl font-black text-white">50+</p>
-              <p className="text-sm text-white/60 uppercase tracking-wider">Projects</p>
-            </div>
-            <div>
-              <p className="text-5xl md:text-6xl font-black text-white">30+</p>
-              <p className="text-sm text-white/60 uppercase tracking-wider">Clients</p>
-            </div>
+            {['Strategy', 'Design', 'Production', 'Content'].map((discipline) => (
+              <span key={discipline} className="rounded-full border border-white/25 px-4 py-2 text-sm font-bold uppercase tracking-wider text-white/85">
+                {discipline}
+              </span>
+            ))}
           </motion.div>
         </div>
       </div>
