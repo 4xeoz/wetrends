@@ -180,15 +180,19 @@ assert.ok(
   'Growth reporting must validate the published-content audit response',
 );
 const publishedAuditNode = growthWorkflow.nodes.find((node) => node.name === 'Audit Published Content');
+const ga4Node = growthWorkflow.nodes.find((node) => node.name === 'GA4 Landing Pages');
 assert.equal(publishedAuditNode.parameters.url, 'https://wetrends.co.uk/api/blog/audit/?limit=20');
 assert.equal(publishedAuditNode.parameters.authentication, 'genericCredentialType');
 assert.equal(publishedAuditNode.credentials.httpHeaderAuth.name, 'WeTrends Blog API');
 assert.equal(growthWorkflow.connections['Check Photoshoots Page'].main[0][0].node, 'Audit Published Content');
 assert.equal(growthWorkflow.connections['Audit Published Content'].main[0][0].node, 'Search Console 28-Day Report');
+assert.equal(ga4Node.parameters.url, 'https://analyticsdata.googleapis.com/v1beta/properties/553107339:runReport');
+assert.notEqual(ga4Node.disabled, true);
+assert.equal(growthWorkflow.connections['Search Console 28-Day Report'].main[0][0].node, 'GA4 Landing Pages');
 const growthBriefNode = growthWorkflow.nodes.find((node) => node.name === 'Build Weekly Growth Brief');
 const gscPassthrough = { rows: [{ keys: ['event photographer london', '/events/'], clicks: 3, impressions: 80, ctr: 0.0375, position: 8.2 }] };
 const growthBrief = new Function('$', growthBriefNode.parameters.jsCode)((name) => ({
-  first: () => ({ json: name === 'Search Console 28-Day Report' || name === 'GA4 Landing Pages — Configure Property ID' ? gscPassthrough : { statusCode: 200 } }),
+  first: () => ({ json: name === 'Search Console 28-Day Report' || name === 'GA4 Landing Pages' ? gscPassthrough : { statusCode: 200 } }),
 }));
 assert.match(growthBrief[0].json.monitorPrompt, /GA4:\nNot configured or no valid GA4 runReport response/);
 assert.equal(growthBrief[0].json.contentMode, 'AUDIT_UNAVAILABLE');

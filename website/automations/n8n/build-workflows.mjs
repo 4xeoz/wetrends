@@ -4,6 +4,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const outputDirectory = path.dirname(fileURLToPath(import.meta.url));
+const ga4PropertyId = '553107339';
 
 const credentials = {
   openai: {
@@ -731,7 +732,7 @@ function buildGrowthMonitorPrompt() {
     try { return $(name).first().json; } catch { return {}; }
   };
   const gsc = get('Search Console 28-Day Report');
-  const ga4 = get('GA4 Landing Pages — Configure Property ID');
+  const ga4 = get('GA4 Landing Pages');
   const publishedAuditResponse = get('Audit Published Content');
   const hasGa4ReportShape = Array.isArray(ga4.dimensionHeaders) && Array.isArray(ga4.metricHeaders) && Array.isArray(ga4.rows);
   const hasPublishedAuditShape = publishedAuditResponse.success === true && Number.isFinite(Number(publishedAuditResponse.audit?.totalPublished));
@@ -769,7 +770,7 @@ function buildGrowthMonitor() {
     httpNode(key, 'Check Photoshoots Page', [200, 440], { url: 'https://wetrends.co.uk/photoshoots/', options: {} }, { onError: 'continueRegularOutput' }),
     httpNode(key, 'Audit Published Content', [420, 440], { url: 'https://wetrends.co.uk/api/blog/audit/?limit=20', authentication: 'genericCredentialType', genericAuthType: 'httpHeaderAuth', options: {} }, { credentials: credentials.blog, onError: 'continueRegularOutput' }),
     httpNode(key, 'Search Console 28-Day Report', [640, 440], { method: 'POST', url: 'https://www.googleapis.com/webmasters/v3/sites/https%3A%2F%2Fwetrends.co.uk%2F/searchAnalytics/query', authentication: 'predefinedCredentialType', nodeCredentialType: 'googleOAuth2Api', sendBody: true, specifyBody: 'json', jsonBody: '={{ JSON.stringify({ startDate: $now.minus({days: 31}).toFormat("yyyy-MM-dd"), endDate: $now.minus({days: 3}).toFormat("yyyy-MM-dd"), dimensions: ["query", "page"], rowLimit: 500, dataState: "final" }) }}', options: {} }, { credentials: credentials.google, onError: 'continueRegularOutput' }),
-    httpNode(key, 'GA4 Landing Pages — Configure Property ID', [860, 440], { method: 'POST', url: 'https://analyticsdata.googleapis.com/v1beta/properties/REPLACE_WITH_GA4_PROPERTY_ID:runReport', authentication: 'predefinedCredentialType', nodeCredentialType: 'googleOAuth2Api', sendBody: true, specifyBody: 'json', jsonBody: '={{ JSON.stringify({ dateRanges: [{ startDate: "28daysAgo", endDate: "yesterday" }], dimensions: [{ name: "landingPagePlusQueryString" }, { name: "sessionDefaultChannelGroup" }], metrics: [{ name: "sessions" }, { name: "engagedSessions" }, { name: "keyEvents" }], limit: 500 }) }}', options: {} }, { credentials: credentials.google, disabled: true, onError: 'continueRegularOutput' }),
+    httpNode(key, 'GA4 Landing Pages', [860, 440], { method: 'POST', url: `https://analyticsdata.googleapis.com/v1beta/properties/${ga4PropertyId}:runReport`, authentication: 'predefinedCredentialType', nodeCredentialType: 'googleOAuth2Api', sendBody: true, specifyBody: 'json', jsonBody: '={{ JSON.stringify({ dateRanges: [{ startDate: "28daysAgo", endDate: "yesterday" }], dimensions: [{ name: "landingPagePlusQueryString" }, { name: "sessionDefaultChannelGroup" }], metrics: [{ name: "sessions" }, { name: "engagedSessions" }, { name: "keyEvents" }], limit: 500 }) }}', options: {} }, { credentials: credentials.google, onError: 'continueRegularOutput' }),
     codeNode(key, 'Build Weekly Growth Brief', [1_080, 440], buildGrowthMonitorPrompt),
     llmChainNode(key, 'Analyse Weekly Growth', [1_300, 440], '={{ $json.monitorPrompt }}'),
     modelNode(key, 'OpenAI Luna - Growth Analyst', [1_300, 680]),
@@ -777,7 +778,7 @@ function buildGrowthMonitor() {
   ];
   const connections = {};
   for (const trigger of ['Monday 08:00 London', 'Manual Test']) connect(connections, trigger, 'Check Sitemap');
-  const sequence = ['Check Sitemap', 'Check Robots', 'Check LLM Index', 'Check Events Page', 'Check Photoshoots Page', 'Audit Published Content', 'Search Console 28-Day Report', 'GA4 Landing Pages — Configure Property ID', 'Build Weekly Growth Brief', 'Analyse Weekly Growth', 'Send Weekly Growth Report'];
+  const sequence = ['Check Sitemap', 'Check Robots', 'Check LLM Index', 'Check Events Page', 'Check Photoshoots Page', 'Audit Published Content', 'Search Console 28-Day Report', 'GA4 Landing Pages', 'Build Weekly Growth Brief', 'Analyse Weekly Growth', 'Send Weekly Growth Report'];
   for (let index = 0; index < sequence.length - 1; index += 1) connect(connections, sequence[index], sequence[index + 1]);
   connect(connections, 'OpenAI Luna - Growth Analyst', 'Analyse Weekly Growth', 'ai_languageModel');
   return workflow('WeTrends Growth Monitor v1 — GSC + GA4 + Technical', nodes, connections);
