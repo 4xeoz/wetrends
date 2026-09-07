@@ -16,7 +16,7 @@ export const teamMembers: TeamMember[] = [
   {
     id: 'eddy',
     name: 'Eddy',
-    role: 'Founder & Creative Director',
+    role: 'Filmmaker & Creative Director',
     image: '/images/eddy.png',
     bio: 'Visionary leader with a passion for storytelling and brand building. 10+ years in creative industry.',
     fullBio: `Eddy is the visionary founder and creative director of WeTrends. With over a decade of experience in the creative industry, Eddy has helped hundreds of brands find their unique voice and connect with their audiences through compelling storytelling.
