@@ -71,7 +71,7 @@ export function BlogPreview({ posts }: BlogPreviewProps) {
               delay={0.2}
             >
               <p className="mt-2 max-w-lg text-sm text-gray-600 sm:mt-3 sm:text-base md:mt-4 md:text-lg">
-                Expert tips, industry trends, and creative inspiration from our team.
+                Practical guidance, industry context, and creative inspiration from our team.
               </p>
             </AnimatedContent>
           </div>

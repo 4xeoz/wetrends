@@ -7,8 +7,8 @@ import type { CaseStudy } from '@/lib/case-studies-data';
 import Reveal from './reveal';
 
 /**
- * Case studies as a two-up card grid. Each card carries its own accentColor on
- * the metric chip, which is the only place non-brand colour appears on the page.
+ * Case studies as a two-up card grid. A measured outcome is shown only when the
+ * study carries evidence; otherwise the card identifies the service and year.
  * With five studies the last card is deliberately left to sit alone rather than
  * stretched full-width — a ragged last row reads as an index, not a mistake.
  */
@@ -63,17 +63,23 @@ export default function CaseCards({ studies }: { studies: CaseStudy[] }) {
                     <p className="mt-2 max-w-sm text-sm leading-relaxed text-gray-500">
                       {study.tagline}
                     </p>
-                    <div className="mt-4 flex items-baseline gap-2">
-                      <span
-                        className="text-xl font-bold"
-                        style={{ color: study.accentColor }}
-                      >
-                        {study.metric}
-                      </span>
-                      <span className="font-mono text-[11px] uppercase tracking-[0.15em] text-gray-400">
-                        {study.metricLabel}
-                      </span>
-                    </div>
+                    {study.metric && study.metricLabel && study.metricEvidence ? (
+                      <div className="mt-4 flex items-baseline gap-2">
+                        <span
+                          className="text-xl font-bold"
+                          style={{ color: study.accentColor }}
+                        >
+                          {study.metric}
+                        </span>
+                        <span className="font-mono text-[11px] uppercase tracking-[0.15em] text-gray-400">
+                          {study.metricLabel}
+                        </span>
+                      </div>
+                    ) : (
+                      <p className="mt-4 font-mono text-[11px] uppercase tracking-[0.15em] text-gray-400">
+                        {study.service} · {study.year}
+                      </p>
+                    )}
                   </div>
 
                   <ArrowUpRight className="mt-1 h-5 w-5 shrink-0 text-gray-300 transition-all duration-300 group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-[#0F0F0F]" />

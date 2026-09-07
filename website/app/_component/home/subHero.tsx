@@ -153,7 +153,7 @@ const SubHero = () => {
 
               <AnimatedContent direction="vertical" distance={40} duration={1} delay={0.4}>
                 <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-white/60 sm:text-lg md:mt-8 md:text-xl">
-                  In a sea of templates and copy-paste strategies, we craft bespoke digital experiences that command attention, spark emotion, and drive unstoppable growth.
+                  In a sea of templates and copy-paste strategies, we craft bespoke digital experiences around a clear brief, a real audience and measurable goals.
                 </p>
               </AnimatedContent>
 

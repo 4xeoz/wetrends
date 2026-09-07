@@ -75,11 +75,11 @@ export default function CinematographyHero() {
             >
               <div className="flex items-baseline gap-1.5 rounded-2xl border border-gray-200 bg-white px-5 py-3 shadow-sm">
                 <span className="text-2xl font-bold text-[#0F0F0F]">£35</span>
-                <span className="text-sm text-gray-500">· 20 pictures · 3 spots</span>
+                <span className="text-sm text-gray-500">· 8 edits from 20 proofs · 3 spots</span>
               </div>
               <div className="flex items-baseline gap-1.5 rounded-2xl border border-[#C72C5B]/30 bg-[#C72C5B]/5 px-5 py-3">
                 <span className="text-2xl font-bold text-[#C72C5B]">£45</span>
-                <span className="text-sm text-gray-600">· 50 pictures + video</span>
+                <span className="text-sm text-gray-600">· 15 edits from 50 proofs + video</span>
               </div>
             </motion.div>
 
@@ -115,8 +115,8 @@ export default function CinematographyHero() {
               className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2"
             >
               {[
-                { icon: Clock, text: '48h guaranteed delivery' },
-                { icon: ShieldCheck, text: 'Satisfaction guarantee' },
+                { icon: Clock, text: '48-hour delivery included' },
+                { icon: ShieldCheck, text: 'Edit adjustments included' },
               ].map(({ icon: Icon, text }) => (
                 <div key={text} className="flex items-center gap-1.5 text-xs text-gray-500">
                   <Icon className="h-3.5 w-3.5 text-[#C72C5B]" />
@@ -137,12 +137,15 @@ export default function CinematographyHero() {
             <div className="relative mx-auto aspect-[4/5] max-w-sm overflow-hidden rounded-3xl shadow-2xl shadow-gray-200 lg:max-w-none">
               <Image
                 src="https://images.unsplash.com/photo-1627556704302-624286467c65?w=900&q=85"
-                alt="Graduation portrait at University of Surrey, Guildford"
+                alt="Licensed graduation portrait reference image"
                 fill
                 priority
                 sizes="(max-width: 1024px) 90vw, 45vw"
                 className="object-cover object-top"
               />
+              <span className="absolute bottom-3 right-3 rounded-full bg-black/65 px-3 py-1.5 text-[10px] font-medium text-white backdrop-blur-sm">
+                Licensed reference · not client work
+              </span>
             </div>
 
             {/* Floating: delivery badge */}
@@ -157,7 +160,7 @@ export default function CinematographyHero() {
               </div>
               <div>
                 <p className="text-xs font-black text-[#0F0F0F]">48h Delivery</p>
-                <p className="text-[10px] text-gray-500">Guaranteed</p>
+                <p className="text-[10px] text-gray-500">Included</p>
               </div>
             </motion.div>
 

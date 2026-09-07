@@ -59,8 +59,8 @@ export function CaseStudies() {
           </h2>
 
           <p className="max-w-md text-lg text-gray-500 lg:text-right">
-            Brands we&apos;ve built, films we&apos;ve shot, and the numbers that
-            came out of them.
+            Selected brand, film and digital work, with project scope shown
+            clearly and measured outcomes included only when evidence exists.
           </p>
         </motion.div>
       </div>

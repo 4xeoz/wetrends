@@ -22,10 +22,12 @@ The same rule applies to social-preview images and personal connect cards. Their
 
 Team biographies, structured data and sales copy may contain only roles, experience and outcomes that the owner can substantiate. Placeholder awards, employers, revenue figures, social profiles and numeric proof are removed rather than indexed. Genuine credentials can be restored later with their source or owner confirmation.
 
+Case-study outcomes fail closed: a measured result needs a traceable source and measurement window, and a relative change also needs its baseline. A testimonial needs a named client-approval record before it can render. When that evidence is unavailable, the page shows the verified project scope and deliverables instead of a decorative number or quote.
+
 ## System flow
 
 ```text
-GSC + GA4 + site inventory
+GSC + GA4 + site and published-content inventory
         |
 opportunity scoring and campaign routing
         |
@@ -56,7 +58,15 @@ All imported workflows use the `Europe/London` timezone and must remain inactive
 | Content Engine | Monday, Wednesday and Friday 09:00 | Consumes one London topic, checks duplication, researches sources, creates the draft and medium GPT Image 2 cover, applies the website quality gate and sends the private review message. |
 | Telegram Review | Event driven | Accepts commands only from the configured private chat. It can approve, reject or regenerate a cover; only the explicit approve path may request publication. |
 | Authority Scout | Tuesday 10:00 | Finds and scores relevant authority opportunities, drafts a suggested approach and sends a review queue. It never sends outreach. |
-| Growth Monitor | Monday 08:00 | Checks public technical surfaces and compares Search Console and GA4 evidence before sending the weekly decision report. |
+| Growth Monitor | Monday 08:00 | Checks public technical surfaces, the authenticated legacy-content audit, Search Console and GA4 before sending the weekly decision report. It reports `RECOVERY` while published posts still need evidence review. |
+
+### Legacy published-content recovery
+
+The authenticated `GET /api/blog/audit/` endpoint is read-only. It inventories every published post, reports missing sources, provenance, campaign routing, CTA, metadata and quality scores, and flags outcome language for evidence review. It returns titles, slugs and risk codes for the highest-priority items but never returns article bodies to Telegram.
+
+Run the same audit locally with `npm run audit:published-content`. The monitor may recommend consolidation, correction or removal, but it cannot edit, unpublish or delete legacy posts. Those actions require a separately approved remediation decision because they can affect existing rankings and URLs.
+
+Legacy posts remain reachable and stay in the existing sitemap during this review, so this implementation does not silently remove URLs or destroy accumulated signals. They are excluded from promotional surfaces—homepage recommendations, `llms.txt` article listings and related-post modules—unless they carry `automationStatus = published`, a quality score of at least 80, campaign and content-type routing, a primary service CTA, a sourced image with alt text and provenance, and at least one source URL.
 
 ### Topic queue contract
 

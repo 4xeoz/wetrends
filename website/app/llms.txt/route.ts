@@ -1,4 +1,4 @@
-import { getPublishedPosts } from '@/actions/blog';
+import { getDiscoveryReadyPosts } from '@/actions/blog';
 import { servicesData } from '@/lib/services-data';
 import { faqs } from '@/lib/faq-data';
 import { caseStudies } from '@/lib/case-studies-data';
@@ -18,14 +18,14 @@ export async function GET() {
 
   let posts = '';
   try {
-    const result = await getPublishedPosts();
+    const result = await getDiscoveryReadyPosts();
     if (result.success && result.posts) {
       posts = result.posts
         .map((post) => `- [${post.title}](${baseUrl}/blogs/${post.slug}/): ${post.excerpt}`)
         .join('\n');
     }
   } catch {
-    // Blog listing is best-effort; serve the rest of the file regardless.
+    // Blog listing is optional; serve the rest of the file regardless.
   }
 
   const faqSection = faqs
@@ -33,10 +33,12 @@ export async function GET() {
     .join('\n\n');
 
   const portfolio = caseStudies
-    .map(
-      (study) =>
-        `- [${study.client}](${baseUrl}/case-studies/${study.slug}/): ${study.tagline} — ${study.metric} ${study.metricLabel.toLowerCase()}.`
-    )
+    .map((study) => {
+      const verifiedMetric = study.metric && study.metricLabel && study.metricEvidence
+        ? ` — ${study.metric} ${study.metricLabel.toLowerCase()}.`
+        : ` — ${study.service}; ${study.location}.`;
+      return `- [${study.client}](${baseUrl}/case-studies/${study.slug}/): ${study.tagline}${verifiedMetric}`;
+    })
     .join('\n');
 
   const content = `# WeTrends
@@ -53,7 +55,7 @@ ${services}
 
 - [Home](${baseUrl}/): Agency overview, portfolio, and contact form
 - [Services](${baseUrl}/services/): All services with details and pricing guidance
-- [Portfolio](${baseUrl}/case-studies/): Real client projects and proven results
+- [Portfolio](${baseUrl}/case-studies/): Selected project scopes and deliverables
 - [Blog](${baseUrl}/blogs/): Articles on branding, marketing, and growing a small business
 - [Questions](${baseUrl}/questions/): Direct answers to common questions about web design, branding, and digital marketing
 - [Cinematography](${baseUrl}/cinematography/): Cinematography and film production booking

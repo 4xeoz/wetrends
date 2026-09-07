@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   title:
     'Graduation Photography & Cinematography Surrey | University of Surrey Guildford | WeTrends',
   description:
-    'Professional graduation photography and cinematography for University of Surrey and Guildford students. 20 pictures across 3 spots from £35 or 50 pictures + cinematic video from £45. 48-hour delivery guaranteed. Book your graduation shoot today.',
+    'Graduation photography and film for University of Surrey and Guildford students. Packages include 8 edited photos from 20 proofs for £35, or 15 edits from 50 proofs plus a short film for £45.',
   keywords: [
     'graduation photography Surrey',
     'graduation photographer Guildford',
@@ -77,7 +77,7 @@ const jsonLd = {
     itemListElement: [
       {
         '@type': 'Offer',
-        name: 'Essentials Package – 20 Pictures',
+        name: 'Essentials Package – 8 Edited Photos',
         price: '35',
         priceCurrency: 'GBP',
         description:
@@ -85,11 +85,11 @@ const jsonLd = {
       },
       {
         '@type': 'Offer',
-        name: 'Premium Package – 15 Pictures',
+        name: 'Premium Package – 15 Edited Photos + Film',
         price: '45',
         priceCurrency: 'GBP',
         description:
-          '15 professionally edited graduation photos of your choice, delivered within 48 hours.'
+          '50 proofs across 3 spots, 15 professionally edited graduation photos and a short cinematic video, delivered within 48 hours.'
       },
     ],
   },

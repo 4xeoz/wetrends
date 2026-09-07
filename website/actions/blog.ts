@@ -3,6 +3,25 @@
 import { prisma } from '@/prisma/prisma';
 import { auth } from '@/lib/auth';
 import { revalidatePath } from 'next/cache';
+import type { Prisma } from '@prisma/client';
+
+/**
+ * Stricter than `published: true`: only evidence-ready posts may be promoted
+ * by the homepage, llms.txt or related-content modules. Legacy posts remain
+ * reachable until the owner approves a separate consolidation decision.
+ */
+const discoveryReadyWhere: Prisma.BlogPostWhereInput = {
+  published: true,
+  automationStatus: 'published',
+  qualityScore: { gte: 80 },
+  campaign: { not: null },
+  contentType: { not: null },
+  primaryServiceUrl: { not: null },
+  featuredImage: { not: null },
+  featuredImageAlt: { not: null },
+  featuredImageKind: { not: null },
+  sourceUrls: { isEmpty: false },
+};
 
 // Get all published blog posts
 export async function getPublishedPosts(limit?: number) {
@@ -26,6 +45,31 @@ export async function getPublishedPosts(limit?: number) {
   } catch (error) {
     console.error('Error fetching posts:', error);
     return { success: false, message: 'Failed to fetch posts' };
+  }
+}
+
+// Get posts that passed the current evidence and provenance contract.
+export async function getDiscoveryReadyPosts(limit?: number) {
+  try {
+    const posts = await prisma.blogPost.findMany({
+      where: discoveryReadyWhere,
+      include: {
+        category: true,
+        author: {
+          select: {
+            name: true,
+            image: true,
+          },
+        },
+      },
+      orderBy: { publishedAt: 'desc' },
+      take: limit,
+    });
+
+    return { success: true, posts };
+  } catch (error) {
+    console.error('Error fetching discovery-ready posts:', error);
+    return { success: false, message: 'Failed to fetch discovery-ready posts' };
   }
 }
 
@@ -90,7 +134,7 @@ export async function getPostBySlug(slug: string) {
 export async function getRelatedPosts(postId: string, categoryId: string | null, keywords: string[], limit = 3) {
   try {
     const candidates = await prisma.blogPost.findMany({
-      where: { published: true, id: { not: postId } },
+      where: { ...discoveryReadyWhere, id: { not: postId } },
       select: {
         id: true,
         title: true,

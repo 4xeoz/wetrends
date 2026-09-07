@@ -42,9 +42,7 @@ export default function CaseStudyDetail({
    * shipped" rather than "Where it landed", so the heading never promises data
    * the page cannot show.
    */
-  const hasMetrics = study.results.some(
-    (r) => r.baseline || r.window || r.source,
-  );
+  const hasMetrics = study.results.length > 0;
 
   return (
     <main className="bg-white">
@@ -118,14 +116,16 @@ export default function CaseStudyDetail({
                 transition={{ duration: 0.6, delay: 0.7 }}
                 className="flex flex-wrap gap-10"
               >
-                <div>
-                  <p className="text-4xl font-black text-white md:text-5xl lg:text-6xl">
-                    {study.metric}
-                  </p>
-                  <p className="mt-1 text-sm uppercase tracking-wider text-white/60">
-                    {study.metricLabel}
-                  </p>
-                </div>
+                {study.metric && study.metricLabel && study.metricEvidence && (
+                  <div>
+                    <p className="text-4xl font-black text-white md:text-5xl lg:text-6xl">
+                      {study.metric}
+                    </p>
+                    <p className="mt-1 text-sm uppercase tracking-wider text-white/60">
+                      {study.metricLabel}
+                    </p>
+                  </div>
+                )}
                 <div>
                   <p className="text-4xl font-black text-white md:text-5xl lg:text-6xl">
                     {study.year}
@@ -350,7 +350,7 @@ export default function CaseStudyDetail({
                 <>
                   How it
                   <span className="font-serif font-thin italic" style={{ color: accent }}>
-                    {' '}turned out.
+                    {hasMetrics ? ' performed.' : ' came together.'}
                   </span>
                 </>
               }
@@ -358,46 +358,55 @@ export default function CaseStudyDetail({
               tone="dark"
             >
               <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                {study.results.map((result, i) => (
-                  <Reveal
-                    key={result.label}
-                    delay={i * 0.08}
-                    className="flex h-full flex-col rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm md:p-8"
-                  >
-                    <CountUp
-                      value={result.value}
-                      className="block text-3xl font-bold leading-none tracking-tight text-white md:text-4xl"
-                    />
-                    <div className="mt-3 text-sm font-medium text-white/50">
-                      {result.label}
-                    </div>
+                {hasMetrics
+                  ? study.results.map((result, i) => (
+                      <Reveal
+                        key={result.label}
+                        delay={i * 0.08}
+                        className="flex h-full flex-col rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm md:p-8"
+                      >
+                        <CountUp
+                          value={result.value}
+                          className="block text-3xl font-bold leading-none tracking-tight text-white md:text-4xl"
+                        />
+                        <div className="mt-3 text-sm font-medium text-white/50">
+                          {result.label}
+                        </div>
 
-                    {/* Baseline / window / source — what makes a figure
-                        checkable rather than merely impressive. */}
-                    {(result.baseline || result.window || result.source) && (
-                      <dl className="mt-5 space-y-1.5 border-t border-white/10 pt-4 text-xs leading-relaxed">
-                        {result.baseline && (
-                          <div className="flex gap-2">
-                            <dt className="shrink-0 text-white/35">From</dt>
-                            <dd className="text-white/70">{result.baseline}</dd>
-                          </div>
-                        )}
-                        {result.window && (
+                        {/* Baseline / window / source make a result checkable
+                            rather than merely impressive. */}
+                        <dl className="mt-5 space-y-1.5 border-t border-white/10 pt-4 text-xs leading-relaxed">
+                          {result.baseline && (
+                            <div className="flex gap-2">
+                              <dt className="shrink-0 text-white/35">From</dt>
+                              <dd className="text-white/70">{result.baseline}</dd>
+                            </div>
+                          )}
                           <div className="flex gap-2">
                             <dt className="shrink-0 text-white/35">Over</dt>
                             <dd className="text-white/70">{result.window}</dd>
                           </div>
-                        )}
-                        {result.source && (
                           <div className="flex gap-2">
                             <dt className="shrink-0 text-white/35">Source</dt>
                             <dd className="text-white/70">{result.source}</dd>
                           </div>
-                        )}
-                      </dl>
-                    )}
-                  </Reveal>
-                ))}
+                        </dl>
+                      </Reveal>
+                    ))
+                  : study.deliverables.map((deliverable, i) => (
+                      <Reveal
+                        key={deliverable}
+                        delay={i * 0.08}
+                        className="flex h-full flex-col rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm md:p-8"
+                      >
+                        <span className="font-mono text-xs text-white/35">
+                          {String(i + 1).padStart(2, '0')}
+                        </span>
+                        <span className="mt-5 text-xl font-semibold leading-tight text-white">
+                          {deliverable}
+                        </span>
+                      </Reveal>
+                    ))}
               </div>
 
               {study.attribution && (
@@ -483,14 +492,14 @@ export default function CaseStudyDetail({
           <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
             <Reveal>
               <h2 className="text-3xl font-bold leading-[0.95] text-white sm:text-4xl md:text-5xl">
-                Want results
+                Planning a project
                 <span className="ml-2 font-serif font-normal italic">
-                  like these?
+                  like this?
                 </span>
               </h2>
               <p className="mx-auto mt-5 max-w-xl text-base text-white/80 md:text-lg">
-                Let&apos;s talk about your project. Free consultation for
-                Guildford &amp; Surrey businesses.
+                Let&apos;s discuss the brief, useful evidence and the right scope
+                for your London, Surrey or UK project.
               </p>
               <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
                 <motion.a

@@ -7,7 +7,7 @@ import { Team } from '../_component/home/team';
 import { Services } from '../_component/home/services';
 import { BlogPreview } from '../_component/home/blog-preview';
 import Contact from '../_component/home/contact';
-import { getPublishedPosts } from '@/actions/blog';
+import { getDiscoveryReadyPosts } from '@/actions/blog';
 import { DEFAULT_SOCIAL_IMAGE, DEFAULT_SOCIAL_IMAGE_PATH } from '@/lib/social-metadata';
 
 export const metadata: Metadata = {
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  const result = await getPublishedPosts(3);
+  const result = await getDiscoveryReadyPosts(3);
   const posts = result.success && result.posts ? result.posts : [];
 
   return (

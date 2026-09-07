@@ -170,32 +170,57 @@ const growthTelegramText = growthWorkflow.nodes.find((node) => node.name === 'Se
 assert.ok(authorityTelegramText.includes('.replaceAll("&", "&amp;")'));
 assert.ok(growthTelegramText.includes('.replaceAll("&", "&amp;")'));
 assert.ok(authorityTelegramText.indexOf('.replaceAll("&", "&amp;")') < authorityTelegramText.indexOf('.slice(0, 3200)'), 'Authority output must be escaped before the Telegram length cap');
-assert.ok(growthTelegramText.indexOf('.replaceAll("&", "&amp;")') < growthTelegramText.indexOf('.slice(0, 3200)'), 'Growth output must be escaped before the Telegram length cap');
+assert.ok(growthTelegramText.indexOf('.replaceAll("&", "&amp;")') < growthTelegramText.indexOf('.slice(0, 3150)'), 'Growth output must be escaped before the Telegram length cap');
 assert.ok(
   growthWorkflow.nodes.find((node) => node.name === 'Build Weekly Growth Brief').parameters.jsCode.includes('hasGa4ReportShape'),
   'Growth reporting must not mistake disabled-node passthrough data for GA4 evidence',
 );
+assert.ok(
+  growthWorkflow.nodes.find((node) => node.name === 'Build Weekly Growth Brief').parameters.jsCode.includes('hasPublishedAuditShape'),
+  'Growth reporting must validate the published-content audit response',
+);
+const publishedAuditNode = growthWorkflow.nodes.find((node) => node.name === 'Audit Published Content');
+assert.equal(publishedAuditNode.parameters.url, 'https://wetrends.co.uk/api/blog/audit/?limit=20');
+assert.equal(publishedAuditNode.parameters.authentication, 'genericCredentialType');
+assert.equal(publishedAuditNode.credentials.httpHeaderAuth.name, 'WeTrends Blog API');
+assert.equal(growthWorkflow.connections['Check Photoshoots Page'].main[0][0].node, 'Audit Published Content');
+assert.equal(growthWorkflow.connections['Audit Published Content'].main[0][0].node, 'Search Console 28-Day Report');
 const growthBriefNode = growthWorkflow.nodes.find((node) => node.name === 'Build Weekly Growth Brief');
 const gscPassthrough = { rows: [{ keys: ['event photographer london', '/events/'], clicks: 3, impressions: 80, ctr: 0.0375, position: 8.2 }] };
 const growthBrief = new Function('$', growthBriefNode.parameters.jsCode)((name) => ({
   first: () => ({ json: name === 'Search Console 28-Day Report' || name === 'GA4 Landing Pages — Configure Property ID' ? gscPassthrough : { statusCode: 200 } }),
 }));
 assert.match(growthBrief[0].json.monitorPrompt, /GA4:\nNot configured or no valid GA4 runReport response/);
+assert.equal(growthBrief[0].json.contentMode, 'AUDIT_UNAVAILABLE');
 
 const createRoute = read('app/api/blog/route.ts');
 const updateRoute = read('app/api/blog/[id]/route.ts');
 const qualityRoute = read('app/api/blog/quality/route.ts');
 const mediaRoute = read('app/api/blog/media/route.ts');
+const publishedAuditRoute = read('app/api/blog/audit/route.ts');
+const blogActions = read('actions/blog.ts');
+const homePage = read('app/(main)/page.tsx');
+const llmIndexRoute = read('app/llms.txt/route.ts');
 const automationState = read('lib/blog-automation-state.ts');
 const automationStateJavaScript = ts.transpileModule(automationState, {
   compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 },
 }).outputText;
 const automationStateModule = await import(`data:text/javascript;base64,${Buffer.from(automationStateJavaScript).toString('base64')}`);
 const { getAutomationTransitionError, isCreatableAutomationState } = automationStateModule;
+const publishedAuditState = read('lib/published-content-audit.ts');
+const publishedAuditJavaScript = ts.transpileModule(publishedAuditState, {
+  compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 },
+}).outputText;
+const publishedAuditModule = await import(`data:text/javascript;base64,${Buffer.from(publishedAuditJavaScript).toString('base64')}`);
 const provider = read('components/providers/posthog-provider.tsx');
 const eventWork = read('app/(main)/events/work/page.tsx');
 const privacyPage = read('app/(main)/privacy/page.tsx');
 const sitemap = read('app/sitemap.ts');
+const caseStudySource = read('lib/case-studies-data.ts');
+const caseStudyJavaScript = ts.transpileModule(caseStudySource, {
+  compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 },
+}).outputText;
+const caseStudyModule = await import(`data:text/javascript;base64,${Buffer.from(caseStudyJavaScript).toString('base64')}`);
 
 assert.match(createRoute, /New API posts must be created as drafts/);
 assert.match(createRoute, /cannot start in an approved, rejected or published state/);
@@ -208,6 +233,14 @@ assert.match(automationState, /Only a review-ready draft can receive a regenerat
 assert.match(updateRoute, /Draft no longer passes the publication quality gate/);
 assert.match(qualityRoute, /validateApiKey/);
 assert.match(mediaRoute, /validateApiKey/);
+assert.match(publishedAuditRoute, /validateApiKey/);
+assert.match(publishedAuditRoute, /auditPublishedContent/);
+assert.match(blogActions, /const discoveryReadyWhere/);
+assert.match(blogActions, /automationStatus: 'published'/);
+assert.match(blogActions, /qualityScore: \{ gte: 80 \}/);
+assert.match(blogActions, /sourceUrls: \{ isEmpty: false \}/);
+assert.match(homePage, /getDiscoveryReadyPosts\(3\)/);
+assert.match(llmIndexRoute, /getDiscoveryReadyPosts\(\)/);
 assert.match(mediaRoute, /wetrends\/blog/);
 assert.match(provider, /const CONSENT_KEY = "wetrends_analytics_consent"/);
 assert.match(provider, /NEXT_PUBLIC_GA_MEASUREMENT_ID/);
@@ -236,12 +269,64 @@ assert.equal(getAutomationTransitionError({ published: false, automationStatus: 
 assert.equal(getAutomationTransitionError({ published: false, automationStatus: 'review_ready' }, { published: false, automationStatus: 'approved' })?.status, 400);
 assert.equal(getAutomationTransitionError({ published: false, automationStatus: 'review_ready' }, { published: true, automationStatus: 'approved' }), null);
 
+const samplePublishedAudit = publishedAuditModule.auditPublishedContent([
+  {
+    id: 'legacy-1',
+    title: 'Guaranteed 40% growth in Guildford',
+    slug: 'guaranteed-growth-guildford',
+    excerpt: 'An unsupported outcome.',
+    content: '<h2>Claim</h2><p>Guaranteed growth.</p>',
+    sourceUrls: [],
+  },
+]);
+assert.equal(samplePublishedAudit.totalPublished, 1);
+assert.equal(samplePublishedAudit.reviewRequired, 1);
+assert.equal(samplePublishedAudit.riskCounts.claim_evidence_review, 1);
+assert.equal(samplePublishedAudit.riskCounts.guildford_transition_review, 1);
+assert.equal(samplePublishedAudit.riskCounts.invalid_h1_count, 1);
+
+for (const study of caseStudyModule.caseStudies) {
+  const hasAnyHeadlineMetricField = Boolean(study.metric || study.metricLabel || study.metricEvidence);
+  if (hasAnyHeadlineMetricField) {
+    assert.ok(study.metric, `${study.slug} has headline evidence but no metric`);
+    assert.ok(study.metricLabel, `${study.slug} has a headline metric but no label`);
+    assert.ok(study.metricEvidence?.window?.trim(), `${study.slug} headline metric needs a measurement window`);
+    assert.ok(study.metricEvidence?.source?.trim(), `${study.slug} headline metric needs a traceable source`);
+    if (/[+−-]?\d+(?:\.\d+)?\s*%|\d+(?:\.\d+)?\s*[×x]/i.test(study.metric)) {
+      assert.ok(study.metricEvidence?.baseline?.trim(), `${study.slug} relative headline metric needs a baseline`);
+    }
+  }
+
+  for (const result of study.results) {
+    assert.ok(result.window?.trim(), `${study.slug}/${result.label} needs a measurement window`);
+    assert.ok(result.source?.trim(), `${study.slug}/${result.label} needs a traceable source`);
+    if (/[+−-]?\d+(?:\.\d+)?\s*%|\d+(?:\.\d+)?\s*[×x]/i.test(result.value)) {
+      assert.ok(result.baseline?.trim(), `${study.slug}/${result.label} relative result needs a baseline`);
+    }
+  }
+
+  if (study.testimonial) {
+    assert.ok(study.testimonial.approvalReference?.trim(), `${study.slug} testimonial needs a client approval reference`);
+  }
+}
+
 const highRiskPublicFiles = [
   'app/layout.tsx',
+  'app/llms.txt/route.ts',
+  'app/_component/home/blog-preview.tsx',
+  'app/_component/home/case-studies.tsx',
+  'app/_component/home/subHero.tsx',
   'app/_component/home/team.tsx',
+  'app/_component/cinematography/booking-form.tsx',
+  'app/_component/cinematography/hero.tsx',
+  'app/_component/cinematography/packages.tsx',
   'app/(main)/blogs/page.tsx',
   'app/(main)/case-studies/page.tsx',
+  'app/(main)/case-studies/[slug]/case-study-detail.tsx',
+  'app/(main)/cinematography/page.tsx',
+  'app/(main)/questions/questions-page.tsx',
   'app/(main)/services/[slug]/service-detail.tsx',
+  'lib/case-studies-data.ts',
   'lib/faq-data.ts',
   'lib/site-profile.ts',
   'lib/team-data.ts',
@@ -249,7 +334,7 @@ const highRiskPublicFiles = [
 for (const filename of highRiskPublicFiles) {
   const source = read(filename);
   assert.doesNotMatch(source, /based in Guildford|Guildford-based|Guildford studio|based in London|London-based|our London office|our London studio/i, `${filename} contains an unverified base claim`);
-  assert.doesNotMatch(source, /\b(?:best|number one|#1|award[- ]winning)\b|leading (?:creative|digital|agency)/i, `${filename} contains an unsupported superlative`);
+  assert.doesNotMatch(source, /\b(?:best|number one|#1|award[- ]winning|guarantee(?:d|s)?)\b|leading (?:creative|digital|agency)/i, `${filename} contains an unsupported superlative or guarantee`);
 }
 
 const teamData = read('lib/team-data.ts');
@@ -257,5 +342,30 @@ assert.doesNotMatch(teamData, /Fortune 500|Creative Review Top|D&AD|Ogilvy|Penta
 assert.doesNotMatch(teamData, /https:\/\/(?:www\.)?(?:linkedin|twitter)\.com\/(?:in\/)?(?:eddy|sarah|zack|meryem|ash|rebecca|jullia)\b/i, 'Team profiles contain placeholder social links');
 const teamSection = read('app/_component/home/team.tsx');
 assert.doesNotMatch(teamSection, />\s*(?:12|30\+|50\+)\s*</, 'Team section contains an unsupported numeric proof claim');
+const homeServices = read('app/_component/home/services.tsx');
+assert.doesNotMatch(homeServices, /\b(?:award[- ]winning|high[- ]converting|expert social media)\b/i, 'Homepage services contain unsupported authority or outcome language');
+const homepageProofSource = [
+  read('app/_component/home/blog-preview.tsx'),
+  read('app/_component/home/case-studies.tsx'),
+  read('app/_component/home/subHero.tsx'),
+  homeServices,
+].join('\n');
+assert.doesNotMatch(
+  homepageProofSource,
+  /unstoppable growth|numbers that came out|expert tips|high[- ]converting|expert social media/i,
+  'Homepage contains unsupported outcome or authority language',
+);
+const serviceDetail = read('app/(main)/services/[slug]/service-detail.tsx');
+const publicProofSource = `${serviceDetail}\n${caseStudySource}`;
+assert.doesNotMatch(
+  publicProofSource,
+  /TechStart UK|GreenLeaf Solutions|Surrey Wellness|Guildford Cafe Co|SaaS Co|FinanceHub UK|Sarah Mitchell|James Anderson|Emily Chen|Michael Brown|Lisa Park|David Wilson|Dr\. Marco Silva/i,
+  'Public proof contains a placeholder testimonial identity',
+);
+assert.doesNotMatch(
+  caseStudySource,
+  /\+180%|\+320%|15k\+|admin time per patient|startup investment recovered|page three|97 PageSpeed|average parent rating/i,
+  'Case studies contain a previously identified unsupported outcome claim',
+);
 
 console.log(`SEO/GEO growth contract passed: ${workflowFiles.length} workflows and website safety gates verified.`);

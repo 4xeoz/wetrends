@@ -154,10 +154,10 @@ export default function CinematographyBookingForm() {
               day long.
             </p>
 
-            {/* Guarantees */}
+            {/* Included service terms */}
             <ul className="mt-8 space-y-4">
               {[
-                { icon: Clock, text: '48-hour photo delivery — guaranteed' },
+                { icon: Clock, text: '48-hour photo delivery included' },
                 { icon: CheckCircle2, text: 'No payment required to book' },
                 { icon: CheckCircle2, text: 'Free adjustments if you are not happy' },
               ].map(({ icon: Icon, text }) => (

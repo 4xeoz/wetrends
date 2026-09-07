@@ -13,6 +13,7 @@
     "lint:fix": "next lint --fix",
     "seed:event-commerce": "node --env-file=.env --env-file=.env.local scripts/seed-event-commerce.mjs",
     "check:event-commerce": "node --env-file=.env --env-file=.env.local scripts/check-event-commerce.mjs",
+    "audit:published-content": "node --env-file=.env --env-file=.env.local scripts/audit-published-content.mjs",
     "build:n8n-growth": "node automations/n8n/build-workflows.mjs",
     "check:seo-growth": "node scripts/check-seo-growth.mjs"
   },

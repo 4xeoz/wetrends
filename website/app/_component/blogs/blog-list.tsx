@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import Link from 'next/link';
 import { Calendar, Clock, ArrowRight, User } from 'lucide-react';
@@ -35,12 +34,8 @@ interface BlogListProps {
   categories: Category[];
 }
 
-export function BlogList({ posts, categories }: BlogListProps) {
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-
-  const filteredPosts = selectedCategory
-    ? posts.filter((post) => post.category?.slug === selectedCategory)
-    : posts;
+export function BlogList({ posts, categories: _categories }: BlogListProps) {
+  const filteredPosts = posts;
 
   return (
     <section className="py-16 md:py-24 bg-[#e9e9e9]">
@@ -49,7 +44,7 @@ export function BlogList({ posts, categories }: BlogListProps) {
         {/* Posts Grid */}
         <AnimatePresence mode="wait">
           <motion.div
-            key={selectedCategory || 'all'}
+            key="all"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}

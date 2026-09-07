@@ -17,7 +17,7 @@ const packages = [
       'High-resolution digital files',
       'Delivered within 48 hours',
       'Surrey campus or Guildford outdoors',
-      'Colour-graded to perfection',
+      'Professionally colour-graded',
     ],
   },
   {
@@ -36,7 +36,7 @@ const packages = [
       'High-resolution digital files',
       'Delivered within 48 hours',
       'Surrey campus or Guildford outdoors',
-      'Colour-graded to perfection',
+      'Professionally colour-graded',
     ],
   },
 ];
@@ -95,7 +95,7 @@ export default function CinematographyPackages() {
                 {/* 48h pill */}
                 <div className="mb-6 inline-flex w-fit items-center gap-1.5 rounded-full bg-green-500/10 px-3 py-1.5 text-xs font-semibold text-green-700">
                   <Clock className="h-3 w-3" />
-                  48-hour delivery guaranteed
+                  48-hour delivery included
                 </div>
 
                 {/* Name + description */}

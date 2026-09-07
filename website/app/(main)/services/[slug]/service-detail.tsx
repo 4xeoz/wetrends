@@ -23,8 +23,8 @@ const services = {
   'video-production': {
     icon: Video,
     title: 'Video Production',
-    headline: 'Cinematic Stories That Stop The Scroll',
-    description: 'From concept to final cut, we create video content that captures attention and drives meaningful engagement across platforms for London, Surrey and UK teams.',
+    headline: 'Cinematic Stories Built for Every Channel',
+    description: 'From concept to final cut, we create video content designed for the audiences and platforms used by London, Surrey and UK teams.',
     features: ['Brand Films', 'Social Content', 'Motion Graphics', 'Commercials', 'Documentary Style', 'Product Videos', 'Event Coverage', 'Aerial/Drone'],
     process: [
       { step: '01', title: 'Discovery', description: 'We learn your brand, goals, and audience to craft the perfect concept.' },
@@ -33,23 +33,18 @@ const services = {
       { step: '04', title: 'Post-Production', description: 'Editing, color grading, sound design, and motion graphics.' },
     ],
     benefits: [
-      { title: 'Increase Engagement', description: 'Video content generates significantly more shares than text and images combined.' },
-      { title: 'Professional Quality', description: '4K/8K production quality that elevates your brand above the competition.' },
-      { title: 'Fast Turnaround', description: 'From brief to delivery in as little as two weeks.' },
+      { title: 'Channel-Ready Edits', description: 'Formats and cut-downs are planned around the channels where the work will appear.' },
+      { title: 'Brief-Matched Production', description: 'The crew, equipment and finish are selected for the creative brief and delivery requirements.' },
+      { title: 'Planned Delivery', description: 'Scope, review rounds and delivery dates are agreed before production begins.' },
       { title: 'Flexible Filming', description: 'We film on location across London, Surrey and the wider UK.' },
     ],
-    testimonial: {
-      quote: "WeTrends transformed our brand story into a cinematic experience. The video they produced for our product launch exceeded all expectations and drove record engagement.",
-      author: "Sarah Mitchell",
-      role: "Marketing Director, TechStart UK"
-    },
     localFocus: 'We film on location across London, Surrey and the wider UK, with production planned around the brief and venue.',
     video: '/videos/video-preview-wetrends.mp4',
   },
   'brand-identity': {
     icon: Palette,
     title: 'Brand Identity',
-    headline: 'Make Your Brand Impossible to Ignore',
+    headline: 'Build a Brand People Can Recognise',
     description: 'We craft distinctive visual identities that capture your essence and resonate with your target audience across London, Surrey and the wider UK.',
     features: ['Logo Design', 'Visual Identity', 'Brand Guidelines', 'Packaging', 'Brand Strategy', 'Naming', 'Typography', 'Color Systems'],
     process: [
@@ -60,23 +55,18 @@ const services = {
     ],
     benefits: [
       { title: 'Increased Recognition', description: 'Consistent branding makes you memorable and builds trust over time.' },
-      { title: 'Customer Trust', description: 'Consumers prefer to buy from brands they recognize and relate to.' },
-      { title: 'Premium Positioning', description: 'Strong brands can command higher prices than competitors.' },
+      { title: 'Clearer Signals', description: 'A coherent identity helps people understand who you are and what you offer.' },
+      { title: 'Distinct Positioning', description: 'A considered visual and verbal system helps distinguish your offer in its market.' },
       { title: 'Scalable Systems', description: 'Identity systems that grow with your business.' },
     ],
-    testimonial: {
-      quote: "The brand identity WeTrends created for us perfectly captures who we are. We've seen a significant increase in brand recognition since the rebrand launched.",
-      author: "James Anderson",
-      role: "CEO, GreenLeaf Solutions"
-    },
     localFocus: 'We help London, Surrey and UK organisations build distinctive identities that work across digital and physical touchpoints.',
     video: '/videos/design-preview-wetrends.mp4',
   },
   'web-design': {
     icon: Globe,
     title: 'Web Design',
-    headline: 'Websites That Convert Visitors to Customers',
-    description: 'High-performing digital experiences built for results. We design and develop websites that turn visitors into enquiries and customers across devices.',
+    headline: 'Websites Designed Around Real User Journeys',
+    description: 'We design and develop fast, accessible websites that make services, evidence and next steps clear across devices.',
     features: ['UI/UX Design', 'Development', 'E-commerce', 'Web Apps', 'SEO Optimization', 'CMS Integration', 'Performance', 'Analytics'],
     process: [
       { step: '01', title: 'Discovery', description: 'Understand your business goals, users, and technical requirements.' },
@@ -85,24 +75,19 @@ const services = {
       { step: '04', title: 'Launch', description: 'Rigorous testing, optimization, and deployment to your domain.' },
     ],
     benefits: [
-      { title: 'Higher Conversions', description: 'User-centered design that turns visitors into leads and customers.' },
-      { title: 'Lightning Fast', description: 'Optimized performance for better SEO and user experience.' },
-      { title: 'Mobile First', description: 'Over 60% of traffic is mobile — we design for thumb-friendly interaction.' },
+      { title: 'Clear Conversion Paths', description: 'Calls to action and information architecture are designed around the intended user journey.' },
+      { title: 'Performance-Conscious', description: 'Technical choices support fast loading, search visibility and a smoother experience.' },
+      { title: 'Mobile First', description: 'Layouts and interactions are designed for small screens before being expanded for larger ones.' },
       { title: 'Built to Scale', description: 'Next.js architecture that grows with your business.' },
     ],
-    testimonial: {
-      quote: "Our new website from WeTrends increased online enquiries dramatically. The design is stunning and the performance is incredible — we rank highly for our key terms.",
-      author: "Emily Chen",
-      role: "Founder, Surrey Wellness"
-    },
     localFocus: 'We work with London, Surrey and UK teams remotely and on location, with consultation details agreed for each project.',
     video: '/videos/website-preview-wetrends.mp4',
   },
   'social-media': {
     icon: Users,
     title: 'Social Media',
-    headline: 'Build Communities That Drive Revenue',
-    description: 'Strategic social media management that grows your following and turns engagement into revenue. We handle content, community, and campaigns across all platforms.',
+    headline: 'Build Communities With a Clear Purpose',
+    description: 'Social media planning, production and management aligned with your audience, brand and commercial goals.',
     features: ['Content Strategy', 'Creative Direction', 'Community Management', 'Analytics', 'Paid Social', 'Influencer Campaigns', 'Video Content', 'Reporting'],
     process: [
       { step: '01', title: 'Strategy', description: 'Develop a tailored strategy aligned with your business goals.' },
@@ -111,16 +96,11 @@ const services = {
       { step: '04', title: 'Optimization', description: 'Analyze performance and continuously refine for better results.' },
     ],
     benefits: [
-      { title: 'Organic Growth', description: 'We help clients grow engaged, loyal follower bases.' },
-      { title: 'Strong ROI', description: 'Our social campaigns are optimized for measurable returns.' },
-      { title: 'Always-On Management', description: 'Round-the-clock monitoring and engagement with your community.' },
-      { title: 'Data-Driven', description: 'Every decision is backed by analytics and audience insights.' },
+      { title: 'Audience Fit', description: 'Content themes and formats are selected for the people you need to reach.' },
+      { title: 'Measurable Campaigns', description: 'Campaign goals, tracking and reporting are agreed before launch.' },
+      { title: 'Managed Coverage', description: 'Publishing, monitoring and response coverage are agreed around the brief.' },
+      { title: 'Evidence-Led Iteration', description: 'Available platform data and audience signals inform each review cycle.' },
     ],
-    testimonial: {
-      quote: "WeTrends took our Instagram from dormant to thriving in just a few months. Their content strategy is unmatched — they truly understand what resonates with our audience.",
-      author: "Michael Brown",
-      role: "Owner, Guildford Cafe Co"
-    },
     localFocus: 'We create social content for London, Surrey and UK audiences while building reach around each client\'s real market.',
     video: '/videos/social-preview-wetrends.mp4',
   },
@@ -138,23 +118,18 @@ const services = {
     ],
     benefits: [
       { title: 'Explain Simply', description: 'Complex products explained clearly through animated storytelling.' },
-      { title: 'More Engagement', description: 'Animated content increases time-on-page and social shares.' },
+      { title: 'Channel Flexibility', description: 'Motion systems can be adapted for web, presentations and social formats.' },
       { title: 'Universal Appeal', description: 'Animation transcends language barriers for global audiences.' },
       { title: 'Endless Creative', description: 'Any concept is possible with the right animation approach.' },
     ],
-    testimonial: {
-      quote: "The explainer video WeTrends created helped us reduce support tickets significantly. Customers finally understand our product, and sales have increased dramatically.",
-      author: "Lisa Park",
-      role: "Product Manager, SaaS Co"
-    },
     localFocus: 'Our animation work serves London, Surrey and UK clients through a flexible remote and on-location production model.',
     video: '/videos/animations-preview-wetrends.mp4',
   },
   'content-strategy': {
     icon: PenTool,
     title: 'Content Strategy',
-    headline: 'Words That Work as Hard as You Do',
-    description: 'Strategic content that positions you as an authority in your space. We craft narratives that educate, engage and convert London, Surrey and UK audiences.',
+    headline: 'Useful Content Built Around Buyer Questions',
+    description: 'Research-led content designed to answer real questions, communicate expertise and support London, Surrey and UK buyer journeys.',
     features: ['SEO Content', 'Copywriting', 'Editorial', 'Storytelling', 'Blog Management', 'Email Campaigns', 'White Papers', 'Case Studies'],
     process: [
       { step: '01', title: 'Research', description: 'Identify high-value topics your audience is searching for.' },
@@ -163,17 +138,12 @@ const services = {
       { step: '04', title: 'Optimize', description: 'SEO refinement, internal linking, and performance tracking.' },
     ],
     benefits: [
-      { title: 'Organic Traffic', description: 'SEO-optimized content strategy that drives sustainable growth.' },
-      { title: 'Thought Leadership', description: 'Position your brand as the go-to expert in your industry.' },
-      { title: 'Evergreen Results', description: 'Quality content continues driving traffic for years.' },
+      { title: 'Search Foundation', description: 'Topics and page structures are aligned with relevant search intent.' },
+      { title: 'Demonstrable Expertise', description: 'Original examples and clearly attributed evidence help readers assess your expertise.' },
+      { title: 'Reusable Knowledge', description: 'Useful source material can support search, sales and social channels.' },
       { title: 'Consistent Voice', description: 'A unified tone across every channel and touchpoint.' },
     ],
-    testimonial: {
-      quote: "Since WeTrends took over our content strategy, our organic traffic has grown consistently. We now rank for highly competitive keywords in our industry.",
-      author: "David Wilson",
-      role: "CMO, FinanceHub UK"
-    },
-    localFocus: 'We understand the Surrey business landscape and create content that resonates locally while building national authority.',
+    localFocus: 'We create content for London and Surrey buyers while preserving the wider UK relevance of each client\'s expertise.',
     video: '/videos/design-preview-wetrends.mp4',
   },
 };
