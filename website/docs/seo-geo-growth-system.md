@@ -60,6 +60,20 @@ All imported workflows use the `Europe/London` timezone and must remain inactive
 | Authority Scout | Tuesday 10:00 | Finds and scores relevant authority opportunities, drafts a suggested approach and sends a review queue. It never sends outreach. |
 | Growth Monitor | Monday 08:00 | Checks public technical surfaces, the authenticated legacy-content audit, Search Console and GA4 before sending the weekly decision report. It reports `RECOVERY` while published posts still need evidence review. |
 
+### Canonical n8n workflow registry
+
+The generated JSON files in `automations/n8n/` remain the implementation source of truth. These are the canonical imported safety copies in the current n8n project:
+
+| Workflow | n8n workflow ID | Imported state |
+| --- | --- | --- |
+| Topic Planner | `LzR6taoMpC3k68Qw` | Inactive safety copy |
+| Content Engine | `Vuc77VC0jfE12Pob` | Inactive safety copy |
+| Telegram Review | `h63iI564uWZSD2tT` | Inactive 24-node restored safety copy |
+| Authority Scout | `fhis4BW52hTkOoLK` | Inactive safety copy |
+| Growth Monitor | `TVEVL2vFZDPxsM9i` | Inactive safety copy |
+
+Older similarly named workflows are preserved as historical copies and are not rollout targets. The legacy `WeTrends SEO + GEO Smart Draft System v2 (London)` workflow (`ieJd5NrbwH130x09`) is still published and draft-only. At cutover, deactivate that scheduler before activating the new Content Engine so two workflows cannot consume the topic queue or create parallel drafts. Do not make that cutover until the preview deployment and draft-only end-to-end gates pass.
+
 ### Legacy published-content recovery
 
 The authenticated `GET /api/blog/audit/` endpoint is read-only. It inventories every published post, reports missing sources, provenance, campaign routing, CTA, metadata and quality scores, and flags outcome language for evidence review. It returns titles, slugs and risk codes for the highest-priority items but never returns article bodies to Telegram.
