@@ -132,6 +132,54 @@ const reviewWorkflow = JSON.parse(reviewWorkflowSource);
 assert.match(reviewWorkflowSource, /chatId === '6833948326'/);
 assert.match(reviewWorkflowSource, /published: true/);
 assert.ok(reviewWorkflow.nodes.find((node) => node.name === 'Publish Approved Draft').parameters.jsonBody.includes('"approved"'));
+const parseReviewCommandNode = reviewWorkflow.nodes.find((node) => node.name === 'Parse and Authorise Command');
+const parseReviewCommand = new Function('$input', parseReviewCommandNode.parameters.jsCode);
+const testPostId = '0123456789abcdef01234567';
+const runReviewCommand = (message) => parseReviewCommand({ first: () => ({ json: { message } }) })[0].json;
+assert.deepEqual(
+  runReviewCommand({ chat: { id: 6833948326 }, text: `/approve ${testPostId}` }),
+  {
+    authorised: true,
+    valid: true,
+    action: 'approve',
+    postId: testPostId,
+    chatId: '6833948326',
+    originalText: `/approve ${testPostId}`,
+  },
+  'The configured private chat must be able to approve one exact MongoDB post ID',
+);
+assert.equal(
+  runReviewCommand({ chat: { id: 999999999 }, text: `/approve ${testPostId}` }).authorised,
+  false,
+  'A valid-looking command from another Telegram chat must remain unauthorised',
+);
+assert.equal(
+  runReviewCommand({ chat: { id: 6833948326 }, text: `/approve ${testPostId} publish-now` }).valid,
+  false,
+  'Approval commands must reject trailing instructions',
+);
+assert.deepEqual(
+  {
+    action: runReviewCommand({ chat: { id: 6833948326 }, text: `/regenerate@wetrends_bot ${testPostId}` }).action,
+    valid: runReviewCommand({ chat: { id: 6833948326 }, text: `/regenerate@wetrends_bot ${testPostId}` }).valid,
+  },
+  { action: 'regenerate', valid: true },
+  'Telegram bot-name command suffixes must remain supported',
+);
+const buildRegenerationPromptNode = reviewWorkflow.nodes.find((node) => node.name === 'Build Regeneration Prompt');
+const buildRegenerationPrompt = new Function('$input', buildRegenerationPromptNode.parameters.jsCode);
+assert.throws(
+  () => buildRegenerationPrompt({ first: () => ({ json: { post: { id: testPostId, contentType: 'case_study' } } }) }),
+  /genuine portfolio proof/,
+  'Case studies must never route into AI image regeneration',
+);
+assert.match(
+  buildRegenerationPrompt({
+    first: () => ({ json: { post: { id: testPostId, title: 'Useful event planning', campaign: 'events', contentType: 'guide' } } }),
+  })[0].json.prompt,
+  /no implication this is client portfolio work/,
+  'Supporting image prompts must preserve the non-portfolio disclosure boundary',
+);
 for (const nodeName of ['Confirm Publication', 'Confirm Rejection', 'Send Regenerated Cover']) {
   const node = reviewWorkflow.nodes.find((item) => item.name === nodeName);
   assert.ok(node.parameters.text.includes('.replaceAll("&", "&amp;")'), `${nodeName} must HTML-escape external text`);
