@@ -70,6 +70,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'monthly' as const,
       priority: 0.7,
     },
+    {
+      url: `${baseUrl}/privacy/`,
+      lastModified: new Date(),
+      changeFrequency: 'yearly' as const,
+      priority: 0.2,
+    },
   ];
 
   // Service detail pages

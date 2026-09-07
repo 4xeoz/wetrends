@@ -1,6 +1,7 @@
 "use client";
 
 import Script from "next/script";
+import Link from "next/link";
 import { Suspense, useEffect, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { capturePageview, initPostHog } from "@/lib/analytics/posthog";
@@ -14,6 +15,29 @@ const INTERNAL_ROUTES = ['/me', '/sign-in'];
 
 const CONSENT_KEY = "wetrends_analytics_consent";
 type AnalyticsConsent = "granted" | "denied" | null;
+
+function clearAnalyticsIdentifiers() {
+  if (typeof window === "undefined") return;
+
+  const isAnalyticsKey = (value: string) => /^(?:_ga|_gid|_gat|ph_|posthog)/i.test(value);
+  for (const storage of [window.localStorage, window.sessionStorage]) {
+    for (let index = storage.length - 1; index >= 0; index -= 1) {
+      const key = storage.key(index);
+      if (key && key !== CONSENT_KEY && isAnalyticsKey(key)) storage.removeItem(key);
+    }
+  }
+
+  const cookieNames = document.cookie
+    .split(";")
+    .map((entry) => entry.split("=")[0]?.trim())
+    .filter((name): name is string => Boolean(name && isAnalyticsKey(name)));
+  for (const name of cookieNames) {
+    document.cookie = `${name}=; Max-Age=0; Path=/; SameSite=Lax`;
+    if (window.location.hostname === "wetrends.co.uk" || window.location.hostname.endsWith(".wetrends.co.uk")) {
+      document.cookie = `${name}=; Max-Age=0; Path=/; Domain=.wetrends.co.uk; SameSite=Lax`;
+    }
+  }
+}
 
 function PageviewTracker({ enabled }: { enabled: boolean }) {
   const pathname = usePathname();
@@ -62,6 +86,7 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
   }, [consent, gaId]);
 
   const choose = (next: Exclude<AnalyticsConsent, null>) => {
+    if (next === "denied") clearAnalyticsIdentifiers();
     window.localStorage.setItem(CONSENT_KEY, next);
     setConsent(next);
   };
@@ -85,7 +110,8 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
           className="fixed inset-x-4 bottom-4 z-[100] mx-auto max-w-2xl rounded-2xl border border-white/15 bg-[#0F0F0F] p-5 text-white shadow-2xl sm:flex sm:items-center sm:justify-between sm:gap-6"
         >
           <p className="text-sm leading-relaxed text-white/75">
-            We use optional analytics to understand which work brings useful enquiries. Nothing loads until you choose.
+            We use optional analytics to understand which work brings useful enquiries. Nothing loads until you choose.{' '}
+            <Link className="font-semibold text-white underline underline-offset-4" href="/privacy/">Privacy &amp; cookies</Link>
           </p>
           <div className="mt-4 flex shrink-0 gap-2 sm:mt-0">
             <button

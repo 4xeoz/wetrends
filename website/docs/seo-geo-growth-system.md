@@ -84,6 +84,7 @@ Telegram send nodes use explicit HTML mode, escape dynamic external text and dis
 - Content may be researched, scored, drafted, illustrated and saved automatically.
 - New articles remain drafts until an explicit Telegram approval.
 - A publish action must use the exact CMS post ID returned when the draft was created. It must never publish by title alone.
+- Reject and regenerate commands apply only to review-ready drafts. The automation API cannot unpublish an article that is already live.
 - Backlink discovery, qualification and outreach copy may be automated. Outreach is not sent without approval.
 - AI images are supporting editorial art. They must never be presented as photographs of a real WeTrends client, venue, event or result.
 - Event and photoshoot case studies require genuine portfolio assets and attributable facts.

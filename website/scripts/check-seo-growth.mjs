@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import ts from 'typescript';
 
 const websiteRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const workflowDirectory = path.join(websiteRoot, 'automations', 'n8n');
@@ -131,9 +132,22 @@ assert.deepEqual(
 
 const topicPlanner = JSON.parse(read('automations/n8n/wetrends-topic-planner-v1.json'));
 const topicParserNode = topicPlanner.nodes.find((node) => node.name === 'Validate Topic Plan');
+const openTopicQueueNode = topicPlanner.nodes.find((node) => node.name === 'Read Open London Topics');
+const plannerBriefNode = topicPlanner.nodes.find((node) => node.name === 'Build Topic Planner Brief');
 assert.ok(topicParserNode.parameters.jsCode.includes("status: 'queued_london'"));
+assert.equal(openTopicQueueNode.parameters.matchType, 'anyCondition');
+assert.equal(openTopicQueueNode.parameters.returnAll, true);
+assert.equal(openTopicQueueNode.alwaysOutputData, true);
+assert.deepEqual(new Set(openTopicQueueNode.parameters.filters.conditions.map((condition) => condition.keyValue)), new Set(['queued_london', 'review_ready', 'quality_blocked']));
 assert.equal(topicPlanner.nodes.find((node) => node.name === 'Insert Pending Topics').parameters.columns.value.status, 'queued_london');
 assert.ok(topicPlanner.nodes.find((node) => node.name === 'Confirm Topic Queue').parameters.text.includes('.replaceAll("&", "&amp;")'));
+assert.equal(topicPlanner.connections['Read Search Opportunities'].main[0][0].node, 'Read Open London Topics');
+assert.equal(topicPlanner.connections['Read Open London Topics'].main[0][0].node, 'Build Topic Planner Brief');
+const plannerBrief = new Function('$', '$input', plannerBriefNode.parameters.jsCode)(
+  (name) => ({ first: () => ({ json: name === 'Fetch Published Index' ? { data: '## Blog Posts\n- [Published topic](https://wetrends.co.uk/blogs/published-topic/)' } : { rows: [{ keys: ['event photographer london', '/events/'], impressions: 80, position: 8.2 }] } }) }),
+  { all: () => [{ json: { topic: 'Open London event guide', status: 'queued_london' } }] },
+);
+assert.match(plannerBrief[0].json.plannerPrompt, /OPEN LONDON TOPICS:\n- Open London event guide \[queued_london\]/);
 const parsedTopics = new Function('$input', topicParserNode.parameters.jsCode)({
   first: () => ({
     json: {
@@ -172,20 +186,55 @@ const createRoute = read('app/api/blog/route.ts');
 const updateRoute = read('app/api/blog/[id]/route.ts');
 const qualityRoute = read('app/api/blog/quality/route.ts');
 const mediaRoute = read('app/api/blog/media/route.ts');
+const automationState = read('lib/blog-automation-state.ts');
+const automationStateJavaScript = ts.transpileModule(automationState, {
+  compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 },
+}).outputText;
+const automationStateModule = await import(`data:text/javascript;base64,${Buffer.from(automationStateJavaScript).toString('base64')}`);
+const { getAutomationTransitionError, isCreatableAutomationState } = automationStateModule;
 const provider = read('components/providers/posthog-provider.tsx');
 const eventWork = read('app/(main)/events/work/page.tsx');
+const privacyPage = read('app/(main)/privacy/page.tsx');
+const sitemap = read('app/sitemap.ts');
 
 assert.match(createRoute, /New API posts must be created as drafts/);
+assert.match(createRoute, /cannot start in an approved, rejected or published state/);
 assert.match(createRoute, /evaluateBlogDraft/);
 assert.match(updateRoute, /explicit approved status in this request/);
+assert.match(updateRoute, /getAutomationTransitionError/);
+assert.match(automationState, /cannot unpublish an already-published post/);
+assert.match(automationState, /Only a review-ready draft can be rejected/);
+assert.match(automationState, /Only a review-ready draft can receive a regenerated cover/);
 assert.match(updateRoute, /Draft no longer passes the publication quality gate/);
 assert.match(qualityRoute, /validateApiKey/);
 assert.match(mediaRoute, /validateApiKey/);
 assert.match(mediaRoute, /wetrends\/blog/);
 assert.match(provider, /const CONSENT_KEY = "wetrends_analytics_consent"/);
 assert.match(provider, /NEXT_PUBLIC_GA_MEASUREMENT_ID/);
+assert.match(provider, /clearAnalyticsIdentifiers/);
+assert.match(provider, /next === "denied"/);
+assert.match(provider, /href="\/privacy\/"/);
+assert.match(privacyPage, /team@wetrends\.co\.uk/);
+assert.match(privacyPage, /Google Analytics and PostHog/);
+assert.match(privacyPage, /Information Commissioner/);
+assert.match(sitemap, /\$\{baseUrl\}\/privacy\//);
 assert.match(eventWork, /robots: \{ index: false, follow: true \}/);
 assert.ok(fs.existsSync(path.join(websiteRoot, 'app/(main)/photoshoots/page.tsx')), 'Dedicated photoshoots page is missing');
+
+assert.equal(isCreatableAutomationState('drafted'), true);
+assert.equal(isCreatableAutomationState('quality_blocked'), true);
+assert.equal(isCreatableAutomationState('review_ready'), true);
+assert.equal(isCreatableAutomationState('approved'), false);
+assert.equal(isCreatableAutomationState('rejected'), false);
+assert.equal(isCreatableAutomationState('published'), false);
+assert.equal(getAutomationTransitionError({ published: true, automationStatus: 'published' }, { published: false, automationStatus: 'rejected' })?.status, 409);
+assert.equal(getAutomationTransitionError({ published: false, automationStatus: 'drafted' }, { published: false, automationStatus: 'rejected' })?.status, 409);
+assert.equal(getAutomationTransitionError({ published: false, automationStatus: 'review_ready' }, { published: false, automationStatus: 'rejected' }), null);
+assert.equal(getAutomationTransitionError({ published: false, automationStatus: 'rejected' }, { published: false, automationStatus: 'rejected' }), null);
+assert.equal(getAutomationTransitionError({ published: false, automationStatus: 'drafted' }, { published: false, automationStatus: 'review_ready' })?.status, 409);
+assert.equal(getAutomationTransitionError({ published: false, automationStatus: 'review_ready' }, { published: false, automationStatus: 'review_ready' }), null);
+assert.equal(getAutomationTransitionError({ published: false, automationStatus: 'review_ready' }, { published: false, automationStatus: 'approved' })?.status, 400);
+assert.equal(getAutomationTransitionError({ published: false, automationStatus: 'review_ready' }, { published: true, automationStatus: 'approved' }), null);
 
 const highRiskPublicFiles = [
   'app/layout.tsx',

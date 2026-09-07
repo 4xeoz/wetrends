@@ -4,6 +4,7 @@ import { validateApiKey } from "@/lib/api-auth";
 import { createBlogPostSchema, updateBlogPostSchema } from "@/lib/zod/blog";
 import { revalidatePath } from "next/cache";
 import { evaluateBlogDraft } from "@/lib/blog-quality";
+import { getAutomationTransitionError } from "@/lib/blog-automation-state";
 
 // ─────────────────────────────────────────────
 // GET — API key required so draft content is never exposed publicly
@@ -97,6 +98,14 @@ export async function PATCH(
       return NextResponse.json(
         { success: false, message: "Post not found" },
         { status: 404 }
+      );
+    }
+
+    const transitionError = getAutomationTransitionError(existingPost, data);
+    if (transitionError) {
+      return NextResponse.json(
+        { success: false, message: transitionError.message },
+        { status: transitionError.status }
       );
     }
 

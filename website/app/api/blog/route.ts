@@ -4,6 +4,7 @@ import { validateApiKey } from "@/lib/api-auth";
 import { createBlogPostSchema } from "@/lib/zod/blog";
 import { revalidatePath } from "next/cache";
 import { evaluateBlogDraft } from "@/lib/blog-quality";
+import { isCreatableAutomationState } from "@/lib/blog-automation-state";
 
 export async function GET(request: NextRequest) {
   const auth = validateApiKey(request);
@@ -70,6 +71,13 @@ export async function POST(request: NextRequest) {
   if (data.published) {
     return NextResponse.json(
       { success: false, message: "New API posts must be created as drafts" },
+      { status: 400 }
+    );
+  }
+
+  if (!isCreatableAutomationState(data.automationStatus)) {
+    return NextResponse.json(
+      { success: false, message: 'New API drafts cannot start in an approved, rejected or published state' },
       { status: 400 }
     );
   }
