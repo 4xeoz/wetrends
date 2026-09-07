@@ -124,7 +124,7 @@
       ],
       "credentials": {
         "httpHeaderAuth": {
-          "id": "REPLACE_WITH_WETRENDS_CREDENTIAL_ID",
+          "id": "jNOBFrsMFwW2ovdd",
           "name": "WeTrends Blog API"
         }
       },
@@ -230,7 +230,7 @@
       ],
       "credentials": {
         "openAiApi": {
-          "id": "REPLACE_WITH_OPENAI_CREDENTIAL_ID",
+          "id": "Lrj5HIOGIlIosZun",
           "name": "OpenAI - WeTrends SEO"
         }
       }

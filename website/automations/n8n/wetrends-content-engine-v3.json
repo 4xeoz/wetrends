@@ -92,7 +92,7 @@
       ],
       "credentials": {
         "httpHeaderAuth": {
-          "id": "REPLACE_WITH_WETRENDS_CREDENTIAL_ID",
+          "id": "jNOBFrsMFwW2ovdd",
           "name": "WeTrends Blog API"
         }
       }
@@ -205,7 +205,7 @@
       ],
       "credentials": {
         "httpHeaderAuth": {
-          "id": "REPLACE_WITH_TAVILY_CREDENTIAL_ID",
+          "id": "gfHlHQLfbKFj5Voi",
           "name": "Tavily API"
         }
       }
@@ -283,7 +283,7 @@
       ],
       "credentials": {
         "openAiApi": {
-          "id": "REPLACE_WITH_OPENAI_CREDENTIAL_ID",
+          "id": "Lrj5HIOGIlIosZun",
           "name": "OpenAI - WeTrends SEO"
         }
       }
@@ -334,7 +334,7 @@
       ],
       "credentials": {
         "openAiApi": {
-          "id": "REPLACE_WITH_OPENAI_CREDENTIAL_ID",
+          "id": "Lrj5HIOGIlIosZun",
           "name": "OpenAI - WeTrends SEO"
         }
       }
@@ -373,7 +373,7 @@
       ],
       "credentials": {
         "openAiApi": {
-          "id": "REPLACE_WITH_OPENAI_CREDENTIAL_ID",
+          "id": "Lrj5HIOGIlIosZun",
           "name": "OpenAI - WeTrends SEO"
         }
       },
@@ -447,7 +447,7 @@
       ],
       "credentials": {
         "httpHeaderAuth": {
-          "id": "REPLACE_WITH_WETRENDS_CREDENTIAL_ID",
+          "id": "jNOBFrsMFwW2ovdd",
           "name": "WeTrends Blog API"
         }
       }
@@ -512,7 +512,7 @@
       ],
       "credentials": {
         "httpHeaderAuth": {
-          "id": "REPLACE_WITH_WETRENDS_CREDENTIAL_ID",
+          "id": "jNOBFrsMFwW2ovdd",
           "name": "WeTrends Blog API"
         }
       },
@@ -586,7 +586,7 @@
       ],
       "credentials": {
         "httpHeaderAuth": {
-          "id": "REPLACE_WITH_WETRENDS_CREDENTIAL_ID",
+          "id": "jNOBFrsMFwW2ovdd",
           "name": "WeTrends Blog API"
         }
       }
@@ -689,7 +689,7 @@
       ],
       "credentials": {
         "httpHeaderAuth": {
-          "id": "REPLACE_WITH_WETRENDS_CREDENTIAL_ID",
+          "id": "jNOBFrsMFwW2ovdd",
           "name": "WeTrends Blog API"
         }
       }

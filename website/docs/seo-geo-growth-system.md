@@ -93,6 +93,8 @@ n8n stores the secret values; exported workflow JSON contains credential referen
 - `Tavily API` for research and opportunity discovery;
 - `WeTrends Blog API` for the authenticated draft, media and quality endpoints.
 
+The workflow generator pins the current WeTrends n8n credential record IDs as non-secret references and the contract test verifies every node's type, name and ID. If a credential is recreated, update the generator deliberately and re-run the contract before importing; this prevents n8n from silently selecting the first credential of the same type.
+
 Telegram send nodes use explicit HTML mode, escape dynamic external text and disable n8n attribution. This avoids Telegram rejecting AI output that contains legacy-Markdown control characters.
 
 ## Automation boundaries

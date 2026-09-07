@@ -9,19 +9,19 @@ const ga4PropertyId = '553107339';
 const credentials = {
   openai: {
     openAiApi: {
-      id: 'REPLACE_WITH_OPENAI_CREDENTIAL_ID',
+      id: 'Lrj5HIOGIlIosZun',
       name: 'OpenAI - WeTrends SEO',
     },
   },
   tavily: {
     httpHeaderAuth: {
-      id: 'REPLACE_WITH_TAVILY_CREDENTIAL_ID',
+      id: 'gfHlHQLfbKFj5Voi',
       name: 'Tavily API',
     },
   },
   blog: {
     httpHeaderAuth: {
-      id: 'REPLACE_WITH_WETRENDS_CREDENTIAL_ID',
+      id: 'jNOBFrsMFwW2ovdd',
       name: 'WeTrends Blog API',
     },
   },
@@ -721,7 +721,7 @@ function buildAuthorityScout() {
     scheduleNode(key, 'Tuesday 10:00 London', [-700, 400], '0 10 * * 2'), manualNode(key, [-700, 560]),
     codeNode(key, 'Build Authority Searches', [-480, 440], authorityQueries),
     httpNode(key, 'Research Authority Opportunities', [-260, 440], { method: 'POST', url: 'https://api.tavily.com/search', authentication: 'genericCredentialType', genericAuthType: 'httpHeaderAuth', sendBody: true, specifyBody: 'json', jsonBody: '={{ JSON.stringify({ query: $json.query, search_depth: "advanced", max_results: 8, include_answer: false, include_raw_content: false }) }}', options: {} }, { credentials: credentials.tavily }),
-    codeNode(key, 'Build Authority Review Brief', [-40, 440], consolidateAuthorityResearch, 'runOnceForAllItems'),
+    codeNode(key, 'Build Authority Review Brief', [-40, 440], consolidateAuthorityResearch),
     llmChainNode(key, 'Score and Draft Outreach', [180, 440], '={{ $json.authorityPrompt }}'),
     modelNode(key, 'OpenAI Luna - Authority', [180, 680]),
     telegramNode(key, 'Send Authority Review Queue', [400, 440], '=🔗 WeTrends authority opportunities — review only\n\n{{ String($json.text || $json.response || $json.output || "No qualified opportunities found.").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").slice(0, 3200).replace(/&(?:a(?:m(?:p)?)?|l(?:t)?|g(?:t)?)?$/, "") }}\n\nNo outreach was sent automatically.'),

@@ -29,6 +29,14 @@ const supportedDataTableOperations = new Set([
   'upsert',
 ]);
 
+const expectedCredentialReferences = new Map([
+  ['OpenAI - WeTrends SEO', ['openAiApi', 'Lrj5HIOGIlIosZun']],
+  ['Tavily API', ['httpHeaderAuth', 'gfHlHQLfbKFj5Voi']],
+  ['WeTrends Blog API', ['httpHeaderAuth', 'jNOBFrsMFwW2ovdd']],
+  ['Google account', ['googleOAuth2Api', 'dsiuhHcD0Kq1Ahao']],
+  ['Telegram account', ['telegramApi', '7jUWAXImCuClzxG5']],
+]);
+
 for (const filename of workflowFiles) {
   const source = fs.readFileSync(path.join(workflowDirectory, filename), 'utf8');
   const workflow = JSON.parse(source);
@@ -50,6 +58,18 @@ for (const filename of workflowFiles) {
 
   for (const node of workflow.nodes.filter((item) => item.type === 'n8n-nodes-base.httpRequest')) {
     assert.ok(String(node.parameters.url).startsWith('https://') || String(node.parameters.url).startsWith('=https://'), `${filename}/${node.name} must use HTTPS`);
+  }
+
+  for (const node of workflow.nodes.filter((item) => item.credentials)) {
+    for (const [credentialType, reference] of Object.entries(node.credentials)) {
+      const expected = expectedCredentialReferences.get(reference.name);
+      assert.ok(expected, `${filename}/${node.name} uses an unknown credential reference ${reference.name}`);
+      assert.deepEqual(
+        [credentialType, reference.id],
+        expected,
+        `${filename}/${node.name} credential ${reference.name} does not match the verified n8n record`,
+      );
+    }
   }
 
   for (const node of workflow.nodes.filter((item) => item.type === 'n8n-nodes-base.code')) {
