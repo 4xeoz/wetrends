@@ -15,16 +15,39 @@ export function getCloudinaryAdmin() {
 }
 
 export function getPublicCloudinaryAdmin() {
-  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
-  const apiKey = process.env.CLOUDINARY_API_KEY;
-  const apiSecret = process.env.CLOUDINARY_API_SECRET;
+  const publicCredentials = {
+    cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+    apiKey: process.env.CLOUDINARY_API_KEY,
+    apiSecret: process.env.CLOUDINARY_API_SECRET,
+  };
+  const eventCredentials = {
+    cloudName: process.env.EVENT_CLOUDINARY_CLOUD_NAME,
+    apiKey: process.env.EVENT_CLOUDINARY_API_KEY,
+    apiSecret: process.env.EVENT_CLOUDINARY_API_SECRET,
+  };
 
-  if (!cloudName || !apiKey || !apiSecret) {
+  // A partial credential set must never be combined with another account.
+  // Prefer the dedicated public-media account, then use the complete event
+  // account as an atomic fallback. Blog assets remain public and isolated in
+  // `wetrends/blog`; gallery assets keep their authenticated delivery type.
+  const credentials =
+    publicCredentials.cloudName && publicCredentials.apiKey && publicCredentials.apiSecret
+      ? publicCredentials
+      : eventCredentials.cloudName && eventCredentials.apiKey && eventCredentials.apiSecret
+        ? eventCredentials
+        : null;
+
+  if (!credentials) {
     throw new Error('Public Cloudinary server credentials are not configured');
   }
 
-  cloudinary.config({ cloud_name: cloudName, api_key: apiKey, api_secret: apiSecret, secure: true });
-  return { cloudinary, cloudName };
+  cloudinary.config({
+    cloud_name: credentials.cloudName,
+    api_key: credentials.apiKey,
+    api_secret: credentials.apiSecret,
+    secure: true,
+  });
+  return { cloudinary, cloudName: credentials.cloudName };
 }
 
 export function cloudinaryGalleryAssetUrl(publicId: string, download = false) {

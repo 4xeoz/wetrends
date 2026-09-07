@@ -182,7 +182,7 @@ Paid-link networks, automated guest-post blasts, reciprocal-link farms and irrel
 
 - GA4 property `553107339` and the `WeTrends Website` web stream (`15735914465`) were created on 7 September 2026. Its measurement ID is `G-8L4SZJWV8R`; set that value as `NEXT_PUBLIC_GA_MEASUREMENT_ID` in each Vercel environment before deployment.
 - The owner accepted the Google Analytics service and required data-processing terms on 7 September 2026.
-- Production Cloudinary server credentials.
+- A complete Cloudinary server credential triplet is configured for both Production and Preview. Blog media prefers the dedicated public triplet when present and otherwise uses the complete event triplet atomically; it never combines a cloud name and key from different accounts. Preview upload and delivery still require an end-to-end test.
 - Verified OpenAI API organisation access for GPT Image models.
 - n8n credentials for OpenAI, Google, Telegram, Tavily and the WeTrends API.
 - Genuine portfolio images and usage permission for proof-led case studies.
