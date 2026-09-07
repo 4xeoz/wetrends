@@ -24,15 +24,23 @@ const services = [
   "Social Media",
   "Animation",
   "Content Strategy",
+  "Event Photography & Film",
+  "Photoshoots",
   "Other"
 ]
 
-export default function ContactForm() {
+export default function ContactForm({
+  defaultService = "",
+  source = "website",
+}: {
+  defaultService?: string
+  source?: string
+}) {
   const [currentStep, setCurrentStep] = useState(1)
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    service: "",
+    service: defaultService,
     message: "",
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -77,7 +85,8 @@ export default function ContactForm() {
   function nextStep() {
     if (validateStep(currentStep)) {
       if (currentStep === 1) {
-        trackEvent(ANALYTICS_EVENTS.contactFormStarted)
+        trackEvent(ANALYTICS_EVENTS.startQuote, { lead_source: source })
+        trackEvent(ANALYTICS_EVENTS.contactFormStarted, { lead_source: source })
       }
       setCurrentStep((prev) => Math.min(prev + 1, steps.length))
     }
@@ -95,13 +104,19 @@ export default function ContactForm() {
     setIsSubmitting(true)
 
     try {
-      const result = await submitContactForm(formData)
+      const result = await submitContactForm({ ...formData, source })
 
       if (result.success) {
-        trackEvent(ANALYTICS_EVENTS.contactFormSubmitted, { service: formData.service })
+        const eventProperties = {
+          service_line: formData.service || "unknown",
+          lead_source: source,
+          currency: "GBP",
+        }
+        trackEvent(ANALYTICS_EVENTS.generateLead, eventProperties)
+        trackEvent(ANALYTICS_EVENTS.contactFormSubmitted, eventProperties)
         setIsSubmitting(false)
         setIsSubmitted(true)
-        setFormData({ name: "", email: "", service: "", message: "" })
+        setFormData({ name: "", email: "", service: defaultService, message: "" })
         setCurrentStep(1)
         setTimeout(() => setIsSubmitted(false), 5000)
       } else {
@@ -126,7 +141,7 @@ export default function ContactForm() {
           <CheckCircle className="h-8 w-8 sm:h-10 sm:w-10 text-white" />
         </div>
         <h3 className="text-2xl sm:text-3xl font-bold mb-2 sm:mb-3 text-white">Message Sent!</h3>
-        <p className="text-base sm:text-lg text-white/70">Thank you for reaching out. We&apos;ll get back to you within 24 hours.</p>
+        <p className="text-base sm:text-lg text-white/70">Thank you for reaching out. We&apos;ll review the brief and reply as soon as we can.</p>
       </div>
     )
   }

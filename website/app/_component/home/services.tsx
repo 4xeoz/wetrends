@@ -3,7 +3,7 @@
 import { useRef, useState } from 'react';
 import { motion, useInView } from 'motion/react';
 import CardSwap, { Card } from '../../../components/ui/cardSwap';
-import { Globe, Video, Palette, Users, Zap, PenTool, ArrowUpRight } from 'lucide-react';
+import { Camera, Globe, Video, Palette, Users, Zap, PenTool, ArrowUpRight } from 'lucide-react';
 import Link from 'next/link';
 
 const services = [
@@ -11,7 +11,7 @@ const services = [
     number: '01',
     icon: Video,
     title: 'Video Production',
-    description: 'Award-winning video production services. Brand films, commercials, social content & motion graphics.',
+    description: 'Video production for brand films, campaigns, commercials, social content and motion graphics.',
     category: "Video",
     slug: 'video-production',
     videoSrc: "/videos/video-preview-wetrends.mp4",
@@ -67,6 +67,17 @@ const services = [
     videoSrc: "/videos/design-preview-wetrends.mp4",
     color: "#0F0F0F",
   },
+  {
+    number: '07',
+    icon: Camera,
+    title: 'Photoshoots',
+    description: 'Portrait, personal-brand, team, product and graduation photography built for real campaigns.',
+    category: "Photography",
+    slug: 'photoshoots',
+    href: '/photoshoots/',
+    videoSrc: "/videos/design-preview-wetrends.mp4",
+    color: "#C72C5B",
+  },
 ];
 
 export function Services() {
@@ -117,7 +128,7 @@ export function Services() {
                   animate={isInView ? { opacity: 1, x: 0 } : {}}
                   transition={{ duration: 0.6, delay: 0.3 + index * 0.1 }}
                 >
-                  <Link href={`/services/${service.slug}/`}>
+                  <Link href={'href' in service && service.href ? service.href : `/services/${service.slug}/`}>
                     <motion.div
                       className="group relative cursor-pointer"
                       onMouseEnter={() => setHoveredIndex(index)}

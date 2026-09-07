@@ -3,6 +3,37 @@ import { prisma } from "@/prisma/prisma";
 import { validateApiKey } from "@/lib/api-auth";
 import { createBlogPostSchema } from "@/lib/zod/blog";
 import { revalidatePath } from "next/cache";
+import { evaluateBlogDraft } from "@/lib/blog-quality";
+
+export async function GET(request: NextRequest) {
+  const auth = validateApiKey(request);
+  if (!auth.authorized) return auth.response;
+
+  const slug = request.nextUrl.searchParams.get("slug");
+  if (!slug) {
+    return NextResponse.json(
+      { success: false, message: "A slug query parameter is required" },
+      { status: 400 }
+    );
+  }
+
+  try {
+    const post = await prisma.blogPost.findUnique({ where: { slug } });
+    if (!post) {
+      return NextResponse.json(
+        { success: false, message: "Post not found" },
+        { status: 404 }
+      );
+    }
+    return NextResponse.json({ success: true, post });
+  } catch (error) {
+    console.error("[API Blog] Lookup error:", error);
+    return NextResponse.json(
+      { success: false, message: "Failed to fetch blog post" },
+      { status: 500 }
+    );
+  }
+}
 
 export async function POST(request: NextRequest) {
   // 1. Authenticate
@@ -35,6 +66,21 @@ export async function POST(request: NextRequest) {
   }
 
   const data = parsed.data;
+
+  if (data.published) {
+    return NextResponse.json(
+      { success: false, message: "New API posts must be created as drafts" },
+      { status: 400 }
+    );
+  }
+
+  const quality = evaluateBlogDraft(data);
+  if (data.automationStatus === "review_ready" && !quality.pass) {
+    return NextResponse.json(
+      { success: false, message: "Draft failed the quality gate", quality },
+      { status: 422 }
+    );
+  }
 
   // 3. Verify authorId exists (if provided)
   if (data.authorId) {
@@ -84,11 +130,21 @@ export async function POST(request: NextRequest) {
         excerpt: data.excerpt,
         content: data.content,
         featuredImage: data.featuredImage,
-        published: data.published,
-        publishedAt: data.published ? new Date() : null,
+        featuredImageAlt: data.featuredImageAlt,
+        featuredImageKind: data.featuredImageKind,
+        featuredImageCredit: data.featuredImageCredit,
+        published: false,
+        publishedAt: null,
         metaTitle: data.metaTitle,
         metaDescription: data.metaDescription,
         keywords: data.keywords ?? [],
+        campaign: data.campaign,
+        contentType: data.contentType,
+        primaryServiceUrl: data.primaryServiceUrl,
+        sourceUrls: data.sourceUrls ?? [],
+        automationStatus: data.automationStatus ?? "drafted",
+        automationRunId: data.automationRunId,
+        qualityScore: quality.score,
         categoryId: data.categoryId,
         authorId: data.authorId,
       },
@@ -100,7 +156,7 @@ export async function POST(request: NextRequest) {
     revalidatePath("/sitemap.xml");
 
     return NextResponse.json(
-      { success: true, post },
+      { success: true, post, quality },
       { status: 201 }
     );
   } catch (error) {

@@ -74,7 +74,13 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const url = `https://wetrends.co.uk/blogs/${post.slug}/`;
 
   const { html, toc } = enrichBlogContent(post.content);
-  const serviceCta = pickServiceCta(post.title, post.keywords, post.category?.name);
+  const serviceCta = pickServiceCta(
+    post.title,
+    post.keywords,
+    post.category?.name,
+    post.campaign,
+    post.primaryServiceUrl
+  );
   const relatedResult = await getRelatedPosts(post.id, post.category?.id ?? null, post.keywords);
   const relatedPosts = relatedResult.posts ?? [];
 
@@ -85,7 +91,15 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     description: post.metaDescription || post.excerpt,
     url,
     mainEntityOfPage: { '@type': 'WebPage', '@id': url },
-    ...(post.featuredImage && { image: post.featuredImage }),
+    ...(post.featuredImage && {
+      image: {
+        '@type': 'ImageObject',
+        contentUrl: post.featuredImage,
+        representativeOfPage: true,
+        ...(post.featuredImageAlt && { caption: post.featuredImageAlt }),
+        ...(post.featuredImageCredit && { creditText: post.featuredImageCredit }),
+      },
+    }),
     ...(post.publishedAt && { datePublished: post.publishedAt.toISOString() }),
     ...(post.updatedAt && { dateModified: post.updatedAt.toISOString() }),
     author: {

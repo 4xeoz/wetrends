@@ -27,6 +27,9 @@ interface Post {
   excerpt: string;
   content: string;
   featuredImage: string | null;
+  featuredImageAlt: string | null;
+  featuredImageKind: string | null;
+  featuredImageCredit: string | null;
   publishedAt: Date | null;
   views: number;
   keywords: string[];
@@ -48,6 +51,8 @@ interface RelatedPost {
   excerpt: string;
   publishedAt: Date | null;
   category: { name: string; slug: string } | null;
+  featuredImage: string | null;
+  featuredImageAlt: string | null;
 }
 
 interface ServiceCta {
@@ -186,6 +191,8 @@ export function BlogPostContent({ post, html, toc, relatedPosts, serviceCta }: B
           title={post.title}
           category={post.category?.name}
           slug={post.slug}
+          imageUrl={post.featuredImage}
+          imageAlt={post.featuredImageAlt}
           size="hero"
           className="absolute inset-0"
           meta={
@@ -210,6 +217,11 @@ export function BlogPostContent({ post, html, toc, relatedPosts, serviceCta }: B
                 <Clock className="h-4 w-4" />
                 {Math.ceil(post.content.split(' ').length / 200)} min read
               </span>
+              {post.featuredImageKind === 'ai_supporting' && (
+                <span className="rounded-full border border-white/20 px-3 py-1 text-xs">
+                  AI-assisted editorial cover
+                </span>
+              )}
             </>
           }
         />
@@ -341,6 +353,8 @@ export function BlogPostContent({ post, html, toc, relatedPosts, serviceCta }: B
                         title={related.title}
                         category={related.category?.name}
                         slug={related.slug}
+                        imageUrl={related.featuredImage}
+                        imageAlt={related.featuredImageAlt}
                         index={index}
                       />
                     </div>

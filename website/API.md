@@ -45,8 +45,9 @@ Content-Type: application/json
 - Examples: `hello-world`, `post-123`, `my-blog-post`
 
 ### Published Logic
-- `published: true` → sets `publishedAt` to current timestamp (if not already published)
-- `published: false` → sets `publishedAt` to `null`
+- `POST` always creates a draft and rejects `published: true`.
+- API publication uses `PATCH` with both `published: true` and `automationStatus: "approved"`.
+- Setting `published: false` sets `publishedAt` to `null`.
 
 ---
 
@@ -69,11 +70,21 @@ Creates a new blog post.
 | Field | Type | Default |
 |-------|------|---------|
 | `featuredImage` | `string` (URL) | `null` |
+| `featuredImageAlt` | `string` | `null` |
+| `featuredImageKind` | `ai_supporting \| portfolio \| editorial` | `null` |
+| `featuredImageCredit` | `string` | `null` |
 | `published` | `boolean` | `false` |
 | `metaTitle` | `string` | `null` |
 | `metaDescription` | `string` | `null` |
 | `keywords` | `string[]` | `[]` |
 | `categoryId` | `string` (ObjectId) | `null` |
+| `campaign` | `events \| photoshoots \| agency` | `null` |
+| `contentType` | `commercial \| case_study \| guide \| comparison \| answer` | `null` |
+| `primaryServiceUrl` | `string` (WeTrends HTTPS URL) | `null` |
+| `sourceUrls` | `string[]` | `[]` |
+| `automationStatus` | `string` | `drafted` |
+| `automationRunId` | `string` | `null` |
+| `qualityScore` | `integer` (0–100) | `null` |
 
 #### Validation Rules
 - `slug` must be unique across all posts
@@ -91,11 +102,19 @@ curl -X POST http://localhost:3000/api/blog/ \
     "slug": "how-we-built-the-rebrand",
     "excerpt": "A behind-the-scenes look at our latest brand identity project.",
     "content": "<p>We started with discovery...</p>",
-    "published": true,
+    "published": false,
     "featuredImage": "https://res.cloudinary.com/.../image.jpg",
     "metaTitle": "How We Built the Rebrand | WeTrends",
     "metaDescription": "Behind the scenes of our latest rebrand.",
-    "keywords": ["branding", "web design", "guildford"],
+    "featuredImageAlt": "Brand identity workshop materials on a studio table",
+    "featuredImageKind": "editorial",
+    "campaign": "agency",
+    "contentType": "guide",
+    "primaryServiceUrl": "https://wetrends.co.uk/services/brand-identity/",
+    "sourceUrls": ["https://example.com/source"],
+    "automationStatus": "review_ready",
+    "qualityScore": 91,
+    "keywords": ["branding", "web design", "London"],
     "categoryId": "507f1f77bcf86cd799439022"
   }'
 ```
@@ -111,12 +130,12 @@ curl -X POST http://localhost:3000/api/blog/ \
     "excerpt": "A behind-the-scenes look...",
     "content": "<p>We started with discovery...</p>",
     "featuredImage": "https://res.cloudinary.com/.../image.jpg",
-    "published": true,
-    "publishedAt": "2025-01-15T10:30:00.000Z",
+    "published": false,
+    "publishedAt": null,
     "views": 0,
     "metaTitle": "How We Built the Rebrand | WeTrends",
     "metaDescription": "Behind the scenes of our latest rebrand.",
-    "keywords": ["branding", "web design", "guildford"],
+    "keywords": ["branding", "web design", "London"],
     "categoryId": "507f1f77bcf86cd799439022",
     "authorId": "507f1f77bcf86cd799439011",
     "createdAt": "2025-01-15T10:30:00.000Z",
@@ -161,8 +180,8 @@ curl -X PATCH http://localhost:3000/api/blog/6677a1b2c3d4e5f6g7h8i9j0/ \
   -H "Content-Type: application/json" \
   -H "x-api-key: <YOUR_API_KEY>" \
   -d '{
-    "title": "How We Built the Rebrand (Updated)",
-    "published": false
+    "published": true,
+    "automationStatus": "approved"
   }'
 ```
 
@@ -225,7 +244,7 @@ curl -X DELETE http://localhost:3000/api/blog/6677a1b2c3d4e5f6g7h8i9j0/ \
 
 ### 4. Get Single Post — `GET /api/blog/{id}/`
 
-Retrieves a single post by ID. **No API key required.**
+Retrieves a single post by ID. An API key is required because the response may contain a draft.
 
 #### Path Parameters
 | Param | Type | Description |
@@ -234,7 +253,8 @@ Retrieves a single post by ID. **No API key required.**
 
 #### Request Example
 ```bash
-curl http://localhost:3000/api/blog/6677a1b2c3d4e5f6g7h8i9j0/
+curl http://localhost:3000/api/blog/6677a1b2c3d4e5f6g7h8i9j0/ \
+  -H "x-api-key: <YOUR_API_KEY>"
 ```
 
 #### Success Response — `200 OK`
@@ -258,6 +278,20 @@ curl http://localhost:3000/api/blog/6677a1b2c3d4e5f6g7h8i9j0/
 | `404` | `"Post not found"` |
 
 ---
+
+### 5. Look Up Post by Slug — `GET /api/blog/?slug={slug}`
+
+Authenticated draft-safe lookup used for idempotency and publication verification.
+
+### 6. Upload Blog Image — `POST /api/blog/media/`
+
+Stores a generated or editorial image in the public `wetrends/blog` Cloudinary folder. Send JSON with `base64`, `contentType`, `filename`, `alt`, `imageKind`, and optional `credit`. Accepted formats are PNG, JPEG and WebP, with a 12 MB decoded limit. The response returns the public HTTPS URL and image metadata.
+
+AI images must use `imageKind: "ai_supporting"` and must not be described as client work.
+
+### 7. Evaluate Draft — `POST /api/blog/quality/`
+
+Runs the same deterministic quality gate used during automated draft creation. It returns a score, word and heading counts, and machine-readable critical or warning issues. A post submitted with `automationStatus: "review_ready"` is rejected with `422` unless this gate passes.
 
 ## n8n Configuration Reference
 

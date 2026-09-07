@@ -4,7 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: 'WeTrends - Creative Digital Agency',
     short_name: 'WeTrends',
-    description: 'Creative digital agency in Guildford, Surrey. Video production, social media, web design & branding.',
+    description: 'Creative technology and production agency serving London, Surrey and UK clients.',
     start_url: '/',
     display: 'standalone',
     background_color: '#ffffff',

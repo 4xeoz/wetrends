@@ -24,7 +24,7 @@ const services = {
     icon: Video,
     title: 'Video Production',
     headline: 'Cinematic Stories That Stop The Scroll',
-    description: 'From concept to final cut, we create video content that captures attention and drives meaningful engagement across all platforms. Our Guildford studio combines creative excellence with technical expertise.',
+    description: 'From concept to final cut, we create video content that captures attention and drives meaningful engagement across platforms for London, Surrey and UK teams.',
     features: ['Brand Films', 'Social Content', 'Motion Graphics', 'Commercials', 'Documentary Style', 'Product Videos', 'Event Coverage', 'Aerial/Drone'],
     process: [
       { step: '01', title: 'Discovery', description: 'We learn your brand, goals, and audience to craft the perfect concept.' },
@@ -36,21 +36,21 @@ const services = {
       { title: 'Increase Engagement', description: 'Video content generates significantly more shares than text and images combined.' },
       { title: 'Professional Quality', description: '4K/8K production quality that elevates your brand above the competition.' },
       { title: 'Fast Turnaround', description: 'From brief to delivery in as little as two weeks.' },
-      { title: 'Local Filming', description: 'We film across Guildford, Woking, Farnham and the wider Surrey area.' },
+      { title: 'Flexible Filming', description: 'We film on location across London, Surrey and the wider UK.' },
     ],
     testimonial: {
       quote: "WeTrends transformed our brand story into a cinematic experience. The video they produced for our product launch exceeded all expectations and drove record engagement.",
       author: "Sarah Mitchell",
       role: "Marketing Director, TechStart UK"
     },
-    localFocus: 'We film across Guildford, Woking, Farnham and the wider Surrey area. Local knowledge means we know the best locations and can respond quickly to your needs.',
+    localFocus: 'We film on location across London, Surrey and the wider UK, with production planned around the brief and venue.',
     video: '/videos/video-preview-wetrends.mp4',
   },
   'brand-identity': {
     icon: Palette,
     title: 'Brand Identity',
     headline: 'Make Your Brand Impossible to Ignore',
-    description: 'We craft distinctive visual identities that capture your essence and resonate deeply with your target audience. Stand out in the crowded Guildford and Surrey business landscape.',
+    description: 'We craft distinctive visual identities that capture your essence and resonate with your target audience across London, Surrey and the wider UK.',
     features: ['Logo Design', 'Visual Identity', 'Brand Guidelines', 'Packaging', 'Brand Strategy', 'Naming', 'Typography', 'Color Systems'],
     process: [
       { step: '01', title: 'Research', description: 'Deep dive into your market, competitors, and target audience.' },
@@ -69,14 +69,14 @@ const services = {
       author: "James Anderson",
       role: "CEO, GreenLeaf Solutions"
     },
-    localFocus: 'We understand the Guildford and Surrey business environment. Our designs help local companies compete with London agencies while maintaining their unique identity.',
+    localFocus: 'We help London, Surrey and UK organisations build distinctive identities that work across digital and physical touchpoints.',
     video: '/videos/design-preview-wetrends.mp4',
   },
   'web-design': {
     icon: Globe,
     title: 'Web Design',
     headline: 'Websites That Convert Visitors to Customers',
-    description: 'High-performing digital experiences built for results. We design and develop websites that turn Guildford browsers into buyers across all devices.',
+    description: 'High-performing digital experiences built for results. We design and develop websites that turn visitors into enquiries and customers across devices.',
     features: ['UI/UX Design', 'Development', 'E-commerce', 'Web Apps', 'SEO Optimization', 'CMS Integration', 'Performance', 'Analytics'],
     process: [
       { step: '01', title: 'Discovery', description: 'Understand your business goals, users, and technical requirements.' },
@@ -95,7 +95,7 @@ const services = {
       author: "Emily Chen",
       role: "Founder, Surrey Wellness"
     },
-    localFocus: 'Based in Guildford, we offer face-to-face consultations and rapid response times. We build websites that help local businesses compete nationally.',
+    localFocus: 'We work with London, Surrey and UK teams remotely and on location, with consultation details agreed for each project.',
     video: '/videos/website-preview-wetrends.mp4',
   },
   'social-media': {
@@ -121,7 +121,7 @@ const services = {
       author: "Michael Brown",
       role: "Owner, Guildford Cafe Co"
     },
-    localFocus: 'We know the Surrey social landscape. From Guildford to Woking, we create content that resonates with local audiences while building national reach.',
+    localFocus: 'We create social content for London, Surrey and UK audiences while building reach around each client\'s real market.',
     video: '/videos/social-preview-wetrends.mp4',
   },
   'animation': {
@@ -147,14 +147,14 @@ const services = {
       author: "Lisa Park",
       role: "Product Manager, SaaS Co"
     },
-    localFocus: 'Our Guildford animation studio serves clients across the UK. We combine local accessibility with world-class animation expertise.',
+    localFocus: 'Our animation work serves London, Surrey and UK clients through a flexible remote and on-location production model.',
     video: '/videos/animations-preview-wetrends.mp4',
   },
   'content-strategy': {
     icon: PenTool,
     title: 'Content Strategy',
     headline: 'Words That Work as Hard as You Do',
-    description: 'Strategic content that positions you as the authority in your space. We craft narratives that educate, engage, and convert your Guildford and UK audience.',
+    description: 'Strategic content that positions you as an authority in your space. We craft narratives that educate, engage and convert London, Surrey and UK audiences.',
     features: ['SEO Content', 'Copywriting', 'Editorial', 'Storytelling', 'Blog Management', 'Email Campaigns', 'White Papers', 'Case Studies'],
     process: [
       { step: '01', title: 'Research', description: 'Identify high-value topics your audience is searching for.' },
@@ -372,7 +372,7 @@ export default function ServiceDetail({ slug }: { slug: string }) {
               Ready to Get Started?
             </h2>
             <p className="mb-8 text-lg text-white/80">
-              Let&apos;s discuss your {service.title.toLowerCase()} project. Free consultation for Guildford & Surrey businesses.
+              Let&apos;s discuss your {service.title.toLowerCase()} project. Initial consultations are available for London, Surrey and UK teams.
             </p>
             <motion.a
               href="/#contact"

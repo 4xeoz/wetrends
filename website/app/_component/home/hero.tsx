@@ -18,7 +18,7 @@ const Hero = () => {
       >
         <Image
           src="/images/hero_background.webp"
-          alt="WeTrends creative agency office in Guildford, Surrey"
+          alt="WeTrends creative technology and production team"
           fill
           priority
           className="object-cover object-center"

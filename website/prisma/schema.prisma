@@ -35,6 +35,8 @@ model ContactMessage {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   name      String
   email     String
+  service   String?
+  source    String?
   message   String
   isRead    Boolean  @default(false)
   createdAt DateTime @default(now())
@@ -234,6 +236,9 @@ model BlogPost {
   excerpt       String
   content       String
   featuredImage String?
+  featuredImageAlt    String?
+  featuredImageKind   String?
+  featuredImageCredit String?
   published     Boolean   @default(false)
   publishedAt   DateTime?
   views         Int       @default(0)
@@ -241,6 +246,13 @@ model BlogPost {
   metaTitle       String?
   metaDescription String?
   keywords        String[]
+  campaign         String?
+  contentType      String?
+  primaryServiceUrl String?
+  sourceUrls       String[] @default([])
+  automationStatus String?
+  automationRunId  String?
+  qualityScore     Int?
 
   categoryId String?       @db.ObjectId
   category   BlogCategory? @relation(fields: [categoryId], references: [id])

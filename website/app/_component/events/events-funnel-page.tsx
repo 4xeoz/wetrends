@@ -188,7 +188,7 @@ const eventSectionLinks = [
   { href: '/events/', label: 'Events' },
   { href: '/events/celebrations/', label: 'Celebrations' },
   { href: '/events/corporate/', label: 'Corporate' },
-  { href: '/events/work/', label: 'Work' },
+  { href: '/events/work/', label: 'Visual concepts' },
 ];
 
 function EventsSectionNav() {
@@ -487,7 +487,7 @@ function ProofGallery() {
         <AnimatedContent direction="vertical" distance={35} duration={0.8}>
           <div className="mb-10 flex items-end justify-between gap-6">
             <h2 className="max-w-2xl text-4xl font-bold leading-[0.95] tracking-[-0.045em] text-[#0F0F0F] sm:text-5xl lg:text-6xl">
-              How the room <span className="font-serif font-normal italic text-[#C72C5B]">felt.</span>
+              The visual <span className="font-serif font-normal italic text-[#C72C5B]">direction.</span>
             </h2>
             <Link href="#book" className="group hidden items-center gap-2 text-sm font-bold text-[#0F0F0F] sm:inline-flex">
               Check your date <ArrowUpRight className="h-4 w-4 transition-transform group-hover:rotate-45" />
@@ -499,13 +499,17 @@ function ProofGallery() {
           {proofImages.map((image, index) => (
             <AnimatedContent key={image.src} direction="vertical" distance={30} duration={0.75} delay={index * 0.04} className={image.className}>
               <figure className="group relative h-full min-h-0 overflow-hidden rounded-2xl bg-black sm:rounded-3xl">
-                <Image src={image.src} alt={`${image.label} event photographed by WeTrends`} fill priority={index === 0} sizes="(max-width: 1024px) 50vw, 40vw" className="object-cover transition-transform duration-700 group-hover:scale-[1.035]" />
+                <Image src={image.src} alt={`Illustrative ${image.label.toLowerCase()} event coverage concept`} fill priority={index === 0} sizes="(max-width: 1024px) 50vw, 40vw" className="object-cover transition-transform duration-700 group-hover:scale-[1.035]" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent" />
                 <figcaption className="absolute bottom-0 left-0 p-4 text-sm font-bold text-white sm:p-6">{image.label}</figcaption>
               </figure>
             </AnimatedContent>
           ))}
         </div>
+
+        <p className="mt-4 max-w-3xl text-xs leading-relaxed text-black/45">
+          These are AI-assisted visual concepts, not photographs of WeTrends clients. Genuine galleries are shared only with client permission.
+        </p>
 
         <Link href="#book" className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#0F0F0F] px-6 py-4 text-sm font-bold text-white sm:hidden">
           Check your date <ArrowRight className="h-4 w-4" />
@@ -536,7 +540,10 @@ export function EventsEnquiry({
   function markStarted() {
     if (started) return;
     setStarted(true);
-    trackEvent(ANALYTICS_EVENTS.contactFormStarted, { source: 'events' });
+    const properties = { lead_source: 'events', service_line: 'events' };
+    trackEvent(ANALYTICS_EVENTS.eventEnquiryStart, properties);
+    trackEvent(ANALYTICS_EVENTS.startQuote, properties);
+    trackEvent(ANALYTICS_EVENTS.contactFormStarted, properties);
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -577,13 +584,17 @@ export function EventsEnquiry({
       });
 
       if (result.success) {
-        trackEvent(ANALYTICS_EVENTS.contactFormSubmitted, {
-          service: 'event_coverage',
+        const eventProperties = {
+          service_line: 'events',
+          lead_source: 'events',
           event_type: plan.eventType,
           duration: plan.duration,
           media: plan.media,
           add_ons: plan.addOns.length,
-        });
+          currency: 'GBP',
+        };
+        trackEvent(ANALYTICS_EVENTS.generateLead, eventProperties);
+        trackEvent(ANALYTICS_EVENTS.contactFormSubmitted, eventProperties);
         setSubmitted(true);
         setForm(emptyForm);
       } else {

@@ -11,13 +11,13 @@ const contactInfo = [
   {
     icon: Mail,
     label: 'Email',
-    value: 'wetrends.uk@gmail.com',
-    href: 'mailto:wetrends.uk@gmail.com',
+    value: 'team@wetrends.co.uk',
+    href: 'mailto:team@wetrends.co.uk',
   },
   {
     icon: MapPin,
     label: 'Location',
-    value: 'Guildford, Surrey, UK',
+    value: 'London · Surrey · UK',
     href: '#',
   },
 ];
@@ -151,7 +151,7 @@ export default function Contact() {
             >
               <p className="text-[10px] sm:text-xs text-white/50 uppercase tracking-wider mb-2 sm:mb-3">Areas We Serve</p>
               <p className="text-xs sm:text-sm text-white/60 leading-relaxed">
-                Guildford • Woking • Farnham • Dorking • Reigate • Leatherhead • Cobham • Esher • Surrey • London • UK-wide
+                London • Guildford • Surrey • UK-wide — we are completing our move from Guildford to London.
               </p>
             </motion.div>
           </motion.div>

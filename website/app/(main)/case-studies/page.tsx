@@ -8,7 +8,7 @@ import FoodSection from './_components/food-section';
 import ReelWall from '@/components/reels/reel-wall';
 
 export const metadata: Metadata = {
-  title: 'Case Studies | WeTrends Creative Agency Guildford',
+  title: 'Case Studies | WeTrends Creative Technology Agency',
   description:
     'Explore real projects and results. See how WeTrends has helped businesses transform their brands and grow through web design, video production, and digital marketing.',
   alternates: {
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Case Studies | WeTrends Creative Agency',
     description:
-      'Real projects, real results. See how WeTrends helps businesses grow through creative digital solutions in Guildford, Surrey, and beyond.',
+      'Real projects and results across creative technology, production and digital growth for London, Surrey and UK clients.',
     url: 'https://wetrends.co.uk/case-studies/',
     type: 'website',
     locale: 'en_GB',

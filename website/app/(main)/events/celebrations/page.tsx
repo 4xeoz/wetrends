@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import EventSpecialistPage from '@/app/_component/events/event-specialist-page';
 
 export const metadata: Metadata = {
-  title: 'Celebration Photography & Video Surrey and London | WeTrends',
+  title: 'Celebration Photography & Video London and Surrey | WeTrends',
   description:
     'Natural photography and film for birthdays, graduations, anniversaries and milestone celebrations across Surrey and London.',
   alternates: {

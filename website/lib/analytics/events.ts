@@ -3,6 +3,13 @@
  * Add a new event here (one line) then call `trackEvent("your_event", {...})` anywhere in the app.
  */
 export const ANALYTICS_EVENTS = {
+  startQuote: "start_quote",
+  generateLead: "generate_lead",
+  portfolioView: "portfolio_view",
+  photoshootBookingStart: "photoshoot_booking_start",
+  eventEnquiryStart: "event_enquiry_start",
+  bookingConfirmed: "booking_confirmed",
+  projectWon: "project_won",
   contactFormStarted: "contact_form_started",
   contactFormSubmitted: "contact_form_submitted",
   bookingStarted: "cinematography_booking_started",

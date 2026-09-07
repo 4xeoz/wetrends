@@ -13,6 +13,7 @@ interface BlogPost {
   slug: string;
   excerpt: string;
   featuredImage: string | null;
+  featuredImageAlt: string | null;
   publishedAt: Date | null;
   category: {
     name: string;
@@ -117,7 +118,7 @@ export function BlogPreview({ posts }: BlogPreviewProps) {
                     {post.featuredImage ? (
                       <Image
                         src={post.featuredImage}
-                        alt={`Featured image for ${post.title} — WeTrends blog on digital marketing and branding`}
+                        alt={post.featuredImageAlt || `Featured image for ${post.title}`}
                         fill
                         className="object-cover transition-transform duration-500 group-hover:scale-105"
                         unoptimized
@@ -182,7 +183,7 @@ export function BlogPreview({ posts }: BlogPreviewProps) {
           ))}
         </div>
 
-        {/* Newsletter CTA */}
+        {/* Insight library CTA */}
         <AnimatedContent
           direction="vertical"
           distance={40}
@@ -194,26 +195,25 @@ export function BlogPreview({ posts }: BlogPreviewProps) {
             <div className="relative flex flex-col items-center justify-between gap-4 sm:gap-6 md:flex-row">
               <div className="text-center md:text-left">
                 <h3 className="mb-1 text-lg font-bold text-white sm:mb-2 sm:text-xl md:text-2xl lg:text-3xl">
-                  Stay in the Loop
+                  Explore the Insight Library
                 </h3>
                 <p className="text-xs text-gray-300 sm:text-sm md:text-base">
-                  Get the latest insights delivered straight to your inbox.
+                  Practical guidance for events, photography, creative production and technical growth.
                 </p>
               </div>
               
               <div className="flex w-full flex-col gap-2 sm:flex-row sm:gap-3 md:w-auto">
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  className="rounded-full bg-white/10 px-4 py-2.5 text-sm text-white placeholder-gray-400 outline-none ring-2 ring-transparent transition-all focus:ring-[#C72C5B] sm:px-6 sm:py-3 md:w-64"
-                />
-                <motion.button
+                <motion.div
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-gray-900 transition-colors hover:bg-gray-100 sm:px-8 sm:py-3"
                 >
-                  Subscribe
-                </motion.button>
+                  <Link
+                    href="/blogs/"
+                    className="block rounded-full bg-white px-5 py-2.5 text-center text-sm font-semibold text-gray-900 transition-colors hover:bg-gray-100 sm:px-8 sm:py-3"
+                  >
+                    Read all insights
+                  </Link>
+                </motion.div>
               </div>
             </div>
           </div>

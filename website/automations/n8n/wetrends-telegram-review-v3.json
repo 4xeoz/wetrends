@@ -1,0 +1,741 @@
+{
+  "name": "WeTrends Telegram Review v3 — Approve + Regenerate + Reject",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "id": "3d706ec8-4137-4826-9c78-f903521be687",
+      "name": "Telegram Review Commands",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -900,
+        400
+      ],
+      "webhookId": "0231ca24-42c3-4af8-bfe6-84b8b6d61e83",
+      "credentials": {
+        "telegramApi": {
+          "id": "7jUWAXImCuClzxG5",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const message = $input.first().json.message || {};\n  const chatId = String(message.chat?.id || '');\n  const text = String(message.text || '').trim();\n  const match = text.match(/^\\/(approve|reject|regenerate)(?:@[A-Za-z0-9_]+)?\\s+([0-9a-fA-F]{24})$/);\n  return [{ json: { authorised: chatId === '6833948326', valid: Boolean(match), action: match?.[1] || '', postId: match?.[2] || '', chatId, originalText: text } }];"
+      },
+      "id": "e503efe3-9e8e-499e-9dc8-c29a8fd2f8dc",
+      "name": "Parse and Authorise Command",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -680,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "424471a7-9440-40d2-aee8-2cfa57988f97",
+              "leftValue": "={{ $json.authorised }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "35b61634-367a-44c2-993a-64ed5b208ccd",
+      "name": "Authorised?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -460,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [];"
+      },
+      "id": "2d3c9a05-27a0-4f4b-9b57-63e95147039a",
+      "name": "Ignore Unauthorised Chat",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -240,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "2f9efe66-d1c3-4c9e-9a56-85ce2be36328",
+              "leftValue": "={{ $json.valid }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "7c637301-0a4b-472c-8974-94d19b0092a7",
+      "name": "Valid Command?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -240,
+        360
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "6833948326",
+        "text": "=Use one of these commands with a 24-character draft ID:\n/approve ID\n/regenerate ID\n/reject ID",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "fbdea9a2-42d2-40ba-a6b2-0811a4764d1f",
+      "name": "Send Command Help",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -20,
+        160
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "7jUWAXImCuClzxG5",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://wetrends.co.uk/api/blog/{{ $(\"Parse and Authorise Command\").first().json.postId }}/",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "id": "fab57907-9f9e-42db-b129-37138648efa2",
+      "name": "Get Draft",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -20,
+        440
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "REPLACE_WITH_WETRENDS_CREDENTIAL_ID",
+          "name": "WeTrends Blog API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e40770cc-40df-4c60-b016-63a97c3f142c",
+              "leftValue": "={{ $(\"Parse and Authorise Command\").first().json.action }}",
+              "rightValue": "approve",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "a0431900-6289-4fbb-90a9-7bd14a90a372",
+      "name": "Approve?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        200,
+        440
+      ]
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://wetrends.co.uk/api/blog/{{ $(\"Parse and Authorise Command\").first().json.postId }}/",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ published: true, automationStatus: \"approved\" }) }}",
+        "options": {}
+      },
+      "id": "92ca59a1-e5dc-426d-b916-116eee8763a7",
+      "name": "Publish Approved Draft",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        420,
+        240
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "REPLACE_WITH_WETRENDS_CREDENTIAL_ID",
+          "name": "WeTrends Blog API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "6833948326",
+        "text": "=✅ Published after your approval\n\n{{ $json.post.title }}\nhttps://wetrends.co.uk/blogs/{{ $json.post.slug }}/",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "9c43ca17-1527-44f3-b8ef-e0373c53bbc9",
+      "name": "Confirm Publication",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        640,
+        240
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "7jUWAXImCuClzxG5",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "32e40adb-b3d4-4a4a-bd69-86ba011d818b",
+              "leftValue": "={{ $(\"Parse and Authorise Command\").first().json.action }}",
+              "rightValue": "reject",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "0f35fd31-8b62-4b7e-8bca-b401c6a5be06",
+      "name": "Reject?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        420,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://wetrends.co.uk/api/blog/{{ $(\"Parse and Authorise Command\").first().json.postId }}/",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ published: false, automationStatus: \"rejected\" }) }}",
+        "options": {}
+      },
+      "id": "3ddf7a1d-f488-4ebf-9a88-96bdb64729f9",
+      "name": "Reject Draft",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        640,
+        440
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "REPLACE_WITH_WETRENDS_CREDENTIAL_ID",
+          "name": "WeTrends Blog API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "6833948326",
+        "text": "=🗑️ Draft rejected and kept private\n\n{{ $json.post.title }}\nDraft ID: {{ $json.post.id }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "417d28a9-93f7-4aba-9492-96bf44f5c761",
+      "name": "Confirm Rejection",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        860,
+        440
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "7jUWAXImCuClzxG5",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const post = $input.first().json.post;\n  if (!post || post.contentType === 'case_study') throw new Error('Case-study images must be genuine portfolio proof and cannot be AI-regenerated.');\n  return [{ json: { postId: post.id, prompt: `Create a fresh premium editorial blog cover for a UK creative technology agency. Article: ${post.title}. Campaign: ${post.campaign || 'agency'}. Wide landscape, sophisticated and credible, charcoal/warm white/magenta palette, no logos, no readable text, no watermarks, no fake UI and no implication this is client portfolio work.`, alt: post.featuredImageAlt || `${post.title} AI-assisted editorial concept` } }];"
+      },
+      "id": "a5e0523f-8d00-4e72-a77a-6098de33cce3",
+      "name": "Build Regeneration Prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        640,
+        680
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/images/generations",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ model: \"gpt-image-2\", prompt: $json.prompt, size: \"1536x1024\", quality: \"medium\", output_format: \"webp\", output_compression: 82, n: 1 }) }}",
+        "options": {}
+      },
+      "id": "e9f9fc3c-4bce-4152-b024-1e3ba200d38c",
+      "name": "Regenerate Medium Cover",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        860,
+        680
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "REPLACE_WITH_OPENAI_CREDENTIAL_ID",
+          "name": "OpenAI - WeTrends SEO"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const response = $input.first().json;\n  const base64 = response.data?.[0]?.b64_json;\n  const context = $('Build Regeneration Prompt').first().json;\n  return [{ json: { imageReady: Boolean(base64), postId: context.postId, mediaPayload: base64 ? { base64, contentType: 'image/webp', filename: `${context.postId}-regenerated-cover.webp`, alt: context.alt, imageKind: 'ai_supporting', credit: 'AI-assisted editorial image generated with OpenAI GPT Image 2' } : null } }];"
+      },
+      "id": "cd76f303-c8b6-4626-a21c-8e54ba5565bd",
+      "name": "Prepare Regenerated Image",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1080,
+        680
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "dcf4d960-549d-49df-b34a-68e87c342b55",
+              "leftValue": "={{ $json.imageReady }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "097d243d-ba9c-447f-9aec-215769b591b9",
+      "name": "Regenerated Image Ready?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1300,
+        680
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://wetrends.co.uk/api/blog/media/",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.mediaPayload) }}",
+        "options": {}
+      },
+      "id": "0f8de8db-a7dd-45c5-85f5-50fc40341f66",
+      "name": "Store Regenerated Cover",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1520,
+        600
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "REPLACE_WITH_WETRENDS_CREDENTIAL_ID",
+          "name": "WeTrends Blog API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://wetrends.co.uk/api/blog/{{ $(\"Parse and Authorise Command\").first().json.postId }}/",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ published: false, automationStatus: \"review_ready\", featuredImage: $json.image.url, featuredImageAlt: $json.image.alt, featuredImageKind: $json.image.kind, featuredImageCredit: $json.image.credit }) }}",
+        "options": {}
+      },
+      "id": "7941f158-3ab4-4e07-a933-6c2b70efb3e7",
+      "name": "Update Draft Cover",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1740,
+        600
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "REPLACE_WITH_WETRENDS_CREDENTIAL_ID",
+          "name": "WeTrends Blog API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "6833948326",
+        "text": "=🖼️ New medium-quality cover ready\n\n{{ $json.post.title }}\n{{ $json.post.featuredImage }}\n\nApprove: /approve {{ $json.post.id }}\nRegenerate again: /regenerate {{ $json.post.id }}\nReject: /reject {{ $json.post.id }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "5d769c59-053e-45ab-8df0-4916f249abc2",
+      "name": "Send Regenerated Cover",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1960,
+        600
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "7jUWAXImCuClzxG5",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "6833948326",
+        "text": "=⚠️ The image could not be regenerated. The draft remains private and unchanged.\nDraft ID: {{ $(\"Parse and Authorise Command\").first().json.postId }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "ecfddda2-407a-468d-95ad-03eaa1b8730c",
+      "name": "Report Regeneration Failure",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1520,
+        820
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "7jUWAXImCuClzxG5",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Approval contract\n\nOnly private Telegram chat 6833948326 is accepted. Publishing requires `/approve <draft-id>`. The website re-runs its quality gate immediately before publication. Regeneration changes only the supporting image. Rejection keeps the draft private.",
+        "height": 260,
+        "width": 620,
+        "color": 5
+      },
+      "id": "c674b4f1-baa7-46ee-82db-ecafae4678f8",
+      "name": "Approval Contract",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -900,
+        840
+      ]
+    }
+  ],
+  "connections": {
+    "Telegram Review Commands": {
+      "main": [
+        [
+          {
+            "node": "Parse and Authorise Command",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse and Authorise Command": {
+      "main": [
+        [
+          {
+            "node": "Authorised?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Authorised?": {
+      "main": [
+        [
+          {
+            "node": "Valid Command?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Ignore Unauthorised Chat",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Valid Command?": {
+      "main": [
+        [
+          {
+            "node": "Get Draft",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Command Help",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Draft": {
+      "main": [
+        [
+          {
+            "node": "Approve?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Approve?": {
+      "main": [
+        [
+          {
+            "node": "Publish Approved Draft",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Reject?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Publish Approved Draft": {
+      "main": [
+        [
+          {
+            "node": "Confirm Publication",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reject?": {
+      "main": [
+        [
+          {
+            "node": "Reject Draft",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Regeneration Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reject Draft": {
+      "main": [
+        [
+          {
+            "node": "Confirm Rejection",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Regeneration Prompt": {
+      "main": [
+        [
+          {
+            "node": "Regenerate Medium Cover",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Regenerate Medium Cover": {
+      "main": [
+        [
+          {
+            "node": "Prepare Regenerated Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Regenerated Image": {
+      "main": [
+        [
+          {
+            "node": "Regenerated Image Ready?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Regenerated Image Ready?": {
+      "main": [
+        [
+          {
+            "node": "Store Regenerated Cover",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Report Regeneration Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Store Regenerated Cover": {
+      "main": [
+        [
+          {
+            "node": "Update Draft Cover",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Draft Cover": {
+      "main": [
+        [
+          {
+            "node": "Send Regenerated Cover",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Europe/London",
+    "saveDataErrorExecution": "all"
+  }
+}

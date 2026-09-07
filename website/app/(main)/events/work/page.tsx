@@ -2,15 +2,16 @@ import type { Metadata } from 'next';
 import EventSpecialistPage from '@/app/_component/events/event-specialist-page';
 
 export const metadata: Metadata = {
-  title: 'Event Photography & Video Portfolio | WeTrends',
+  title: 'Event Coverage Visual Direction | WeTrends',
   description:
-    'Selected WeTrends photography and film work from celebrations, conferences, launches and milestone events across Surrey and London.',
+    'Illustrative coverage directions for celebrations, conferences, launches and milestone events across London and Surrey.',
+  robots: { index: false, follow: true },
   alternates: {
     canonical: 'https://wetrends.co.uk/events/work/',
   },
   openGraph: {
-    title: 'Selected Event Work | WeTrends',
-    description: 'Celebrations, conferences, launches and milestones photographed without stopping the flow.',
+    title: 'Event Coverage Visual Direction | WeTrends',
+    description: 'Illustrative directions for celebrations, conferences, launches and milestones.',
     url: 'https://wetrends.co.uk/events/work/',
     type: 'website',
     locale: 'en_GB',
@@ -20,7 +21,7 @@ export const metadata: Metadata = {
         url: '/images/events-celebration-toast.png',
         width: 1672,
         height: 941,
-        alt: 'A collection of event photography by WeTrends',
+        alt: 'AI-assisted illustrative event coverage concept',
       },
     ],
   },

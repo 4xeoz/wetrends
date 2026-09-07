@@ -16,6 +16,8 @@ interface BlogCoverProps {
   category?: string | null;
   index?: number;
   slug?: string;
+  imageUrl?: string | null;
+  imageAlt?: string | null;
   size?: 'card' | 'hero';
   meta?: ReactNode;
   className?: string;
@@ -43,12 +45,14 @@ export function BlogCover({
   category,
   index,
   slug,
+  imageUrl,
+  imageAlt,
   size = 'card',
   meta,
   className = '',
 }: BlogCoverProps) {
   const imageIndex = getImageIndex(index, slug);
-  const image = COVER_IMAGES[imageIndex % COVER_IMAGES.length];
+  const image = imageUrl || COVER_IMAGES[imageIndex % COVER_IMAGES.length];
   const gradient = GRADIENTS[imageIndex % GRADIENTS.length];
   const isHero = size === 'hero';
 
@@ -57,7 +61,7 @@ export function BlogCover({
       {/* Background image */}
       <Image
         src={image}
-        alt=""
+        alt={imageUrl ? imageAlt || title : ""}
         fill
         sizes={isHero ? '100vw' : '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'}
         className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"

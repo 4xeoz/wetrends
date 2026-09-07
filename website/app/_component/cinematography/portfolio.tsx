@@ -6,17 +6,17 @@ import AnimatedContent from '@/components/ui/animated-content';
 const portfolioImages = [
   {
     src: 'https://images.unsplash.com/photo-1627556704302-624286467c65?w=800&q=80',
-    alt: 'Graduation portrait at University of Surrey campus',
+    alt: 'Licensed graduation portrait reference image',
     tall: true,
   },
   {
     src: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=600&q=75',
-    alt: 'Graduate celebrating at Guildford ceremony',
+    alt: 'Licensed graduate celebration reference image',
     tall: false,
   },
   {
     src: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=600&q=75',
-    alt: 'Graduation cap in the air, Surrey University',
+    alt: 'Licensed graduation setting reference image',
     tall: false,
   },
   {
@@ -26,12 +26,12 @@ const portfolioImages = [
   },
   {
     src: 'https://images.unsplash.com/photo-1563237023-b1e970526dcb?w=600&q=75',
-    alt: 'Graduate holding diploma outdoors Guildford',
+    alt: 'Licensed outdoor graduation portrait reference image',
     tall: false,
   },
   {
     src: 'https://images.unsplash.com/photo-1571260899304-425eee4c7efc?w=800&q=80',
-    alt: 'Group of Surrey University graduates celebrating',
+    alt: 'Licensed group graduation reference image',
     tall: false,
   },
 ];
@@ -47,17 +47,16 @@ export default function CinematographyPortfolio() {
             <div>
               <span className="mb-4 inline-flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-[#C72C5B]">
                 <span className="h-px w-8 bg-[#C72C5B]" />
-                Our Work
+                Shoot direction
               </span>
               <h2 className="text-4xl font-bold leading-none text-[#0F0F0F] md:text-5xl lg:text-6xl xl:text-7xl">
-                Real Graduates.
+                Useful references.
                 <br />
-                <span className="font-serif italic text-[#C72C5B]">Real Moments.</span>
+                <span className="font-serif italic text-[#C72C5B]">Your real moment.</span>
               </h2>
             </div>
             <p className="max-w-sm text-base leading-relaxed text-gray-500 md:text-right">
-              Every shoot is unique — here&apos;s a taste of what we create at Surrey
-              University and across Guildford.
+              These licensed references show the intended mood and framing. Your final gallery is built around you and the agreed location.
             </p>
           </div>
         </AnimatedContent>
@@ -91,7 +90,7 @@ export default function CinematographyPortfolio() {
         {/* Disclaimer + CTA row */}
         <div className="mt-8 flex flex-col items-center justify-between gap-4 sm:flex-row">
           <p className="text-sm text-gray-400">
-            Sample portfolio — your photos will be tailored to your graduation day
+            Licensed reference images from Unsplash — not WeTrends client work.
           </p>
           <Link
             href="#book"

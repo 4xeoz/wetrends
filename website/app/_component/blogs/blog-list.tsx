@@ -20,6 +20,7 @@ interface Post {
   slug: string;
   excerpt: string;
   featuredImage: string | null;
+  featuredImageAlt: string | null;
   publishedAt: Date | null;
   views: number;
   category: Category | null;
@@ -71,6 +72,8 @@ export function BlogList({ posts, categories }: BlogListProps) {
                       title={post.title}
                       category={post.category?.name}
                       slug={post.slug}
+                      imageUrl={post.featuredImage}
+                      imageAlt={post.featuredImageAlt}
                       index={index}
                     />
                   </div>

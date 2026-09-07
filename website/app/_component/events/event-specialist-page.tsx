@@ -61,7 +61,7 @@ const configs: Record<EventSpecialistPageKind, SpecialistPageConfig> = {
     accent: 'We’ll keep it.',
     description: 'Natural photographs and films of the people, reactions and little moments you missed.',
     primaryCta: 'Check your date',
-    secondaryCta: 'See celebration work',
+    secondaryCta: 'See visual direction',
     hero: [
       {
         src: '/images/events-celebration.png',
@@ -160,7 +160,7 @@ const configs: Record<EventSpecialistPageKind, SpecialistPageConfig> = {
     accent: 'as it felt.',
     description: 'Fast, polished event coverage built for press, teams and next-day social.',
     primaryCta: 'Check availability',
-    secondaryCta: 'See corporate work',
+    secondaryCta: 'See visual direction',
     hero: [
       {
         src: '/images/events-corporate-stage.png',
@@ -254,10 +254,10 @@ const configs: Record<EventSpecialistPageKind, SpecialistPageConfig> = {
   },
   work: {
     kind: 'work',
-    eyebrow: 'Selected event work',
-    title: 'Real rooms.',
-    accent: 'Real moments.',
-    description: 'Celebrations, conferences, launches and milestones—photographed without stopping the flow.',
+    eyebrow: 'Illustrative event direction',
+    title: 'Plan the room.',
+    accent: 'Keep the feeling.',
+    description: 'A coverage direction for celebrations, conferences, launches and milestones, shown with AI-assisted concepts.',
     primaryCta: 'Start a brief',
     secondaryCta: 'Explore the work',
     hero: [
@@ -281,9 +281,9 @@ const configs: Record<EventSpecialistPageKind, SpecialistPageConfig> = {
       },
     ],
     signals: ['Celebrations', 'Corporate', 'Photography + film'],
-    valueEyebrow: 'Selected frames',
-    valueTitle: 'Work that feels',
-    valueAccent: 'lived in.',
+    valueEyebrow: 'Coverage direction',
+    valueTitle: 'Built around',
+    valueAccent: 'the room.',
     values: [
       { title: 'Celebrations', copy: 'Birthdays, graduations, milestones.' },
       { title: 'Corporate', copy: 'Conferences, launches and awards.' },
@@ -369,7 +369,7 @@ const sectionLinks = [
   { href: '/events/', label: 'Events', key: 'events' },
   { href: '/events/celebrations/', label: 'Celebrations', key: 'celebrations' },
   { href: '/events/corporate/', label: 'Corporate', key: 'corporate' },
-  { href: '/events/work/', label: 'Work', key: 'work' },
+  { href: '/events/work/', label: 'Visual concepts', key: 'work' },
 ] as const;
 
 function EventSectionNav({ active }: { active: EventSpecialistPageKind }) {
@@ -429,7 +429,7 @@ function HeroStack({ items }: { items: [GalleryItem, GalleryItem, GalleryItem] }
         </motion.figure>
       ))}
       <div className="absolute bottom-[8%] left-[1%] z-40 flex h-20 w-20 -rotate-6 items-center justify-center rounded-full border-4 border-white bg-[#0F0F0F] text-center text-[9px] font-bold uppercase leading-tight tracking-[0.13em] text-white shadow-xl sm:h-24 sm:w-24 sm:text-[10px]">
-        Real<br />moments
+        Visual<br />concept
       </div>
     </div>
   );
@@ -484,6 +484,9 @@ function ProofGallery({ config }: { config: SpecialistPageConfig }) {
             </AnimatedContent>
           ))}
         </div>
+        <p className="mt-4 max-w-3xl text-xs leading-relaxed text-black/45">
+          These are AI-assisted visual concepts, not photographs of WeTrends clients. Genuine event galleries are published only with permission.
+        </p>
       </div>
     </section>
   );

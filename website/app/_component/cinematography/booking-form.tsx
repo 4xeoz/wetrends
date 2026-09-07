@@ -109,7 +109,14 @@ export default function CinematographyBookingForm() {
     try {
       const result = await createCinemaBooking(parsed.data);
       if (result.success) {
-        trackEvent(ANALYTICS_EVENTS.bookingCompleted, { package: parsed.data.service });
+        const eventProperties = {
+          package: parsed.data.service,
+          service_line: 'photoshoots',
+          lead_source: 'graduation_photography',
+          currency: 'GBP',
+        };
+        trackEvent(ANALYTICS_EVENTS.generateLead, eventProperties);
+        trackEvent(ANALYTICS_EVENTS.bookingCompleted, eventProperties);
         setSubmitted(true);
       } else {
         setServerError(result.message ?? 'Something went wrong. Please try again.');
@@ -224,7 +231,13 @@ export default function CinematographyBookingForm() {
                           type="button"
                           onClick={() => {
                             if (!selectedService) {
-                              trackEvent(ANALYTICS_EVENTS.bookingStarted, { package: value });
+                              const eventProperties = {
+                                package: value,
+                                service_line: 'photoshoots',
+                                lead_source: 'graduation_photography',
+                              };
+                              trackEvent(ANALYTICS_EVENTS.photoshootBookingStart, eventProperties);
+                              trackEvent(ANALYTICS_EVENTS.bookingStarted, eventProperties);
                             }
                             setSelectedService(value);
                             setFieldErrors((p) => ({ ...p, service: undefined }));

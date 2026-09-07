@@ -1,16 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/prisma/prisma";
 import { validateApiKey } from "@/lib/api-auth";
-import { updateBlogPostSchema } from "@/lib/zod/blog";
+import { createBlogPostSchema, updateBlogPostSchema } from "@/lib/zod/blog";
 import { revalidatePath } from "next/cache";
+import { evaluateBlogDraft } from "@/lib/blog-quality";
 
 // ─────────────────────────────────────────────
-// GET — Public (no API key needed)
+// GET — API key required so draft content is never exposed publicly
 // ─────────────────────────────────────────────
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const auth = validateApiKey(request);
+  if (!auth.authorized) return auth.response;
+
   try {
     const { id } = await params;
 
@@ -96,6 +100,64 @@ export async function PATCH(
       );
     }
 
+    if (data.published === true) {
+      if (data.automationStatus !== "approved") {
+        return NextResponse.json(
+          { success: false, message: "API publication requires an explicit approved status in this request" },
+          { status: 400 }
+        );
+      }
+
+      if (!['review_ready', 'approved', 'published'].includes(existingPost.automationStatus ?? '')) {
+        return NextResponse.json(
+          { success: false, message: "Only a review-ready draft can be published" },
+          { status: 409 }
+        );
+      }
+
+      const publicationCandidate = {
+        title: data.title ?? existingPost.title,
+        slug: data.slug ?? existingPost.slug,
+        excerpt: data.excerpt ?? existingPost.excerpt,
+        content: data.content ?? existingPost.content,
+        featuredImage: data.featuredImage ?? existingPost.featuredImage ?? undefined,
+        featuredImageAlt: data.featuredImageAlt ?? existingPost.featuredImageAlt ?? undefined,
+        featuredImageKind: data.featuredImageKind ?? existingPost.featuredImageKind ?? undefined,
+        featuredImageCredit: data.featuredImageCredit ?? existingPost.featuredImageCredit ?? undefined,
+        published: false,
+        metaTitle: data.metaTitle ?? existingPost.metaTitle ?? undefined,
+        metaDescription: data.metaDescription ?? existingPost.metaDescription ?? undefined,
+        keywords: data.keywords ?? existingPost.keywords,
+        campaign: data.campaign ?? existingPost.campaign ?? undefined,
+        contentType: data.contentType ?? existingPost.contentType ?? undefined,
+        primaryServiceUrl: data.primaryServiceUrl ?? existingPost.primaryServiceUrl ?? undefined,
+        sourceUrls: data.sourceUrls ?? existingPost.sourceUrls,
+        automationStatus: 'review_ready' as const,
+        automationRunId: data.automationRunId ?? existingPost.automationRunId ?? undefined,
+        qualityScore: data.qualityScore ?? existingPost.qualityScore ?? undefined,
+        categoryId: data.categoryId ?? existingPost.categoryId ?? undefined,
+        authorId: data.authorId ?? existingPost.authorId ?? undefined,
+      };
+      const candidateParsed = createBlogPostSchema.safeParse(publicationCandidate);
+      if (!candidateParsed.success) {
+        return NextResponse.json(
+          {
+            success: false,
+            message: "Draft is not publication-ready",
+            errors: candidateParsed.error.flatten().fieldErrors,
+          },
+          { status: 422 }
+        );
+      }
+      const quality = evaluateBlogDraft(candidateParsed.data);
+      if (!quality.pass) {
+        return NextResponse.json(
+          { success: false, message: "Draft no longer passes the publication quality gate", quality },
+          { status: 422 }
+        );
+      }
+    }
+
     // 4. Verify authorId exists (if changing)
     if (data.authorId) {
       const authorExists = await prisma.user.findUnique({
@@ -156,11 +218,23 @@ export async function PATCH(
         ...(data.excerpt !== undefined && { excerpt: data.excerpt }),
         ...(data.content !== undefined && { content: data.content }),
         ...(data.featuredImage !== undefined && { featuredImage: data.featuredImage }),
+        ...(data.featuredImageAlt !== undefined && { featuredImageAlt: data.featuredImageAlt }),
+        ...(data.featuredImageKind !== undefined && { featuredImageKind: data.featuredImageKind }),
+        ...(data.featuredImageCredit !== undefined && { featuredImageCredit: data.featuredImageCredit }),
         ...(data.published !== undefined && { published: data.published }),
         ...(publishedAt !== undefined && { publishedAt }),
         ...(data.metaTitle !== undefined && { metaTitle: data.metaTitle }),
         ...(data.metaDescription !== undefined && { metaDescription: data.metaDescription }),
         ...(data.keywords !== undefined && { keywords: data.keywords }),
+        ...(data.campaign !== undefined && { campaign: data.campaign }),
+        ...(data.contentType !== undefined && { contentType: data.contentType }),
+        ...(data.primaryServiceUrl !== undefined && { primaryServiceUrl: data.primaryServiceUrl }),
+        ...(data.sourceUrls !== undefined && { sourceUrls: data.sourceUrls }),
+        ...(data.automationStatus !== undefined && {
+          automationStatus: data.published === true ? "published" : data.automationStatus,
+        }),
+        ...(data.automationRunId !== undefined && { automationRunId: data.automationRunId }),
+        ...(data.qualityScore !== undefined && { qualityScore: data.qualityScore }),
         ...(data.categoryId !== undefined && { categoryId: data.categoryId }),
         ...(data.authorId !== undefined && { authorId: data.authorId }),
       },
@@ -169,6 +243,7 @@ export async function PATCH(
     // 7. Revalidate
     revalidatePath("/blogs");
     revalidatePath(`/blogs/${post.slug}`);
+    revalidatePath("/sitemap.xml");
 
     return NextResponse.json({ success: true, post });
   } catch (error) {

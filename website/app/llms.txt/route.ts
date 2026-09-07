@@ -41,7 +41,7 @@ export async function GET() {
 
   const content = `# WeTrends
 
-> WeTrends is a creative digital agency in Guildford, Surrey, UK. We help small businesses build uncopyable brands through web design, brand identity, video production, social media management, animation, and content strategy. We serve Guildford, Woking, Farnham, Dorking, Reigate, wider Surrey, London, and the UK.
+> WeTrends is a creative technology and production agency serving London, Surrey and UK clients. We build brands, websites, campaigns, films, event coverage and photography. We are completing a move from Guildford to London and do not claim a public London office address until it is verified.
 
 Contact: team@wetrends.co.uk — typical budget for a bespoke website is £3,000–£15,000; a full rebrand takes 6–12 weeks.
 
@@ -57,6 +57,8 @@ ${services}
 - [Blog](${baseUrl}/blogs/): Articles on branding, marketing, and growing a small business
 - [Questions](${baseUrl}/questions/): Direct answers to common questions about web design, branding, and digital marketing
 - [Cinematography](${baseUrl}/cinematography/): Cinematography and film production booking
+- [Photoshoots](${baseUrl}/photoshoots/): Portrait, personal-brand, team, product and graduation photography
+- [Events](${baseUrl}/events/): Celebration and corporate event photography and film
 
 ## Portfolio
 

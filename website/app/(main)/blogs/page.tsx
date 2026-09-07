@@ -4,8 +4,8 @@ import { BlogList } from '@/app/_component/blogs/blog-list';
 import { BlogHero } from '@/app/_component/blogs/blog-hero';
 
 export const metadata: Metadata = {
-  title: 'Blog | Digital Marketing Insights | WeTrends Guildford',
-  description: 'Expert insights on video production, social media marketing, web design and branding from Guildford\'s leading creative agency.',
+  title: 'Creative Technology & Production Insights | WeTrends',
+  description: 'Practical insights on creative technology, web design, content, events, photography and production for London, Surrey and UK teams.',
   alternates: {
     canonical: 'https://wetrends.co.uk/blogs',
   },

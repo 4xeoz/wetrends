@@ -14,6 +14,19 @@ export function getCloudinaryAdmin() {
   return { cloudinary, cloudName, apiKey, apiSecret };
 }
 
+export function getPublicCloudinaryAdmin() {
+  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+  const apiKey = process.env.CLOUDINARY_API_KEY;
+  const apiSecret = process.env.CLOUDINARY_API_SECRET;
+
+  if (!cloudName || !apiKey || !apiSecret) {
+    throw new Error('Public Cloudinary server credentials are not configured');
+  }
+
+  cloudinary.config({ cloud_name: cloudName, api_key: apiKey, api_secret: apiSecret, secure: true });
+  return { cloudinary, cloudName };
+}
+
 export function cloudinaryGalleryAssetUrl(publicId: string, download = false) {
   const { cloudinary } = getCloudinaryAdmin();
   return cloudinary.url(publicId, {

@@ -2,6 +2,14 @@ import posthog from "posthog-js";
 import type { AnalyticsEventName, AnalyticsEventProperties } from "./events";
 
 const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || "unknown-site";
+let lastPageviewUrl = "";
+
+declare global {
+  interface Window {
+    dataLayer?: unknown[];
+    gtag?: (...args: unknown[]) => void;
+  }
+}
 
 /**
  * Initializes PostHog once, client-side only. Safe to call multiple times —
@@ -58,13 +66,19 @@ export function initPostHog() {
 }
 
 export function trackEvent(name: AnalyticsEventName, properties?: AnalyticsEventProperties) {
-  if (typeof window === "undefined" || !posthog.__loaded) return;
-  posthog.capture(name, properties);
+  if (typeof window === "undefined") return;
+  if (posthog.__loaded) posthog.capture(name, properties);
+  window.gtag?.("event", name, properties ?? {});
 }
 
 export function capturePageview(url: string) {
-  if (typeof window === "undefined" || !posthog.__loaded) return;
-  posthog.capture("$pageview", { $current_url: url });
+  if (typeof window === "undefined" || url === lastPageviewUrl) return;
+  lastPageviewUrl = url;
+  if (posthog.__loaded) posthog.capture("$pageview", { $current_url: url });
+  window.gtag?.("event", "page_view", {
+    page_location: url,
+    page_path: new URL(url).pathname,
+  });
 }
 
 export function identifyUser(distinctId: string, properties?: AnalyticsEventProperties) {

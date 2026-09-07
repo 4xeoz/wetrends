@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowUpRight, Star, Clock, ShieldCheck } from 'lucide-react';
+import { ArrowUpRight, Check, Clock, ShieldCheck } from 'lucide-react';
 import { motion } from 'motion/react';
 
 export default function CinematographyHero() {
@@ -54,20 +54,16 @@ export default function CinematographyHero() {
               Stunning edits delivered to your inbox in 48 hours.
             </motion.p>
 
-            {/* Star rating */}
+            {/* Trust signals */}
             <motion.div
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.35 }}
               className="mt-5 flex items-center gap-2"
             >
-              <div className="flex">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="h-4 w-4 fill-amber-400 text-amber-400" />
-                ))}
-              </div>
-              <span className="text-sm font-bold text-[#0F0F0F]">5.0</span>
-              <span className="text-sm text-gray-500">· 200+ Surrey graduates</span>
+              <Check className="h-4 w-4 text-[#C72C5B]" />
+              <span className="text-sm font-bold text-[#0F0F0F]">Calm direction</span>
+              <span className="text-sm text-gray-500">· clear deliverables</span>
             </motion.div>
 
             {/* Price anchors */}

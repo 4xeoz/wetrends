@@ -201,7 +201,28 @@ const serviceSignals: [ServiceSlug, string[]][] = [
   ['animation', ['animation', 'motion graphics', 'explainer']],
 ];
 
-export function pickServiceCta(title: string, keywords: string[], categoryName?: string | null): ServiceCta | null {
+export function pickServiceCta(
+  title: string,
+  keywords: string[],
+  categoryName?: string | null,
+  campaign?: string | null,
+  primaryServiceUrl?: string | null
+): ServiceCta | null {
+  if (campaign === 'events' || primaryServiceUrl?.includes('/events/')) {
+    return {
+      title: 'Event photography and film',
+      description: 'Plan coverage around the room, the moments and the content you need afterwards.',
+      href: '/events/',
+    };
+  }
+  if (campaign === 'photoshoots' || primaryServiceUrl?.includes('/photoshoots/')) {
+    return {
+      title: 'Photoshoots for people and brands',
+      description: 'Build a practical shot list for portraits, teams, products or a personal brand campaign.',
+      href: '/photoshoots/',
+    };
+  }
+
   const haystack = [title, ...keywords, categoryName ?? ''].join(' ').toLowerCase();
 
   let best: { slug: ServiceSlug; score: number } | null = null;

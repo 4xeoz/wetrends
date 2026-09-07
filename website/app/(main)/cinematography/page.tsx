@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     'graduation video Surrey',
     'graduation photography near me Surrey',
     'affordable graduation photographer Surrey',
-    'University of Surrey graduation 2025',
+    'University of Surrey graduation photography',
     'Guildford graduation photographer',
   ],
   alternates: {
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
         url: 'https://images.unsplash.com/photo-1627556704302-624286467c65?w=1200&q=80',
         width: 1200,
         height: 630,
-        alt: 'Graduation Photography Surrey by WeTrends',
+        alt: 'Graduation portrait in academic dress',
       },
     ],
   },
@@ -55,33 +55,20 @@ export const metadata: Metadata = {
 
 const jsonLd = {
   '@context': 'https://schema.org',
-  '@type': 'LocalBusiness',
+  '@type': 'Service',
   name: 'WeTrends Graduation Photography',
   description:
     'Professional graduation photography and cinematography services for University of Surrey and Guildford students.',
   url: 'https://wetrends.co.uk/cinematography/',
-  address: {
-    '@type': 'PostalAddress',
-    addressLocality: 'Guildford',
-    addressRegion: 'Surrey',
-    addressCountry: 'GB',
-    postalCode: 'GU2',
-  },
-  geo: {
-    '@type': 'GeoCoordinates',
-    latitude: '51.2362',
-    longitude: '-0.5704',
+  provider: {
+    '@type': 'ProfessionalService',
+    '@id': 'https://wetrends.co.uk/#organisation',
+    name: 'WeTrends',
   },
   areaServed: [
     { '@type': 'City', name: 'Guildford' },
     { '@type': 'AdministrativeArea', name: 'Surrey' },
   ],
-  aggregateRating: {
-    '@type': 'AggregateRating',
-    ratingValue: '5.0',
-    reviewCount: '200',
-    bestRating: '5',
-  },
   priceRange: '££',
   hasOfferCatalog: {
     '@type': 'OfferCatalog',

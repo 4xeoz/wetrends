@@ -63,7 +63,7 @@ Sarah is passionate about sustainable marketing practices and regularly advises 
     role: 'Lead Designer',
     image: '/images/zack.png',
     bio: 'Award-winning designer crafting visual experiences that captivate and convert.',
-    fullBio: `Zack is the creative force behind WeTrends' visual identity work. An award-winning designer with a background in both traditional graphic design and digital experiences, Zack brings a unique perspective to every project.
+    fullBio: `Zack is the creative force behind WeTrends' visual identity work. A multidisciplinary designer with a background in both traditional graphic design and digital experiences, Zack brings a unique perspective to every project.
 
 His design philosophy centers on the belief that great design should be both beautiful and functional. Zack has created visual systems for brands ranging from tech startups to established luxury retailers, always finding the perfect balance between innovation and brand heritage.
 

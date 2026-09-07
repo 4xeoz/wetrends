@@ -11,7 +11,7 @@ const topics = [
   {
     title: 'Web Design for Surrey Businesses',
     description:
-      'Bespoke, conversion focused websites built with Next.js. Mobile first, fast, and designed to turn visitors into customers. We work with businesses in Guildford, Woking, Farnham, and across Surrey.',
+      'Bespoke, conversion-focused websites built with Next.js. Mobile first, fast and designed to turn visitors into customers. We work with teams across London, Surrey and the UK.',
     href: '/services/web-design/',
   },
   {

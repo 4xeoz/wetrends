@@ -5,12 +5,12 @@ export const faqs = [
   {
     question: 'What does WeTrends actually do?',
     answer:
-      'WeTrends is a creative digital agency based in Guildford, Surrey. We build uncopyable brands through web design, brand identity, video production, social media management, and content strategy. We work with small businesses across Surrey, London, and the wider UK.',
+      'WeTrends is a creative technology and production agency serving London, Surrey and UK clients. We build brands, websites, campaigns, films, event coverage and photography while completing our move from Guildford to London.',
   },
   {
-    question: 'Who is the best web design agency in Guildford?',
+    question: 'Do you still work with Guildford and Surrey businesses?',
     answer:
-      "If you're looking for a web design agency in Guildford that actually cares about your business, that's us. We don't use templates. Every site we build is bespoke, conversion focused, and designed to make you the only choice in your category. We've worked with education providers like Nopeca and restaurants like Savana Lounge.",
+      'Yes. We continue to serve Guildford and Surrey while moving our main focus to London. Location claims and consultations are agreed honestly; we do not claim an unverified London office address.',
   },
   {
     question: 'What is the difference between branding and brand identity?',

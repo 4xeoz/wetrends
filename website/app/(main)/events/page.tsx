@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import EventsPage from '@/app/_component/events/events-funnel-page';
 
 export const metadata: Metadata = {
-  title: 'Event Photography & Video Surrey and London | WeTrends',
+  title: 'Event Photography & Video London and Surrey | WeTrends',
   description:
     'Natural event photography and cinematic video for birthdays, private celebrations, launches, conferences and corporate events across Surrey and London.',
   alternates: {
@@ -48,8 +48,8 @@ const serviceSchema = {
     url: 'https://wetrends.co.uk/',
   },
   areaServed: [
-    { '@type': 'AdministrativeArea', name: 'Surrey' },
     { '@type': 'City', name: 'London' },
+    { '@type': 'AdministrativeArea', name: 'Surrey' },
   ],
   hasOfferCatalog: {
     '@type': 'OfferCatalog',

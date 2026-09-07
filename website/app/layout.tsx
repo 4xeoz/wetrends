@@ -4,44 +4,29 @@ import "./globals.css";
 import { SessionProvider } from "next-auth/react";
 import { PostHogProvider } from "@/components/providers/posthog-provider";
 import { NavigationProgress } from "@/app/_component/shared/navigation-progress";
+import { organisationSchema, siteProfile } from "@/lib/site-profile";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "WeTrends | Creative Agency Guildford, Surrey | Digital Marketing & Content",
-  description: "WeTrends is a creative digital agency in Guildford, Surrey. We help UK businesses grow with expert video production, social media management, web design, branding & content creation. Local agency, national results.",
+  title: "WeTrends | Creative Technology & Production Agency London",
+  description: siteProfile.description,
   keywords: [
+    "creative agency London",
+    "technology agency London",
+    "production agency London",
+    "event photography London",
+    "photoshoot London",
+    "video production London",
+    "web design London",
+    "brand identity London",
+    "content marketing London",
+    "programmatic content agency",
     "digital agency Guildford",
-    "marketing agency Surrey",
-    "content creation Guildford",
-    "video production Surrey",
-    "social media management Guildford",
-    "web design Guildford",
-    "branding agency Surrey",
-    "digital marketing Guildford",
+    "creative agency Surrey",
     "creative agency near me",
-    "content marketing Surrey",
-    "graphic design Guildford",
-    "SEO agency Surrey",
-    "brand strategy Guildford",
-    "digital branding UK",
-    "video editing Surrey",
-    "social media agency Guildford",
-    "web development Surrey",
-    "animation studio Guildford",
-    "creative design Surrey",
-    "marketing consultant Guildford",
-    "local marketing agency",
-    "Surrey business marketing",
-    "Guildford business growth",
-    "Woking marketing agency",
-    "Farnham creative agency",
-    "Dorking digital marketing",
-    "Reigate content creation",
-    "Leatherhead web design",
-    "Cobham branding agency",
-    "Esher video production"
+    "digital branding UK"
   ],
   authors: [{ name: "WeTrends" }],
   creator: "WeTrends",
@@ -61,8 +46,8 @@ export const metadata: Metadata = {
     canonical: "https://wetrends.co.uk",
   },
   openGraph: {
-    title: "WeTrends | Creative Digital Agency in Guildford, Surrey",
-    description: "Guildford's leading creative agency for video production, social media, web design & branding. Helping UK businesses grow with compelling digital content.",
+    title: "WeTrends | Creative Technology & Production Agency London",
+    description: siteProfile.description,
     url: "https://wetrends.co.uk",
     type: "website",
     locale: "en_GB",
@@ -72,14 +57,14 @@ export const metadata: Metadata = {
         url: "/images/og-image.png",
         width: 1200,
         height: 630,
-        alt: "WeTrends Creative Agency Guildford Surrey",
+        alt: "WeTrends creative technology and production agency",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "WeTrends | Creative Agency Guildford, Surrey",
-    description: "Guildford's creative agency for digital marketing, video production & branding. Local expertise, national results.",
+    title: "WeTrends | Creative Technology & Production Agency London",
+    description: siteProfile.description,
     images: ["/images/og-image.png"],
   },
   ...(process.env.GOOGLE_SITE_VERIFICATION && {
@@ -95,52 +80,6 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-};
-
-// Local Business Schema
-const localBusinessSchema = {
-  "@context": "https://schema.org",
-  "@type": "ProfessionalService",
-  "name": "WeTrends",
-  "description": "Creative digital agency in Guildford, Surrey specialising in video production, social media management, web design, branding and content creation.",
-  "url": "https://wetrends.co.uk",
-  "email": "wetrends.uk@gmail.com",
-  "address": {
-    "@type": "PostalAddress",
-    "addressLocality": "Guildford",
-    "addressRegion": "Surrey",
-    "addressCountry": "GB"
-  },
-  "geo": {
-    "@type": "GeoCoordinates",
-    "latitude": "51.2362",
-    "longitude": "-0.5704"
-  },
-  "areaServed": [
-    { "@type": "City", "name": "Guildford" },
-    { "@type": "City", "name": "Woking" },
-    { "@type": "City", "name": "Farnham" },
-    { "@type": "City", "name": "Dorking" },
-    { "@type": "City", "name": "Reigate" },
-    { "@type": "AdministrativeArea", "name": "Surrey" },
-    { "@type": "Country", "name": "United Kingdom" }
-  ],
-  "serviceType": [
-    "Video Production",
-    "Social Media Management",
-    "Web Design & Development",
-    "Brand Strategy",
-    "Content Creation",
-    "Graphic Design",
-    "Animation",
-    "Digital Marketing"
-  ],
-  "priceRange": "££",
-  "openingHours": ["Mo-Fr 09:00-18:00"],
-  "sameAs": [
-    "https://www.instagram.com/wetrends.uk",
-    "https://www.linkedin.com/company/wetrends-uk"
-  ]
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode; }>) {
@@ -161,14 +100,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         {/* Schema markup */}
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organisationSchema) }}
         />
-        
-        {/* Geo tags for local SEO */}
-        <meta name="geo.region" content="GB-SRY" />
-        <meta name="geo.placename" content="Guildford" />
-        <meta name="geo.position" content="51.2362;-0.5704" />
-        <meta name="ICBM" content="51.2362, -0.5704" />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <PostHogProvider>

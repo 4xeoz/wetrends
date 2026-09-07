@@ -10,13 +10,15 @@ import { z } from 'zod'
 interface ContactFormData {
   name: string;
   email: string;
+  service?: string;
+  source?: string;
   message: string;
 }
 
 // Define response types
 interface SuccessResponse {
   success: true;
-  messageId: number;
+  messageId: string;
 }
 
 interface ValidationErrorResponse {
@@ -35,6 +37,8 @@ type ContactFormResponse = SuccessResponse | ValidationErrorResponse | GenericEr
 const ContactFormSchema = z.object({
   name: z.string().min(1, { message: "Name is required" }),
   email: z.string().email({ message: "Valid email is required" }),
+  service: z.string().trim().max(100).optional(),
+  source: z.string().trim().max(100).optional(),
   message: z.string().min(1, { message: "Message is required" })
 })
 
@@ -49,11 +53,13 @@ export async function submitContactForm(formData: ContactFormData): Promise<Cont
       data: {
         name: validatedData.name,
         email: validatedData.email,
+        service: validatedData.service || null,
+        source: validatedData.source || null,
         message: validatedData.message
       }
     })
 
-    return { success: true, messageId: Number(savedMessage.id) }
+    return { success: true, messageId: savedMessage.id }
 
   } catch (error) {
     console.error("Error submitting contact form:", error)

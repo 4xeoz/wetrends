@@ -55,14 +55,9 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
       '@type': 'ProfessionalService',
       name: 'WeTrends',
       url: 'https://wetrends.co.uk',
-      address: {
-        '@type': 'PostalAddress',
-        addressLocality: 'Guildford',
-        addressRegion: 'Surrey',
-        addressCountry: 'GB',
-      },
     },
     areaServed: [
+      { '@type': 'City', name: 'London' },
       { '@type': 'City', name: 'Guildford' },
       { '@type': 'AdministrativeArea', name: 'Surrey' },
       { '@type': 'Country', name: 'United Kingdom' },

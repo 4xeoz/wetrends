@@ -10,14 +10,14 @@ import Contact from '../_component/home/contact';
 import { getPublishedPosts } from '@/actions/blog';
 
 export const metadata: Metadata = {
-  title: "WeTrends | Creative Digital Agency Guildford, Surrey | Web Design & Branding",
-  description: "WeTrends is a creative digital agency based in Guildford, Surrey, UK. We build uncopyable brands through bespoke web design, brand identity, video production, and social media management for small businesses across Surrey and London.",
+  title: "Creative Technology & Production Agency London | WeTrends",
+  description: "WeTrends builds brands, websites, campaigns, films and photography for London, Surrey and UK businesses.",
   alternates: {
     canonical: "https://wetrends.co.uk/",
   },
   openGraph: {
-    title: "Digital Marketing Agency Guildford Surrey | WeTrends",
-    description: "Guildford's creative agency for video production, social media, web design & branding. Helping Surrey businesses grow with compelling digital content.",
+    title: "Creative Technology & Production Agency London | WeTrends",
+    description: "Brand, web, production, social, event and photography work for ambitious London, Surrey and UK businesses.",
     url: "https://wetrends.co.uk/",
     type: "website",
     locale: "en_GB",
