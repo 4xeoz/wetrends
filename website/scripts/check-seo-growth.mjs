@@ -18,6 +18,16 @@ const forbiddenSecrets = [
   /\bn8n_wt_[A-Za-z0-9_-]+\b/,
 ];
 
+const supportedDataTableOperations = new Set([
+  'insert',
+  'get',
+  'rowExists',
+  'rowNotExists',
+  'deleteRows',
+  'update',
+  'upsert',
+]);
+
 for (const filename of workflowFiles) {
   const source = fs.readFileSync(path.join(workflowDirectory, filename), 'utf8');
   const workflow = JSON.parse(source);
@@ -45,6 +55,23 @@ for (const filename of workflowFiles) {
     assert.doesNotThrow(() => new Function(node.parameters.jsCode), `${filename}/${node.name} contains invalid JavaScript`);
   }
 
+  for (const node of workflow.nodes.filter((item) => item.type === '@n8n/n8n-nodes-langchain.lmChatOpenAi')) {
+    assert.ok(!Object.hasOwn(node.parameters.options || {}, 'temperature'), `${filename}/${node.name} must use Luna's default temperature`);
+  }
+
+  for (const node of workflow.nodes.filter((item) => item.type === 'n8n-nodes-base.telegram')) {
+    assert.equal(node.parameters.additionalFields?.parse_mode, 'HTML', `${filename}/${node.name} must opt out of n8n's legacy Markdown fallback`);
+    assert.equal(node.parameters.additionalFields?.appendAttribution, false, `${filename}/${node.name} must not append n8n attribution`);
+  }
+
+  for (const node of workflow.nodes.filter((item) => item.type === 'n8n-nodes-base.dataTable')) {
+    assert.ok(supportedDataTableOperations.has(node.parameters.operation), `${filename}/${node.name} uses an unsupported Data Table operation`);
+    for (const condition of node.parameters.filters?.conditions || []) {
+      assert.ok(condition.keyName, `${filename}/${node.name} has a Data Table condition without a column`);
+      assert.ok(condition.condition, `${filename}/${node.name} has a Data Table condition without an operator`);
+    }
+  }
+
   if (filename !== 'wetrends-telegram-review-v3.json') {
     assert.ok(!source.includes('published: true'), `${filename} may not publish content`);
   }
@@ -53,16 +80,93 @@ for (const filename of workflowFiles) {
 const contentWorkflowSource = read('automations/n8n/wetrends-content-engine-v3.json');
 const contentWorkflow = JSON.parse(contentWorkflowSource);
 const imageNode = contentWorkflow.nodes.find((node) => node.name === 'Generate Medium Blog Cover');
+const queuedTopicNode = contentWorkflow.nodes.find((node) => node.name === 'Get Next Pending Topic');
+const draftPackageNode = contentWorkflow.nodes.find((node) => node.name === 'Build Draft Package');
 assert.ok(imageNode.parameters.jsonBody.includes('"gpt-image-2"'));
 assert.ok(imageNode.parameters.jsonBody.includes('"medium"'));
 assert.ok(imageNode.parameters.jsonBody.includes('"1536x1024"'));
+assert.equal(queuedTopicNode.parameters.filters.conditions[0].keyValue, 'queued_london');
+assert.ok(draftPackageNode.parameters.jsCode.includes(':topic:'), 'Drafts must retain their topic-row linkage');
 assert.match(contentWorkflowSource, /automationStatus: 'review_ready'/);
 assert.match(contentWorkflowSource, /Nothing is public until you approve/);
 
+const contentTelegramNamesWithExternalText = new Set([
+  'Send Draft Review to Telegram',
+  'Send Quality Block to Telegram',
+]);
+for (const node of contentWorkflow.nodes.filter((item) => contentTelegramNamesWithExternalText.has(item.name))) {
+  assert.ok(node.parameters.text.includes('.replaceAll("&", "&amp;")'), `${node.name} must HTML-escape external text`);
+}
+const qualityBlockText = contentWorkflow.nodes.find((node) => node.name === 'Send Quality Block to Telegram').parameters.text;
+assert.ok(qualityBlockText.indexOf('.replaceAll("&", "&amp;")') < qualityBlockText.indexOf('.slice(0, 1800)'), 'Quality issues must be escaped before the Telegram length cap');
+
 const reviewWorkflowSource = read('automations/n8n/wetrends-telegram-review-v3.json');
+const reviewWorkflow = JSON.parse(reviewWorkflowSource);
 assert.match(reviewWorkflowSource, /chatId === '6833948326'/);
 assert.match(reviewWorkflowSource, /published: true/);
-assert.ok(JSON.parse(reviewWorkflowSource).nodes.find((node) => node.name === 'Publish Approved Draft').parameters.jsonBody.includes('"approved"'));
+assert.ok(reviewWorkflow.nodes.find((node) => node.name === 'Publish Approved Draft').parameters.jsonBody.includes('"approved"'));
+for (const nodeName of ['Confirm Publication', 'Confirm Rejection', 'Send Regenerated Cover']) {
+  const node = reviewWorkflow.nodes.find((item) => item.name === nodeName);
+  assert.ok(node.parameters.text.includes('.replaceAll("&", "&amp;")'), `${nodeName} must HTML-escape external text`);
+}
+const publishedTopicSync = reviewWorkflow.nodes.find((node) => node.name === 'Sync Published Topic Status');
+const rejectedTopicSync = reviewWorkflow.nodes.find((node) => node.name === 'Sync Rejected Topic Status');
+assert.equal(publishedTopicSync.parameters.columns.value.status, 'published');
+assert.ok(publishedTopicSync.parameters.columns.value.published_url.includes('post.slug'));
+assert.equal(publishedTopicSync.parameters.filters.conditions[0].keyName, 'id');
+assert.equal(publishedTopicSync.onError, 'continueRegularOutput');
+assert.equal(rejectedTopicSync.parameters.columns.value.status, 'rejected');
+assert.equal(rejectedTopicSync.parameters.filters.conditions[0].keyName, 'id');
+assert.equal(rejectedTopicSync.onError, 'continueRegularOutput');
+assert.deepEqual(
+  new Set(reviewWorkflow.connections['Publish Approved Draft'].main[0].map((edge) => edge.node)),
+  new Set(['Confirm Publication', 'Sync Published Topic Status']),
+  'Publication confirmation and topic sync must be independent branches',
+);
+assert.deepEqual(
+  new Set(reviewWorkflow.connections['Reject Draft'].main[0].map((edge) => edge.node)),
+  new Set(['Confirm Rejection', 'Sync Rejected Topic Status']),
+  'Rejection confirmation and topic sync must be independent branches',
+);
+
+const topicPlanner = JSON.parse(read('automations/n8n/wetrends-topic-planner-v1.json'));
+const topicParserNode = topicPlanner.nodes.find((node) => node.name === 'Validate Topic Plan');
+assert.ok(topicParserNode.parameters.jsCode.includes("status: 'queued_london'"));
+assert.equal(topicPlanner.nodes.find((node) => node.name === 'Insert Pending Topics').parameters.columns.value.status, 'queued_london');
+assert.ok(topicPlanner.nodes.find((node) => node.name === 'Confirm Topic Queue').parameters.text.includes('.replaceAll("&", "&amp;")'));
+const parsedTopics = new Function('$input', topicParserNode.parameters.jsCode)({
+  first: () => ({
+    json: {
+      text: JSON.stringify([
+        { topic: 'London event topic', keywords: 'event', icp_angle: 'buyers', intent: 'commercial' },
+        { topic: 'London photoshoot topic', keywords: 'photoshoot', icp_angle: 'teams', intent: 'commercial' },
+        { topic: 'London agency topic', keywords: 'agency', icp_angle: 'founders', intent: 'commercial' },
+      ]),
+    },
+  }),
+});
+assert.deepEqual(parsedTopics.map((item) => item.json.status), ['queued_london', 'queued_london', 'queued_london']);
+
+const authorityWorkflowSource = read('automations/n8n/wetrends-authority-scout-v1.json');
+const growthWorkflowSource = read('automations/n8n/wetrends-growth-monitor-v1.json');
+const authorityWorkflow = JSON.parse(authorityWorkflowSource);
+const growthWorkflow = JSON.parse(growthWorkflowSource);
+const authorityTelegramText = authorityWorkflow.nodes.find((node) => node.name === 'Send Authority Review Queue').parameters.text;
+const growthTelegramText = growthWorkflow.nodes.find((node) => node.name === 'Send Weekly Growth Report').parameters.text;
+assert.ok(authorityTelegramText.includes('.replaceAll("&", "&amp;")'));
+assert.ok(growthTelegramText.includes('.replaceAll("&", "&amp;")'));
+assert.ok(authorityTelegramText.indexOf('.replaceAll("&", "&amp;")') < authorityTelegramText.indexOf('.slice(0, 3200)'), 'Authority output must be escaped before the Telegram length cap');
+assert.ok(growthTelegramText.indexOf('.replaceAll("&", "&amp;")') < growthTelegramText.indexOf('.slice(0, 3200)'), 'Growth output must be escaped before the Telegram length cap');
+assert.ok(
+  growthWorkflow.nodes.find((node) => node.name === 'Build Weekly Growth Brief').parameters.jsCode.includes('hasGa4ReportShape'),
+  'Growth reporting must not mistake disabled-node passthrough data for GA4 evidence',
+);
+const growthBriefNode = growthWorkflow.nodes.find((node) => node.name === 'Build Weekly Growth Brief');
+const gscPassthrough = { rows: [{ keys: ['event photographer london', '/events/'], clicks: 3, impressions: 80, ctr: 0.0375, position: 8.2 }] };
+const growthBrief = new Function('$', growthBriefNode.parameters.jsCode)((name) => ({
+  first: () => ({ json: name === 'Search Console 28-Day Report' || name === 'GA4 Landing Pages — Configure Property ID' ? gscPassthrough : { statusCode: 200 } }),
+}));
+assert.match(growthBrief[0].json.monitorPrompt, /GA4:\nNot configured or no valid GA4 runReport response/);
 
 const createRoute = read('app/api/blog/route.ts');
 const updateRoute = read('app/api/blog/[id]/route.ts');

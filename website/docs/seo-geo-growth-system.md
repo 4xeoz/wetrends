@@ -40,6 +40,45 @@ publish verification + sitemap check
 weekly performance feedback and backlink opportunity queue
 ```
 
+## Runtime components
+
+All imported workflows use the `Europe/London` timezone and must remain inactive until the preview-deployment gates below pass.
+
+| Workflow | Schedule | Responsibility |
+| --- | --- | --- |
+| Topic Planner | Sunday 18:00 | Uses the published site index and Search Console evidence to propose exactly one events, one photoshoots and one agency opportunity. It writes only new topics. |
+| Content Engine | Monday, Wednesday and Friday 09:00 | Consumes one London topic, checks duplication, researches sources, creates the draft and medium GPT Image 2 cover, applies the website quality gate and sends the private review message. |
+| Telegram Review | Event driven | Accepts commands only from the configured private chat. It can approve, reject or regenerate a cover; only the explicit approve path may request publication. |
+| Authority Scout | Tuesday 10:00 | Finds and scores relevant authority opportunities, drafts a suggested approach and sends a review queue. It never sends outreach. |
+| Growth Monitor | Monday 08:00 | Checks public technical surfaces and compares Search Console and GA4 evidence before sending the weekly decision report. |
+
+### Topic queue contract
+
+The shared n8n Data Table is named `blog_topics`. Existing legacy rows are preserved. New London-first planner rows use `status = queued_london`, and the Content Engine consumes only that status. This prevents the historic Guildford/Surrey `pending` backlog from entering the London rollout accidentally.
+
+The automated state path is:
+
+```text
+queued_london -> duplicate
+queued_london -> quality_blocked
+queued_london -> review_ready -> approved -> published
+queued_london -> review_ready -> rejected
+```
+
+Changing or bulk-migrating legacy `pending` rows requires a separate content review; it is not an activation step.
+
+### Credential contract
+
+n8n stores the secret values; exported workflow JSON contains credential references only:
+
+- `OpenAI - WeTrends SEO` for Luna text work and GPT Image 2;
+- `Google account` with read-only Search Console and Analytics scopes;
+- `Telegram account` for the private review chat;
+- `Tavily API` for research and opportunity discovery;
+- `WeTrends Blog API` for the authenticated draft, media and quality endpoints.
+
+Telegram send nodes use explicit HTML mode, escape dynamic external text and disable n8n attribution. This avoids Telegram rejecting AI output that contains legacy-Markdown control characters.
+
 ## Automation boundaries
 
 - Content may be researched, scored, drafted, illustrated and saved automatically.

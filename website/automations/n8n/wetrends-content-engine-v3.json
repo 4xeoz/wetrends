@@ -40,14 +40,17 @@
           "value": "blog_topics",
           "mode": "name"
         },
+        "matchType": "allConditions",
         "filters": {
           "conditions": [
             {
               "keyName": "status",
-              "keyValue": "pending"
+              "condition": "eq",
+              "keyValue": "queued_london"
             }
           ]
         },
+        "returnAll": false,
         "limit": 1
       },
       "id": "e220f8e0-5bb4-47ee-99e6-52ed3c6568e4",
@@ -141,9 +144,12 @@
           "value": "blog_topics",
           "mode": "name"
         },
+        "matchType": "allConditions",
         "filters": {
           "conditions": [
             {
+              "keyName": "id",
+              "condition": "eq",
               "keyValue": "={{ $('Duplicate Guard').first().json.rowId }}"
             }
           ]
@@ -257,9 +263,7 @@
           "value": "gpt-5.6-luna",
           "mode": "id"
         },
-        "options": {
-          "temperature": 0.3
-        }
+        "options": {}
       },
       "id": "e5b76aca-731e-4dd5-875a-1365caa750aa",
       "name": "OpenAI Luna - Writer",
@@ -310,9 +314,7 @@
           "value": "gpt-5.6-luna",
           "mode": "id"
         },
-        "options": {
-          "temperature": 0.3
-        }
+        "options": {}
       },
       "id": "2f029535-6af4-47ad-a9b1-669edf360e2c",
       "name": "OpenAI Luna - Metadata",
@@ -331,7 +333,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const output = $input.first().json;\n  const raw = String(output.text ?? output.response ?? output.output ?? '{}').replace(/```json/gi, '').replace(/```/g, '').trim();\n  const start = raw.indexOf('{');\n  const end = raw.lastIndexOf('}');\n  if (start < 0 || end <= start) throw new Error('Metadata model did not return JSON.');\n  let metadata;\n  try { metadata = JSON.parse(raw.slice(start, end + 1)); } catch (error) { throw new Error(`Could not parse metadata JSON: ${error.message}`); }\n  const context = $('Build Metadata Brief').first().json;\n  const clean = (value, limit) => String(value || '').replace(/<[^>]*>/g, '').replace(/\\s+/g, ' ').trim().slice(0, limit);\n  const escapeHtml = (value) => String(value || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g, '&quot;').replace(/'/g, '&#039;');\n  const slug = clean(metadata.slug || metadata.title || context.topic, 100).toLowerCase().replace(/[^a-z0-9\\s-]/g, '').replace(/\\s+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '').slice(0, 90);\n  const faq = Array.isArray(metadata.faq) ? metadata.faq.slice(0, 3) : [];\n  const faqHtml = faq.length ? `<h2>Frequently asked questions</h2>${faq.map((item) => `<h3>${escapeHtml(item.q)}</h3><p>${escapeHtml(item.a)}</p>`).join('')}` : '';\n  let content = `${context.draft}${faqHtml}`;\n  if (!content.includes(context.primaryServiceUrl)) {\n    content += `<h2>What to do next</h2><p>If you need practical support, explore the relevant <a href=\"${context.primaryServiceUrl}\">WeTrends service</a> and bring us the real brief, constraints and desired outcome.</p>`;\n  }\n  const imageAlt = clean(metadata.imageAlt || `${context.topic} editorial concept`, 180);\n  const imagePrompt = `Create a premium editorial blog cover for a UK creative technology agency. Topic: ${clean(context.topic, 160)}. Campaign: ${context.campaign}. Wide landscape composition, sophisticated art direction, restrained WeTrends palette with charcoal, warm white and magenta accents, credible London context without landmarks unless relevant, natural detail, no logos, no readable text, no watermarks, no fake interface screenshots, no claims of being client work. This is supporting editorial art, not a portfolio photograph.`;\n  const corePayload = {\n    title: clean(metadata.title || context.topic, 80),\n    slug,\n    excerpt: clean(metadata.excerpt, 200),\n    content,\n    published: false,\n    metaTitle: clean(metadata.metaTitle || metadata.title || context.topic, 60),\n    metaDescription: clean(metadata.metaDescription || metadata.excerpt, 155),\n    keywords: (Array.isArray(metadata.keywords) ? metadata.keywords : String(context.keywords || '').split(',')).map((keyword) => clean(keyword, 80)).filter(Boolean).slice(0, 10),\n    campaign: context.campaign,\n    contentType: context.contentType,\n    primaryServiceUrl: context.primaryServiceUrl,\n    sourceUrls: context.sourceUrls,\n    automationStatus: 'drafted',\n    automationRunId: String($execution.id),\n  };\n  return [{ json: { rowId: context.rowId, imageAlt, imagePrompt, corePayload } }];"
+        "jsCode": "const output = $input.first().json;\n  const raw = String(output.text ?? output.response ?? output.output ?? '{}').replace(/```json/gi, '').replace(/```/g, '').trim();\n  const start = raw.indexOf('{');\n  const end = raw.lastIndexOf('}');\n  if (start < 0 || end <= start) throw new Error('Metadata model did not return JSON.');\n  let metadata;\n  try { metadata = JSON.parse(raw.slice(start, end + 1)); } catch (error) { throw new Error(`Could not parse metadata JSON: ${error.message}`); }\n  const context = $('Build Metadata Brief').first().json;\n  const clean = (value, limit) => String(value || '').replace(/<[^>]*>/g, '').replace(/\\s+/g, ' ').trim().slice(0, limit);\n  const escapeHtml = (value) => String(value || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g, '&quot;').replace(/'/g, '&#039;');\n  const slug = clean(metadata.slug || metadata.title || context.topic, 100).toLowerCase().replace(/[^a-z0-9\\s-]/g, '').replace(/\\s+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '').slice(0, 90);\n  const faq = Array.isArray(metadata.faq) ? metadata.faq.slice(0, 3) : [];\n  const faqHtml = faq.length ? `<h2>Frequently asked questions</h2>${faq.map((item) => `<h3>${escapeHtml(item.q)}</h3><p>${escapeHtml(item.a)}</p>`).join('')}` : '';\n  let content = `${context.draft}${faqHtml}`;\n  if (!content.includes(context.primaryServiceUrl)) {\n    content += `<h2>What to do next</h2><p>If you need practical support, explore the relevant <a href=\"${context.primaryServiceUrl}\">WeTrends service</a> and bring us the real brief, constraints and desired outcome.</p>`;\n  }\n  const imageAlt = clean(metadata.imageAlt || `${context.topic} editorial concept`, 180);\n  const imagePrompt = `Create a premium editorial blog cover for a UK creative technology agency. Topic: ${clean(context.topic, 160)}. Campaign: ${context.campaign}. Wide landscape composition, sophisticated art direction, restrained WeTrends palette with charcoal, warm white and magenta accents, credible London context without landmarks unless relevant, natural detail, no logos, no readable text, no watermarks, no fake interface screenshots, no claims of being client work. This is supporting editorial art, not a portfolio photograph.`;\n  const corePayload = {\n    title: clean(metadata.title || context.topic, 80),\n    slug,\n    excerpt: clean(metadata.excerpt, 200),\n    content,\n    published: false,\n    metaTitle: clean(metadata.metaTitle || metadata.title || context.topic, 60),\n    metaDescription: clean(metadata.metaDescription || metadata.excerpt, 155),\n    keywords: (Array.isArray(metadata.keywords) ? metadata.keywords : String(context.keywords || '').split(',')).map((keyword) => clean(keyword, 80)).filter(Boolean).slice(0, 10),\n    campaign: context.campaign,\n    contentType: context.contentType,\n    primaryServiceUrl: context.primaryServiceUrl,\n    sourceUrls: context.sourceUrls,\n    automationStatus: 'drafted',\n    automationRunId: `${String($execution.id)}:topic:${String(context.rowId)}`,\n  };\n  return [{ json: { rowId: context.rowId, imageAlt, imagePrompt, corePayload } }];"
       },
       "id": "7b95f529-9830-4298-9df1-d432eafcf4b8",
       "name": "Build Draft Package",
@@ -589,9 +591,12 @@
           "value": "blog_topics",
           "mode": "name"
         },
+        "matchType": "allConditions",
         "filters": {
           "conditions": [
             {
+              "keyName": "id",
+              "condition": "eq",
               "keyValue": "={{ $('Build Draft Package').first().json.rowId }}"
             }
           ]
@@ -621,9 +626,10 @@
     {
       "parameters": {
         "chatId": "6833948326",
-        "text": "=📝 WeTrends draft ready\n\n{{ $(\"Create Review-Ready Draft\").first().json.post.title }}\nCampaign: {{ $(\"Prepare Review-Ready Draft\").first().json.campaign }}\nQuality: {{ $(\"Prepare Review-Ready Draft\").first().json.qualityScore }}/100\nImage: {{ $(\"Prepare Review-Ready Draft\").first().json.featuredImage }}\n\nDraft ID: {{ $(\"Create Review-Ready Draft\").first().json.post.id }}\n\nApprove: /approve {{ $(\"Create Review-Ready Draft\").first().json.post.id }}\nRegenerate image: /regenerate {{ $(\"Create Review-Ready Draft\").first().json.post.id }}\nReject: /reject {{ $(\"Create Review-Ready Draft\").first().json.post.id }}\n\nNothing is public until you approve.",
+        "text": "=📝 WeTrends draft ready\n\n{{ String($(\"Create Review-Ready Draft\").first().json.post.title || \"\").replaceAll(\"&\", \"&amp;\").replaceAll(\"<\", \"&lt;\").replaceAll(\">\", \"&gt;\") }}\nCampaign: {{ String($(\"Prepare Review-Ready Draft\").first().json.campaign || \"\").replaceAll(\"&\", \"&amp;\").replaceAll(\"<\", \"&lt;\").replaceAll(\">\", \"&gt;\") }}\nQuality: {{ $(\"Prepare Review-Ready Draft\").first().json.qualityScore }}/100\nImage: {{ String($(\"Prepare Review-Ready Draft\").first().json.featuredImage || \"\").replaceAll(\"&\", \"&amp;\").replaceAll(\"<\", \"&lt;\").replaceAll(\">\", \"&gt;\") }}\n\nDraft ID: {{ $(\"Create Review-Ready Draft\").first().json.post.id }}\n\nApprove: /approve {{ $(\"Create Review-Ready Draft\").first().json.post.id }}\nRegenerate image: /regenerate {{ $(\"Create Review-Ready Draft\").first().json.post.id }}\nReject: /reject {{ $(\"Create Review-Ready Draft\").first().json.post.id }}\n\nNothing is public until you approve.",
         "additionalFields": {
-          "appendAttribution": false
+          "appendAttribution": false,
+          "parse_mode": "HTML"
         }
       },
       "id": "31c87782-1d2c-4f70-a4ec-7e0060e0ac8d",
@@ -688,9 +694,12 @@
           "value": "blog_topics",
           "mode": "name"
         },
+        "matchType": "allConditions",
         "filters": {
           "conditions": [
             {
+              "keyName": "id",
+              "condition": "eq",
               "keyValue": "={{ $('Build Draft Package').first().json.rowId }}"
             }
           ]
@@ -720,9 +729,10 @@
     {
       "parameters": {
         "chatId": "6833948326",
-        "text": "=⚠️ WeTrends draft saved but blocked\n\n{{ $(\"Save Quality-Blocked Draft\").first().json.post.title }}\nQuality: {{ $(\"Prepare Quality-Blocked Draft\").first().json.qualityScore }}/100\nIssues: {{ JSON.stringify($(\"Prepare Quality-Blocked Draft\").first().json.qualityIssues).slice(0, 1800) }}\n\nDraft ID: {{ $(\"Save Quality-Blocked Draft\").first().json.post.id }}\nIt cannot be published until corrected and rechecked.",
+        "text": "=⚠️ WeTrends draft saved but blocked\n\n{{ String($(\"Save Quality-Blocked Draft\").first().json.post.title || \"\").replaceAll(\"&\", \"&amp;\").replaceAll(\"<\", \"&lt;\").replaceAll(\">\", \"&gt;\") }}\nQuality: {{ $(\"Prepare Quality-Blocked Draft\").first().json.qualityScore }}/100\nIssues: {{ String(JSON.stringify($(\"Prepare Quality-Blocked Draft\").first().json.qualityIssues)).replaceAll(\"&\", \"&amp;\").replaceAll(\"<\", \"&lt;\").replaceAll(\">\", \"&gt;\").slice(0, 1800).replace(/&(?:a(?:m(?:p)?)?|l(?:t)?|g(?:t)?)?$/, \"\") }}\n\nDraft ID: {{ $(\"Save Quality-Blocked Draft\").first().json.post.id }}\nIt cannot be published until corrected and rechecked.",
         "additionalFields": {
-          "appendAttribution": false
+          "appendAttribution": false,
+          "parse_mode": "HTML"
         }
       },
       "id": "7e2a9e91-63cd-4f73-8c26-74cbe8879f1f",

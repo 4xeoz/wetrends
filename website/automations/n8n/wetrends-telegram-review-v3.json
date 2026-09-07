@@ -123,7 +123,8 @@
         "chatId": "6833948326",
         "text": "=Use one of these commands with a 24-character draft ID:\n/approve ID\n/regenerate ID\n/reject ID",
         "additionalFields": {
-          "appendAttribution": false
+          "appendAttribution": false,
+          "parse_mode": "HTML"
         }
       },
       "id": "fbdea9a2-42d2-40ba-a6b2-0811a4764d1f",
@@ -225,9 +226,10 @@
     {
       "parameters": {
         "chatId": "6833948326",
-        "text": "=✅ Published after your approval\n\n{{ $json.post.title }}\nhttps://wetrends.co.uk/blogs/{{ $json.post.slug }}/",
+        "text": "=✅ Published after your approval\n\n{{ String($json.post.title || \"\").replaceAll(\"&\", \"&amp;\").replaceAll(\"<\", \"&lt;\").replaceAll(\">\", \"&gt;\") }}\nhttps://wetrends.co.uk/blogs/{{ $json.post.slug }}/",
         "additionalFields": {
-          "appendAttribution": false
+          "appendAttribution": false,
+          "parse_mode": "HTML"
         }
       },
       "id": "9c43ca17-1527-44f3-b8ef-e0373c53bbc9",
@@ -244,6 +246,47 @@
           "name": "Telegram account"
         }
       }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "blog_topics",
+          "mode": "name"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ Number(String($('Publish Approved Draft').first().json.post.automationRunId || '').split(':topic:')[1] || -1) }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "status": "published",
+            "published_url": "={{ 'https://wetrends.co.uk/blogs/' + $('Publish Approved Draft').first().json.post.slug + '/' }}"
+          },
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "e587451b-08b7-478a-80bb-e41befffe162",
+      "name": "Sync Published Topic Status",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        860,
+        240
+      ],
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
@@ -307,9 +350,10 @@
     {
       "parameters": {
         "chatId": "6833948326",
-        "text": "=🗑️ Draft rejected and kept private\n\n{{ $json.post.title }}\nDraft ID: {{ $json.post.id }}",
+        "text": "=🗑️ Draft rejected and kept private\n\n{{ String($json.post.title || \"\").replaceAll(\"&\", \"&amp;\").replaceAll(\"<\", \"&lt;\").replaceAll(\">\", \"&gt;\") }}\nDraft ID: {{ $json.post.id }}",
         "additionalFields": {
-          "appendAttribution": false
+          "appendAttribution": false,
+          "parse_mode": "HTML"
         }
       },
       "id": "417d28a9-93f7-4aba-9492-96bf44f5c761",
@@ -326,6 +370,47 @@
           "name": "Telegram account"
         }
       }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "blog_topics",
+          "mode": "name"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ Number(String($('Reject Draft').first().json.post.automationRunId || '').split(':topic:')[1] || -1) }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "status": "rejected",
+            "published_url": ""
+          },
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "18ae68cc-3ff0-4f8d-a465-cdf3f65bae47",
+      "name": "Sync Rejected Topic Status",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1080,
+        440
+      ],
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
@@ -469,9 +554,10 @@
     {
       "parameters": {
         "chatId": "6833948326",
-        "text": "=🖼️ New medium-quality cover ready\n\n{{ $json.post.title }}\n{{ $json.post.featuredImage }}\n\nApprove: /approve {{ $json.post.id }}\nRegenerate again: /regenerate {{ $json.post.id }}\nReject: /reject {{ $json.post.id }}",
+        "text": "=🖼️ New medium-quality cover ready\n\n{{ String($json.post.title || \"\").replaceAll(\"&\", \"&amp;\").replaceAll(\"<\", \"&lt;\").replaceAll(\">\", \"&gt;\") }}\n{{ String($json.post.featuredImage || \"\").replaceAll(\"&\", \"&amp;\").replaceAll(\"<\", \"&lt;\").replaceAll(\">\", \"&gt;\") }}\n\nApprove: /approve {{ $json.post.id }}\nRegenerate again: /regenerate {{ $json.post.id }}\nReject: /reject {{ $json.post.id }}",
         "additionalFields": {
-          "appendAttribution": false
+          "appendAttribution": false,
+          "parse_mode": "HTML"
         }
       },
       "id": "5d769c59-053e-45ab-8df0-4916f249abc2",
@@ -494,7 +580,8 @@
         "chatId": "6833948326",
         "text": "=⚠️ The image could not be regenerated. The draft remains private and unchanged.\nDraft ID: {{ $(\"Parse and Authorise Command\").first().json.postId }}",
         "additionalFields": {
-          "appendAttribution": false
+          "appendAttribution": false,
+          "parse_mode": "HTML"
         }
       },
       "id": "ecfddda2-407a-468d-95ad-03eaa1b8730c",
@@ -624,6 +711,11 @@
             "node": "Confirm Publication",
             "type": "main",
             "index": 0
+          },
+          {
+            "node": "Sync Published Topic Status",
+            "type": "main",
+            "index": 0
           }
         ]
       ]
@@ -651,6 +743,11 @@
         [
           {
             "node": "Confirm Rejection",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Sync Rejected Topic Status",
             "type": "main",
             "index": 0
           }

@@ -106,9 +106,7 @@
           "value": "gpt-5.6-luna",
           "mode": "id"
         },
-        "options": {
-          "temperature": 0.3
-        }
+        "options": {}
       },
       "id": "c22cfeda-2f50-48bb-a868-69cb70ed9df8",
       "name": "OpenAI Luna - Authority",
@@ -128,9 +126,10 @@
     {
       "parameters": {
         "chatId": "6833948326",
-        "text": "=🔗 WeTrends authority opportunities — review only\n\n{{ String($json.text || $json.response || $json.output || \"No qualified opportunities found.\").slice(0, 3800) }}\n\nNo outreach was sent automatically.",
+        "text": "=🔗 WeTrends authority opportunities — review only\n\n{{ String($json.text || $json.response || $json.output || \"No qualified opportunities found.\").replaceAll(\"&\", \"&amp;\").replaceAll(\"<\", \"&lt;\").replaceAll(\">\", \"&gt;\").slice(0, 3200).replace(/&(?:a(?:m(?:p)?)?|l(?:t)?|g(?:t)?)?$/, \"\") }}\n\nNo outreach was sent automatically.",
         "additionalFields": {
-          "appendAttribution": false
+          "appendAttribution": false,
+          "parse_mode": "HTML"
         }
       },
       "id": "41c40d65-0356-44ee-960a-edeefa8defb1",

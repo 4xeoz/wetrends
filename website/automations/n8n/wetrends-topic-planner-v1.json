@@ -107,9 +107,7 @@
           "value": "gpt-5.6-luna",
           "mode": "id"
         },
-        "options": {
-          "temperature": 0.3
-        }
+        "options": {}
       },
       "id": "def15d81-f877-45e2-92ce-2c97c84bb9fe",
       "name": "OpenAI Luna - Planner",
@@ -128,7 +126,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const output = $input.first().json;\n  const raw = String(output.text ?? output.response ?? output.output ?? '[]').replace(/```json/gi, '').replace(/```/g, '').trim();\n  const start = raw.indexOf('[');\n  const end = raw.lastIndexOf(']');\n  if (start < 0 || end <= start) throw new Error('Topic planner did not return a JSON array.');\n  const topics = JSON.parse(raw.slice(start, end + 1));\n  if (!Array.isArray(topics) || topics.length !== 3) throw new Error('Topic planner must return exactly three topics.');\n  return topics.map((topic) => ({ json: { topic: String(topic.topic || '').slice(0, 240), keywords: String(topic.keywords || '').slice(0, 500), icp_angle: String(topic.icp_angle || '').slice(0, 500), intent: String(topic.intent || '').slice(0, 120), status: 'pending', published_url: '' } }));"
+        "jsCode": "const output = $input.first().json;\n  const raw = String(output.text ?? output.response ?? output.output ?? '[]').replace(/```json/gi, '').replace(/```/g, '').trim();\n  const start = raw.indexOf('[');\n  const end = raw.lastIndexOf(']');\n  if (start < 0 || end <= start) throw new Error('Topic planner did not return a JSON array.');\n  const topics = JSON.parse(raw.slice(start, end + 1));\n  if (!Array.isArray(topics) || topics.length !== 3) throw new Error('Topic planner must return exactly three topics.');\n  return topics.map((topic) => ({ json: { topic: String(topic.topic || '').slice(0, 240), keywords: String(topic.keywords || '').slice(0, 500), icp_angle: String(topic.icp_angle || '').slice(0, 500), intent: String(topic.intent || '').slice(0, 120), status: 'queued_london', published_url: '' } }));"
       },
       "id": "b7e880cf-a70f-444a-8f94-8aaa29264909",
       "name": "Validate Topic Plan",
@@ -141,16 +139,18 @@
     },
     {
       "parameters": {
-        "operation": "ifRowDoesNotExist",
+        "operation": "rowNotExists",
         "dataTableId": {
           "__rl": true,
           "value": "blog_topics",
           "mode": "name"
         },
+        "matchType": "allConditions",
         "filters": {
           "conditions": [
             {
               "keyName": "topic",
+              "condition": "eq",
               "keyValue": "={{ $json.topic }}"
             }
           ]
@@ -181,7 +181,7 @@
             "keywords": "={{ $json.keywords }}",
             "icp_angle": "={{ $json.icp_angle }}",
             "intent": "={{ $json.intent }}",
-            "status": "pending",
+            "status": "queued_london",
             "published_url": ""
           },
           "matchingColumns": [],
@@ -203,9 +203,10 @@
     {
       "parameters": {
         "chatId": "6833948326",
-        "text": "=📚 Added a balanced weekly content topic to the queue:\n{{ $json.topic || $(\"Validate Topic Plan\").item.json.topic }}\n\nThe content engine will process pending topics as drafts only.",
+        "text": "=📚 Added a balanced weekly London content topic to the queue:\n{{ String($json.topic || $(\"Validate Topic Plan\").item.json.topic || \"\").replaceAll(\"&\", \"&amp;\").replaceAll(\"<\", \"&lt;\").replaceAll(\">\", \"&gt;\") }}\n\nThe content engine will process queued London topics as drafts only.",
         "additionalFields": {
-          "appendAttribution": false
+          "appendAttribution": false,
+          "parse_mode": "HTML"
         }
       },
       "id": "69386712-b1ef-4609-9374-5062b4aecb7f",
