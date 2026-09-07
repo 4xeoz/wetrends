@@ -1,80 +1,68 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { getContactMessages } from '@/actions/contact';
-import { DashboardContent, type Message } from '@/app/_component/me/dashboard/dashboard-content';
+import { useEffect, useState } from 'react';
+import { AlertTriangle, RefreshCw } from 'lucide-react';
 import { motion } from 'motion/react';
+import { getDashboardOverview, type DashboardOverview } from '@/actions/dashboard';
+import { DashboardContent } from '@/app/_component/me/dashboard/dashboard-content';
 
 export default function AdminDashboardPage() {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [overview, setOverview] = useState<DashboardOverview | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchMessages = async () => {
+  async function fetchDashboard() {
     setIsLoading(true);
     try {
-      const response = await getContactMessages();
-      if (response.success && response.messages) {
-        setMessages(response.messages);
+      const response = await getDashboardOverview();
+      if (response.success) {
+        setOverview(response.overview);
         setError(null);
       } else {
-        setError(response.message || 'Failed to fetch messages');
+        setError(response.message);
       }
-    } catch (err) {
-      setError('An unexpected error occurred');
-      console.error(err);
+    } catch {
+      setError('An unexpected error occurred while loading the dashboard.');
     } finally {
       setIsLoading(false);
     }
-  };
+  }
 
   useEffect(() => {
-    fetchMessages();
+    void fetchDashboard();
   }, []);
 
-  if (isLoading && messages.length === 0) {
+  if (isLoading && !overview) {
     return (
-      <div className="flex h-[100svh] items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+      <div className="flex min-h-[100svh] items-center justify-center bg-[#F7F4F2]">
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
+          initial={{ opacity: 0, scale: 0.94 }}
           animate={{ opacity: 1, scale: 1 }}
           className="flex flex-col items-center gap-4"
         >
-          <div className="relative">
-            <div className="h-16 w-16 animate-spin rounded-full border-4 border-[#C72C5B]/20 border-t-[#C72C5B]" />
-            <div className="absolute inset-0 h-16 w-16 animate-ping rounded-full border-4 border-[#C72C5B]/10" />
-          </div>
-          <p className="text-lg font-medium text-gray-600">Loading dashboard...</p>
+          <span className="wt-page-loader" aria-hidden="true"><span /></span>
+          <p className="text-sm font-semibold text-black/50">Loading your workspace…</p>
         </motion.div>
       </div>
     );
   }
 
-  if (error) {
+  if (!overview) {
     return (
-      <div className="flex h-[100svh] items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 p-6">
+      <div className="flex min-h-[100svh] items-center justify-center bg-[#F7F4F2] p-6">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          className="max-w-md rounded-2xl bg-white p-8 text-center shadow-lg"
+          className="w-full max-w-md rounded-[2rem] bg-white p-8 text-center shadow-[0_24px_80px_rgba(58,24,36,0.1)]"
         >
-          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100 text-red-600 mx-auto">
-            <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            </svg>
-          </div>
-          <h3 className="mb-2 text-xl font-bold text-gray-900">Something went wrong</h3>
-          <p className="mb-6 text-gray-600">{error}</p>
-          <button
-            onClick={fetchMessages}
-            className="rounded-full bg-[#C72C5B] px-6 py-2 font-medium text-white transition-all hover:bg-[#A3244A] hover:shadow-lg"
-          >
-            Try Again
-          </button>
+          <span className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-[#FFF0F4] text-[#C72C5B]"><AlertTriangle className="h-5 w-5" /></span>
+          <h1 className="mt-5 text-2xl font-bold tracking-[-0.04em]">Workspace unavailable</h1>
+          <p className="mt-3 text-sm leading-relaxed text-black/50">{error || 'We could not load your event overview.'}</p>
+          <button type="button" onClick={() => { void fetchDashboard(); }} className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#C72C5B] px-5 py-3 text-xs font-bold text-white transition hover:bg-[#A3244A]"><RefreshCw className="h-4 w-4" /> Try again</button>
         </motion.div>
       </div>
     );
   }
 
-  return <DashboardContent messages={messages} isLoading={isLoading} onRefresh={fetchMessages} />;
+  return <DashboardContent overview={overview} isLoading={isLoading} onRefresh={fetchDashboard} error={error} />;
 }

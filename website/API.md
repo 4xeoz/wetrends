@@ -10,7 +10,7 @@
 Every mutation request must include the API key in the header:
 
 ```http
-x-api-key: n8n_wt_cbdc08ee40fafeec3f40f6fa766d93a0985e9d2ae8d6eeccccc6d2431501de11
+x-api-key: <YOUR_API_KEY>
 Content-Type: application/json
 ```
 
@@ -85,7 +85,7 @@ Creates a new blog post.
 ```bash
 curl -X POST http://localhost:3000/api/blog/ \
   -H "Content-Type: application/json" \
-  -H "x-api-key: n8n_wt_cbdc08ee40fafeec3f40f6fa766d93a0985e9d2ae8d6eeccccc6d2431501de11" \
+  -H "x-api-key: <YOUR_API_KEY>" \
   -d '{
     "title": "How We Built the Rebrand",
     "slug": "how-we-built-the-rebrand",
@@ -159,7 +159,7 @@ Same as Create, minus `authorId` (can be included but is optional).
 ```bash
 curl -X PATCH http://localhost:3000/api/blog/6677a1b2c3d4e5f6g7h8i9j0/ \
   -H "Content-Type: application/json" \
-  -H "x-api-key: n8n_wt_cbdc08ee40fafeec3f40f6fa766d93a0985e9d2ae8d6eeccccc6d2431501de11" \
+  -H "x-api-key: <YOUR_API_KEY>" \
   -d '{
     "title": "How We Built the Rebrand (Updated)",
     "published": false
@@ -204,7 +204,7 @@ Deletes a post permanently.
 #### Request Example
 ```bash
 curl -X DELETE http://localhost:3000/api/blog/6677a1b2c3d4e5f6g7h8i9j0/ \
-  -H "x-api-key: n8n_wt_cbdc08ee40fafeec3f40f6fa766d93a0985e9d2ae8d6eeccccc6d2431501de11"
+  -H "x-api-key: <YOUR_API_KEY>"
 ```
 
 #### Success Response — `200 OK`

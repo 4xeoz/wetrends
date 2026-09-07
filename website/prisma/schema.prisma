@@ -41,6 +41,182 @@ model ContactMessage {
   updatedAt DateTime @updatedAt
 }
 
+// Structured leads from the public Events enquiry form.
+model EventLead {
+  id        String          @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  email     String
+  phone     String
+  eventDate DateTime
+  location  String
+  eventType String
+  duration  String
+  media     String
+  addOns    String[]
+  details   String?
+  status    EventLeadStatus @default(NEW)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum EventLeadStatus {
+  NEW
+  CONTACTED
+  CONVERTED
+  ARCHIVED
+}
+
+// A confirmed event and the commercial terms shown in its private offer.
+model EventJob {
+  id                   String          @id @default(auto()) @map("_id") @db.ObjectId
+  clientName           String
+  clientEmail          String
+  clientPhone          String?
+  eventTitle           String
+  eventType            String
+  eventDate            DateTime?
+  location             String?
+  photographerName     String
+  photographerImage    String?
+  partnerName          String?
+  includedImageCount   Int             @default(10)
+  fullGalleryPrice     Int
+  retouchingPrice      Int             @default(0)
+  extraCoverageMinutes Int             @default(0)
+  extraCoveragePrice   Int             @default(0)
+  currency             String          @default("gbp")
+  selectedPackage      GalleryPackage?
+  retouchingSelected   Boolean         @default(false)
+  accessVersion        Int             @default(1)
+  status               EventJobStatus  @default(DRAFT)
+  offerSentAt          DateTime?
+  productionStartedAt  DateTime?
+  // Folder created in the company Shared Drive for this event's production files.
+  driveFolderId        String?
+
+  gallery EventGallery?
+  orders  EventOrder[]
+  emails  EventEmailLog[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum GalleryPackage {
+  INCLUDED
+  FULL
+}
+
+enum EventJobStatus {
+  DRAFT
+  OFFER_SENT
+  AWAITING_PAYMENT
+  IN_PRODUCTION
+  GALLERY_READY
+  COMPLETED
+  CANCELLED
+}
+
+model EventGallery {
+  id          String         @id @default(auto()) @map("_id") @db.ObjectId
+  eventJobId  String         @unique @db.ObjectId
+  eventJob    EventJob       @relation(fields: [eventJobId], references: [id], onDelete: Cascade)
+  status      GalleryStatus  @default(DRAFT)
+  publishedAt DateTime?
+  assets      GalleryAsset[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum GalleryStatus {
+  DRAFT
+  PUBLISHED
+}
+
+model GalleryAsset {
+  id               String       @id @default(auto()) @map("_id") @db.ObjectId
+  galleryId        String       @db.ObjectId
+  gallery          EventGallery @relation(fields: [galleryId], references: [id], onDelete: Cascade)
+  title            String
+  alt              String
+  provider         String       @default("external")
+  sourceUrl        String?
+  cloudinaryId     String?
+  cloudinaryFormat String?
+  driveFileId      String?
+  driveMimeType    String?
+  driveName        String?
+  width            Int?
+  height           Int?
+  sortOrder        Int          @default(0)
+  isFeatured       Boolean      @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model EventOrder {
+  id                      String           @id @default(auto()) @map("_id") @db.ObjectId
+  eventJobId              String           @db.ObjectId
+  eventJob                EventJob         @relation(fields: [eventJobId], references: [id], onDelete: Cascade)
+  type                    EventOrderType
+  status                  EventOrderStatus @default(CREATED)
+  paymentMethod           String           @default("stripe")
+  customerEmail           String
+  currency                String           @default("gbp")
+  subtotal                Int
+  shippingAmount          Int              @default(0)
+  total                   Int
+  items                   Json
+  stripeCheckoutSessionId String?
+  stripePaymentIntentId   String?
+  shippingAddress         Json?
+  paidAt                  DateTime?
+  fulfilledAt             DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum EventOrderType {
+  DIGITAL
+  PRINT
+}
+
+enum EventOrderStatus {
+  CREATED
+  CHECKOUT_PENDING
+  CONFIRMED
+  PAID
+  PROCESSING
+  FULFILLED
+  CANCELLED
+  FAILED
+  REFUNDED
+}
+
+model StripeWebhookEvent {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  stripeEventId String   @unique
+  type          String
+  processedAt   DateTime @default(now())
+}
+
+model EventEmailLog {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  eventJobId   String   @db.ObjectId
+  eventJob     EventJob @relation(fields: [eventJobId], references: [id], onDelete: Cascade)
+  kind         String
+  recipient    String
+  providerId   String?
+  status       String
+  errorMessage String?
+
+  createdAt DateTime @default(now())
+}
+
 model BlogCategory {
   id          String     @id @default(auto()) @map("_id") @db.ObjectId
   name        String     @unique

@@ -10,11 +10,10 @@ export default function Layout({ children }: LayoutProps) {
     return (
         <SidebarProvider>
             <AppSidebar />
-            <SidebarInset>
+            <SidebarInset className="min-w-0">
                 <SidebarTrigger />
                 {children}
             </SidebarInset>
         </SidebarProvider>
     );
 }
-

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Trash2 } from 'lucide-react';
+import { Loader2, Trash2 } from 'lucide-react';
 import { deleteQrLink } from '@/actions/qr';
 import { useRouter } from 'next/navigation';
 
@@ -12,21 +12,28 @@ export default function QrDeleteButton({ id, label }: { id: string; label: strin
 
   async function handleDelete() {
     setDeleting(true);
-    await deleteQrLink(id);
-    router.refresh();
+    try {
+      await deleteQrLink(id);
+      router.refresh();
+    } finally {
+      setDeleting(false);
+    }
   }
 
   if (confirming) {
     return (
       <div className="flex items-center gap-1">
         <button
+          type="button"
           onClick={handleDelete}
           disabled={deleting}
+          aria-busy={deleting}
           className="rounded-xl bg-red-500 px-3 py-2 text-xs font-bold text-white transition-colors hover:bg-red-600 disabled:opacity-60"
         >
-          {deleting ? '…' : 'Delete'}
+          {deleting ? <><Loader2 className="mr-1.5 inline h-3.5 w-3.5 animate-spin" /> Deleting…</> : 'Delete'}
         </button>
         <button
+          type="button"
           onClick={() => setConfirming(false)}
           className="rounded-xl border border-gray-200 px-3 py-2 text-xs text-gray-500 hover:border-gray-300"
         >
@@ -38,6 +45,7 @@ export default function QrDeleteButton({ id, label }: { id: string; label: strin
 
   return (
     <button
+      type="button"
       onClick={() => setConfirming(true)}
       title={`Delete ${label}`}
       className="flex items-center justify-center rounded-xl border border-gray-200 p-2 text-gray-400 transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-500"

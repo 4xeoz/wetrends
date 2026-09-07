@@ -9,6 +9,8 @@ import {
   Settings,
   Clapperboard,
   QrCode,
+  CalendarDays,
+  ShoppingBag,
 } from 'lucide-react';
 import {
   Sidebar,
@@ -62,6 +64,16 @@ const navSections: NavSection[] = [
     title: 'Services',
     items: [
       {
+        label: 'Event Studio',
+        href: '/me/events',
+        icon: <CalendarDays className="h-5 w-5" />,
+      },
+      {
+        label: 'Print Orders',
+        href: '/me/print-orders',
+        icon: <ShoppingBag className="h-5 w-5" />,
+      },
+      {
         label: 'Cinematography',
         href: '/me/cinematography',
         icon: <Clapperboard className="h-5 w-5" />,
@@ -80,7 +92,6 @@ const navSections: NavSection[] = [
         label: 'Messages',
         href: '/me/messages',
         icon: <MessageSquare className="h-5 w-5" />,
-        badge: 2,
       },
     ],
   },
@@ -150,7 +161,7 @@ function NavSection({
       </h3>
       <div className="space-y-1">
         {section.items.map((item) => {
-          const isActive = pathname === item.href;
+          const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
           return <NavLink key={item.href} item={item} isActive={isActive} />;
         })}
       </div>

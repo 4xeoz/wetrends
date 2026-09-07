@@ -1,10 +1,27 @@
 #!/usr/bin/env tsx
+import { loadEnvConfig } from "@next/env";
 import bcrypt from "bcryptjs";
 import { prisma } from "../prisma/prisma";
 
-const EMAIL = "iyad@wetrends.co.uk";
-const PASSWORD = "admin123";
-const NAME = "Iyad Cherifi";
+loadEnvConfig(process.cwd());
+
+function requireAdminSetting(name: 'ADMIN_EMAIL' | 'ADMIN_PASSWORD') {
+  const value = process.env[name]?.trim();
+  if (!value) throw new Error(`Set ${name} before running this script.`);
+  return value;
+}
+
+const EMAIL = requireAdminSetting('ADMIN_EMAIL').toLowerCase();
+const PASSWORD = requireAdminSetting('ADMIN_PASSWORD');
+const NAME = process.env.ADMIN_NAME?.trim() || "WeTrends Admin";
+
+if (!EMAIL.includes("@")) {
+  throw new Error("Set ADMIN_EMAIL to a valid email address before running this script.");
+}
+
+if (PASSWORD.length < 12) {
+  throw new Error("Set ADMIN_PASSWORD to at least 12 characters before running this script.");
+}
 
 async function createAdmin() {
   try {
@@ -40,7 +57,6 @@ async function createAdmin() {
 
     console.log("✅ Admin user created successfully!");
     console.log(`Email: ${EMAIL}`);
-    console.log(`Password: ${PASSWORD}`);
     console.log(`Name: ${NAME}`);
   } catch (error) {
     console.error("Error creating admin user:", error);

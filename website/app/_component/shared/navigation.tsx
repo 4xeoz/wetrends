@@ -23,6 +23,7 @@ import { Button } from '@/components/ui/button';
 const navLinks = [
   { href: '/', label: 'Home' },
   { href: '/services/', label: 'Services' },
+  { href: '/events/', label: 'Events' },
   { href: '/case-studies/', label: 'Portfolio' },
   { href: '/blogs/', label: 'Blog' },
 ];
@@ -123,6 +124,9 @@ export function Navigation() {
 
           {/* Mobile Menu Button */}
           <button
+            type="button"
+            aria-label={isMobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+            aria-expanded={isMobileMenuOpen}
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             className={`rounded-lg p-2 lg:hidden ${
               isLight ? 'text-gray-900' : 'text-white'
