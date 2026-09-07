@@ -116,11 +116,10 @@ export async function getPostBySlug(slug: string) {
       return { success: false, message: 'Post not found' };
     }
 
-    // Increment views
-    await prisma.blogPost.update({
-      where: { id: post.id },
-      data: { views: { increment: 1 } },
-    });
+    // Page retrieval must be read-only. This function runs during metadata
+    // generation and static builds as well as real visits, so incrementing a
+    // counter here counts builds, crawlers and some requests twice. Consented
+    // GA4 page views are the traffic source of truth.
 
     return { success: true, post };
   } catch (error) {

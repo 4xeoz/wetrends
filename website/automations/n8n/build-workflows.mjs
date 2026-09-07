@@ -259,12 +259,10 @@ function campaignRouter() {
 
 function duplicateGuard() {
   const topic = $('Route Campaign').first().json;
-  const indexText = String($input.first().json.data || $input.first().json.body || '');
-  const posts = [];
-  const section = (indexText.split(/^## Blog Posts$/m)[1] || '').split(/^## /m)[0];
-  const pattern = /^- \[(.+?)\]\((.+?)\)/gm;
-  let match;
-  while ((match = pattern.exec(section))) posts.push({ title: match[1], url: match[2] });
+  const inventory = $input.first().json;
+  const posts = Array.isArray(inventory.posts)
+    ? inventory.posts.filter((post) => post && post.title && post.url)
+    : [];
 
   const stopWords = new Set(['guide', 'strategy', 'business', 'marketing', 'small', 'your', 'with', 'that', 'this', 'from', 'what', 'when', 'london']);
   const words = (value) => new Set(String(value).toLowerCase().replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter((word) => word.length > 3 && !stopWords.has(word)));
@@ -273,17 +271,21 @@ function duplicateGuard() {
     const postWords = words(post.title);
     const intersection = [...postWords].filter((word) => topicWords.has(word)).length;
     const union = new Set([...postWords, ...topicWords]).size;
-    return { ...post, similarity: union ? intersection / union : 0 };
-  }).sort((a, b) => b.similarity - a.similarity);
+    const similarity = union ? intersection / union : 0;
+    const containment = Math.min(postWords.size, topicWords.size) ? intersection / Math.min(postWords.size, topicWords.size) : 0;
+    return { ...post, similarity, containment, matchScore: Math.max(similarity, containment) };
+  }).sort((a, b) => b.matchScore - a.matchScore);
 
   const top = scored[0];
-  const isDuplicate = Boolean(top && top.similarity >= 0.5);
+  const isDuplicate = Boolean(top && (top.similarity >= 0.45 || top.containment >= 0.7));
   return [{
     json: {
       ...topic,
       isDuplicate,
       duplicateOf: isDuplicate ? top.url : '',
-      internalLinkCandidates: scored.filter((post) => post.similarity >= 0.1 && post.similarity < 0.5).slice(0, 3),
+      internalLinkCandidates: scored
+        .filter((post) => post.discoveryReady && post.matchScore >= 0.1 && (!isDuplicate || post.url !== top.url))
+        .slice(0, 3),
     },
   }];
 }
@@ -458,7 +460,9 @@ function buildContentEngine() {
       operation: 'get', dataTableId: dataTableSelector(), matchType: 'allConditions', filters: { conditions: [{ keyName: 'status', condition: 'eq', keyValue: 'queued_london' }] }, returnAll: false, limit: 1,
     }),
     codeNode(key, 'Route Campaign', [-700, 360], campaignRouter),
-    httpNode(key, 'Fetch Site Index', [-500, 360], { url: 'https://wetrends.co.uk/llms.txt', options: {} }),
+    httpNode(key, 'Fetch Content Inventory', [-500, 360], {
+      url: 'https://wetrends.co.uk/api/blog/inventory/', authentication: 'genericCredentialType', genericAuthType: 'httpHeaderAuth', options: {},
+    }, { credentials: credentials.blog }),
     codeNode(key, 'Duplicate Guard', [-300, 360], duplicateGuard),
     ifNode(key, 'Is Duplicate?', [-100, 360], '={{ $json.isDuplicate }}', { type: 'boolean', operation: 'true', singleValue: true }),
     updateTopicNode(key, 'Mark Topic Duplicate', [120, 160], 'duplicate', 'Duplicate Guard', "={{ $('Duplicate Guard').first().json.duplicateOf }}"),
@@ -514,8 +518,8 @@ function buildContentEngine() {
   const connections = {};
   for (const trigger of ['Mon Wed Fri 09:00 London', 'Manual Test']) connect(connections, trigger, 'Get Next Pending Topic');
   connect(connections, 'Get Next Pending Topic', 'Route Campaign');
-  connect(connections, 'Route Campaign', 'Fetch Site Index');
-  connect(connections, 'Fetch Site Index', 'Duplicate Guard');
+  connect(connections, 'Route Campaign', 'Fetch Content Inventory');
+  connect(connections, 'Fetch Content Inventory', 'Duplicate Guard');
   connect(connections, 'Duplicate Guard', 'Is Duplicate?');
   connect(connections, 'Is Duplicate?', 'Mark Topic Duplicate', 'main', 0);
   connect(connections, 'Is Duplicate?', 'Research Topic', 'main', 1);
@@ -628,7 +632,11 @@ function buildApprovalWorkflow() {
 }
 
 function buildTopicPlannerPrompt() {
-  const indexText = String($('Fetch Published Index').first().json.data || $('Fetch Published Index').first().json.body || '');
+  const inventory = $('Fetch Content Inventory').first().json;
+  const indexText = (Array.isArray(inventory.posts) ? inventory.posts : [])
+    .slice(0, 500)
+    .map((post) => `- ${String(post.title || '').slice(0, 180)} | ${post.url || ''}${post.discoveryReady ? ' | evidence-ready' : ''}`)
+    .join('\n');
   const gsc = $('Read Search Opportunities').first().json;
   const openTopics = $input.all().map((item) => item.json).filter((item) => item.topic).slice(0, 80);
   const rows = (Array.isArray(gsc.rows) ? gsc.rows : []).slice(0, 80).map((row) => `${(row.keys || []).join(' | ')} | impressions ${row.impressions || 0} | position ${Number(row.position || 0).toFixed(1)}`).join('\n');
@@ -661,7 +669,9 @@ function buildTopicPlanner() {
   const key = 'topic-planner-v1';
   const nodes = [
     scheduleNode(key, 'Sunday 18:00 London', [-800, 360], '0 18 * * 0'), manualNode(key, [-800, 520]),
-    httpNode(key, 'Fetch Published Index', [-580, 400], { url: 'https://wetrends.co.uk/llms.txt', options: {} }),
+    httpNode(key, 'Fetch Content Inventory', [-580, 400], {
+      url: 'https://wetrends.co.uk/api/blog/inventory/', authentication: 'genericCredentialType', genericAuthType: 'httpHeaderAuth', options: {},
+    }, { credentials: credentials.blog }),
     httpNode(key, 'Read Search Opportunities', [-360, 400], { method: 'POST', url: 'https://www.googleapis.com/webmasters/v3/sites/https%3A%2F%2Fwetrends.co.uk%2F/searchAnalytics/query', authentication: 'predefinedCredentialType', nodeCredentialType: 'googleOAuth2Api', sendBody: true, specifyBody: 'json', jsonBody: '={{ JSON.stringify({ startDate: $now.minus({days: 93}).toFormat("yyyy-MM-dd"), endDate: $now.minus({days: 3}).toFormat("yyyy-MM-dd"), dimensions: ["query", "page"], rowLimit: 500, dataState: "final" }) }}', options: {} }, { credentials: credentials.google, onError: 'continueRegularOutput' }),
     makeNode(key, 'Read Open London Topics', 'n8n-nodes-base.dataTable', 1, [-140, 400], { operation: 'get', dataTableId: dataTableSelector(), matchType: 'anyCondition', filters: { conditions: [{ keyName: 'status', condition: 'eq', keyValue: 'queued_london' }, { keyName: 'status', condition: 'eq', keyValue: 'review_ready' }, { keyName: 'status', condition: 'eq', keyValue: 'quality_blocked' }] }, returnAll: true }, { alwaysOutputData: true }),
     codeNode(key, 'Build Topic Planner Brief', [80, 400], buildTopicPlannerPrompt),
@@ -673,8 +683,8 @@ function buildTopicPlanner() {
     telegramNode(key, 'Confirm Topic Queue', [1_180, 400], '=📚 Added a balanced weekly London content topic to the queue:\n{{ String($json.topic || $("Validate Topic Plan").item.json.topic || "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;") }}\n\nThe content engine will process queued London topics as drafts only.'),
   ];
   const connections = {};
-  for (const trigger of ['Sunday 18:00 London', 'Manual Test']) connect(connections, trigger, 'Fetch Published Index');
-  connect(connections, 'Fetch Published Index', 'Read Search Opportunities');
+  for (const trigger of ['Sunday 18:00 London', 'Manual Test']) connect(connections, trigger, 'Fetch Content Inventory');
+  connect(connections, 'Fetch Content Inventory', 'Read Search Opportunities');
   connect(connections, 'Read Search Opportunities', 'Read Open London Topics');
   connect(connections, 'Read Open London Topics', 'Build Topic Planner Brief');
   connect(connections, 'Build Topic Planner Brief', 'Plan Three Campaign Topics');

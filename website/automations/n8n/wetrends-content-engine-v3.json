@@ -77,21 +77,29 @@
     },
     {
       "parameters": {
-        "url": "https://wetrends.co.uk/llms.txt",
+        "url": "https://wetrends.co.uk/api/blog/inventory/",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
         "options": {}
       },
-      "id": "b2917bb0-1017-4405-8d00-149134555458",
-      "name": "Fetch Site Index",
+      "id": "0db70465-e6bb-4eb5-ae51-996ad253b9b5",
+      "name": "Fetch Content Inventory",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
         -500,
         360
-      ]
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "REPLACE_WITH_WETRENDS_CREDENTIAL_ID",
+          "name": "WeTrends Blog API"
+        }
+      }
     },
     {
       "parameters": {
-        "jsCode": "const topic = $('Route Campaign').first().json;\n  const indexText = String($input.first().json.data || $input.first().json.body || '');\n  const posts = [];\n  const section = (indexText.split(/^## Blog Posts$/m)[1] || '').split(/^## /m)[0];\n  const pattern = /^- \\[(.+?)\\]\\((.+?)\\)/gm;\n  let match;\n  while ((match = pattern.exec(section))) posts.push({ title: match[1], url: match[2] });\n\n  const stopWords = new Set(['guide', 'strategy', 'business', 'marketing', 'small', 'your', 'with', 'that', 'this', 'from', 'what', 'when', 'london']);\n  const words = (value) => new Set(String(value).toLowerCase().replace(/[^a-z0-9\\s]/g, ' ').split(/\\s+/).filter((word) => word.length > 3 && !stopWords.has(word)));\n  const topicWords = words(`${topic.topic} ${topic.keywords || ''}`);\n  const scored = posts.map((post) => {\n    const postWords = words(post.title);\n    const intersection = [...postWords].filter((word) => topicWords.has(word)).length;\n    const union = new Set([...postWords, ...topicWords]).size;\n    return { ...post, similarity: union ? intersection / union : 0 };\n  }).sort((a, b) => b.similarity - a.similarity);\n\n  const top = scored[0];\n  const isDuplicate = Boolean(top && top.similarity >= 0.5);\n  return [{\n    json: {\n      ...topic,\n      isDuplicate,\n      duplicateOf: isDuplicate ? top.url : '',\n      internalLinkCandidates: scored.filter((post) => post.similarity >= 0.1 && post.similarity < 0.5).slice(0, 3),\n    },\n  }];"
+        "jsCode": "const topic = $('Route Campaign').first().json;\n  const inventory = $input.first().json;\n  const posts = Array.isArray(inventory.posts)\n    ? inventory.posts.filter((post) => post && post.title && post.url)\n    : [];\n\n  const stopWords = new Set(['guide', 'strategy', 'business', 'marketing', 'small', 'your', 'with', 'that', 'this', 'from', 'what', 'when', 'london']);\n  const words = (value) => new Set(String(value).toLowerCase().replace(/[^a-z0-9\\s]/g, ' ').split(/\\s+/).filter((word) => word.length > 3 && !stopWords.has(word)));\n  const topicWords = words(`${topic.topic} ${topic.keywords || ''}`);\n  const scored = posts.map((post) => {\n    const postWords = words(post.title);\n    const intersection = [...postWords].filter((word) => topicWords.has(word)).length;\n    const union = new Set([...postWords, ...topicWords]).size;\n    const similarity = union ? intersection / union : 0;\n    const containment = Math.min(postWords.size, topicWords.size) ? intersection / Math.min(postWords.size, topicWords.size) : 0;\n    return { ...post, similarity, containment, matchScore: Math.max(similarity, containment) };\n  }).sort((a, b) => b.matchScore - a.matchScore);\n\n  const top = scored[0];\n  const isDuplicate = Boolean(top && (top.similarity >= 0.45 || top.containment >= 0.7));\n  return [{\n    json: {\n      ...topic,\n      isDuplicate,\n      duplicateOf: isDuplicate ? top.url : '',\n      internalLinkCandidates: scored\n        .filter((post) => post.discoveryReady && post.matchScore >= 0.1 && (!isDuplicate || post.url !== top.url))\n        .slice(0, 3),\n    },\n  }];"
       },
       "id": "e1a29df3-fa96-4bbc-b1d7-255846952c93",
       "name": "Duplicate Guard",
@@ -805,14 +813,14 @@
       "main": [
         [
           {
-            "node": "Fetch Site Index",
+            "node": "Fetch Content Inventory",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Fetch Site Index": {
+    "Fetch Content Inventory": {
       "main": [
         [
           {

@@ -37,6 +37,23 @@ export function evaluateBlogDraft(draft: CreateBlogPostInput) {
     add('answer_first', 'warning', 'The article should begin with H1 followed by a direct-answer paragraph.');
   }
 
+  if (
+    /```|\{\{[^}]+\}\}|\b(?:lorem ipsum|placeholder text|TODO|TBD)\b|\[(?:insert|client name|company name|source needed|citation needed|date)\b[^\]]*\]/i.test(
+      draft.content
+    )
+  ) {
+    add('placeholder_text', 'critical', 'The draft contains a code fence or unresolved placeholder.');
+  }
+
+  if (
+    draft.contentType !== 'case_study' &&
+    /\b(?:we|our team|wetrends)\s+(?:have\s+)?(?:helped|worked\s+with|delivered|filmed|photographed|produced|achieved|increased|reduced|grew|cut)\b/i.test(
+      text
+    )
+  ) {
+    add('first_party_claim_review', 'critical', 'A first-party client or outcome claim needs human evidence review.');
+  }
+
   if (!draft.campaign) add('campaign_missing', 'critical', 'Campaign is required for automated drafts.');
   if (!draft.contentType) add('content_type_missing', 'warning', 'Content type is missing.');
   if (!draft.primaryServiceUrl) {
@@ -54,6 +71,15 @@ export function evaluateBlogDraft(draft: CreateBlogPostInput) {
     return !sourceUrls.includes(link);
   });
   if (unknownExternal.length) add('unknown_external_link', 'critical', 'The article contains an external link that is not in sourceUrls.');
+
+  const hasUncitedStatistic = [...draft.content.matchAll(/<p\b[^>]*>([\s\S]*?)<\/p>/gi)].some((match) => {
+    const paragraph = match[1];
+    if (!/\b\d+(?:\.\d+)?\s*(?:%|x|×)(?![a-z0-9])/i.test(stripHtml(paragraph))) return false;
+    return !hrefs(paragraph).some((link) => sourceUrls.includes(link));
+  });
+  if (hasUncitedStatistic) {
+    add('statistic_source_missing', 'critical', 'Every percentage or multiplier needs a source link in the same paragraph.');
+  }
 
   const unsupportedClaimPatterns = [
     /\b(?:best|leading|number one|#1|award[- ]winning)\b/i,

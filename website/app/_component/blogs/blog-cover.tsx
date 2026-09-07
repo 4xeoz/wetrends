@@ -95,15 +95,15 @@ export function BlogCover({
             {category}
           </span>
         )}
-        <p
-          className={`font-bold leading-[1.1] text-white ${
-            isHero
-              ? 'line-clamp-4 text-3xl sm:text-5xl md:text-6xl lg:text-7xl'
-              : 'line-clamp-3 text-lg sm:text-xl'
-          }`}
-        >
-          {title}
-        </p>
+        {isHero ? (
+          <h1 className="line-clamp-4 text-3xl font-bold leading-[1.1] text-white sm:text-5xl md:text-6xl lg:text-7xl">
+            {title}
+          </h1>
+        ) : (
+          <p className="line-clamp-3 text-lg font-bold leading-[1.1] text-white sm:text-xl">
+            {title}
+          </p>
+        )}
 
         {isHero && meta && (
           <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-white/80">

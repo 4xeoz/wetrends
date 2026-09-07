@@ -83,11 +83,17 @@ const contentWorkflow = JSON.parse(contentWorkflowSource);
 const imageNode = contentWorkflow.nodes.find((node) => node.name === 'Generate Medium Blog Cover');
 const queuedTopicNode = contentWorkflow.nodes.find((node) => node.name === 'Get Next Pending Topic');
 const draftPackageNode = contentWorkflow.nodes.find((node) => node.name === 'Build Draft Package');
+const contentInventoryNode = contentWorkflow.nodes.find((node) => node.name === 'Fetch Content Inventory');
+const duplicateGuardNode = contentWorkflow.nodes.find((node) => node.name === 'Duplicate Guard');
 assert.ok(imageNode.parameters.jsonBody.includes('"gpt-image-2"'));
 assert.ok(imageNode.parameters.jsonBody.includes('"medium"'));
 assert.ok(imageNode.parameters.jsonBody.includes('"1536x1024"'));
 assert.equal(queuedTopicNode.parameters.filters.conditions[0].keyValue, 'queued_london');
 assert.ok(draftPackageNode.parameters.jsCode.includes(':topic:'), 'Drafts must retain their topic-row linkage');
+assert.equal(contentInventoryNode.parameters.url, 'https://wetrends.co.uk/api/blog/inventory/');
+assert.equal(contentInventoryNode.parameters.genericAuthType, 'httpHeaderAuth');
+assert.ok(duplicateGuardNode.parameters.jsCode.includes('post.discoveryReady'));
+assert.ok(duplicateGuardNode.parameters.jsCode.includes('top.containment >= 0.7'));
 assert.match(contentWorkflowSource, /automationStatus: 'review_ready'/);
 assert.match(contentWorkflowSource, /Nothing is public until you approve/);
 
@@ -134,20 +140,24 @@ const topicPlanner = JSON.parse(read('automations/n8n/wetrends-topic-planner-v1.
 const topicParserNode = topicPlanner.nodes.find((node) => node.name === 'Validate Topic Plan');
 const openTopicQueueNode = topicPlanner.nodes.find((node) => node.name === 'Read Open London Topics');
 const plannerBriefNode = topicPlanner.nodes.find((node) => node.name === 'Build Topic Planner Brief');
+const plannerInventoryNode = topicPlanner.nodes.find((node) => node.name === 'Fetch Content Inventory');
 assert.ok(topicParserNode.parameters.jsCode.includes("status: 'queued_london'"));
 assert.equal(openTopicQueueNode.parameters.matchType, 'anyCondition');
 assert.equal(openTopicQueueNode.parameters.returnAll, true);
 assert.equal(openTopicQueueNode.alwaysOutputData, true);
 assert.deepEqual(new Set(openTopicQueueNode.parameters.filters.conditions.map((condition) => condition.keyValue)), new Set(['queued_london', 'review_ready', 'quality_blocked']));
 assert.equal(topicPlanner.nodes.find((node) => node.name === 'Insert Pending Topics').parameters.columns.value.status, 'queued_london');
+assert.equal(plannerInventoryNode.parameters.url, 'https://wetrends.co.uk/api/blog/inventory/');
+assert.equal(plannerInventoryNode.parameters.genericAuthType, 'httpHeaderAuth');
 assert.ok(topicPlanner.nodes.find((node) => node.name === 'Confirm Topic Queue').parameters.text.includes('.replaceAll("&", "&amp;")'));
 assert.equal(topicPlanner.connections['Read Search Opportunities'].main[0][0].node, 'Read Open London Topics');
 assert.equal(topicPlanner.connections['Read Open London Topics'].main[0][0].node, 'Build Topic Planner Brief');
 const plannerBrief = new Function('$', '$input', plannerBriefNode.parameters.jsCode)(
-  (name) => ({ first: () => ({ json: name === 'Fetch Published Index' ? { data: '## Blog Posts\n- [Published topic](https://wetrends.co.uk/blogs/published-topic/)' } : { rows: [{ keys: ['event photographer london', '/events/'], impressions: 80, position: 8.2 }] } }) }),
+  (name) => ({ first: () => ({ json: name === 'Fetch Content Inventory' ? { posts: [{ title: 'Published topic', url: 'https://wetrends.co.uk/blogs/published-topic/', discoveryReady: false }] } : { rows: [{ keys: ['event photographer london', '/events/'], impressions: 80, position: 8.2 }] } }) }),
   { all: () => [{ json: { topic: 'Open London event guide', status: 'queued_london' } }] },
 );
 assert.match(plannerBrief[0].json.plannerPrompt, /OPEN LONDON TOPICS:\n- Open London event guide \[queued_london\]/);
+assert.match(plannerBrief[0].json.plannerPrompt, /Published topic \| https:\/\/wetrends\.co\.uk\/blogs\/published-topic\//);
 const parsedTopics = new Function('$input', topicParserNode.parameters.jsCode)({
   first: () => ({
     json: {
@@ -201,8 +211,10 @@ const createRoute = read('app/api/blog/route.ts');
 const updateRoute = read('app/api/blog/[id]/route.ts');
 const qualityRoute = read('app/api/blog/quality/route.ts');
 const mediaRoute = read('app/api/blog/media/route.ts');
+const inventoryRoute = read('app/api/blog/inventory/route.ts');
 const publishedAuditRoute = read('app/api/blog/audit/route.ts');
 const blogActions = read('actions/blog.ts');
+const adminBlogPage = read('app/(auth)/(admin)/me/blog/page.tsx');
 const homePage = read('app/(main)/page.tsx');
 const llmIndexRoute = read('app/llms.txt/route.ts');
 const automationState = read('lib/blog-automation-state.ts');
@@ -220,9 +232,16 @@ const publishedAuditJavaScript = ts.transpileModule(publishedAuditState, {
   compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 },
 }).outputText;
 const publishedAuditModule = await import(`data:text/javascript;base64,${Buffer.from(publishedAuditJavaScript).toString('base64')}`);
+const blogQualitySource = read('lib/blog-quality.ts');
+const blogQualityJavaScript = ts.transpileModule(blogQualitySource, {
+  compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 },
+}).outputText;
+const blogQualityModule = await import(`data:text/javascript;base64,${Buffer.from(blogQualityJavaScript).toString('base64')}`);
 const provider = read('components/providers/posthog-provider.tsx');
 const posthogAnalytics = read('lib/analytics/posthog.ts');
 const cloudinaryAdmin = read('lib/cloudinary-admin.ts');
+const blogCover = read('app/_component/blogs/blog-cover.tsx');
+const blogContent = read('lib/blog-content.ts');
 const eventWork = read('app/(main)/events/work/page.tsx');
 const privacyPage = read('app/(main)/privacy/page.tsx');
 const sitemap = read('app/sitemap.ts');
@@ -248,12 +267,20 @@ assert.match(automationState, /Only a review-ready draft can receive a regenerat
 assert.match(updateRoute, /Draft no longer passes the publication quality gate/);
 assert.match(qualityRoute, /validateApiKey/);
 assert.match(mediaRoute, /validateApiKey/);
+assert.match(inventoryRoute, /validateApiKey/);
+assert.match(inventoryRoute, /where: \{ published: true \}/);
+assert.match(inventoryRoute, /discoveryReady: Boolean/);
+assert.match(inventoryRoute, /'Cache-Control': 'private, no-store'/);
 assert.match(publishedAuditRoute, /validateApiKey/);
 assert.match(publishedAuditRoute, /auditPublishedContent/);
 assert.match(blogActions, /const discoveryReadyWhere/);
 assert.match(blogActions, /automationStatus: 'published'/);
 assert.match(blogActions, /qualityScore: \{ gte: 80 \}/);
 assert.match(blogActions, /sourceUrls: \{ isEmpty: false \}/);
+assert.match(blogActions, /Page retrieval must be read-only/);
+assert.doesNotMatch(blogActions, /views:\s*\{\s*increment:/);
+assert.match(adminBlogPage, /legacy opens/);
+assert.match(adminBlogPage, /Use consented GA4 reporting for traffic decisions/);
 assert.match(homePage, /getDiscoveryReadyPosts\(3\)/);
 assert.match(llmIndexRoute, /getDiscoveryReadyPosts\(\)/);
 assert.match(mediaRoute, /wetrends\/blog/);
@@ -275,6 +302,9 @@ assert.match(cloudinaryAdmin, /const eventCredentials =/);
 assert.match(cloudinaryAdmin, /A partial credential set must never be combined with another account/);
 assert.match(cloudinaryAdmin, /publicCredentials\.cloudName && publicCredentials\.apiKey && publicCredentials\.apiSecret/);
 assert.match(cloudinaryAdmin, /eventCredentials\.cloudName && eventCredentials\.apiKey && eventCredentials\.apiSecret/);
+assert.match(blogCover, /isHero \? \(/);
+assert.match(blogCover, /<h1 className=/);
+assert.match(blogContent, /Drop the content's own <h1>; the page renders the post title/);
 assert.match(privacyPage, /team@wetrends\.co\.uk/);
 assert.match(privacyPage, /Google Analytics and PostHog/);
 assert.match(privacyPage, /Information Commissioner/);
@@ -316,6 +346,42 @@ assert.equal(
     { published: true, automationStatus: 'approved', title: 'Mutated live title' },
   ),
   'blocked',
+);
+
+const repeatedQualitySentence = 'A useful production brief connects the audience, channel, constraints and measurable decision. ';
+const qualityContent = `<h1>London event production planning</h1><p>Start with a clear outcome and use the <a href="https://wetrends.co.uk/events/">event production service</a> to shape the brief.</p>${[1, 2, 3, 4]
+  .map((section) => `<h2>Planning section ${section}</h2><p>${repeatedQualitySentence.repeat(22)}</p>`)
+  .join('')}`;
+const validQualityDraft = {
+  title: 'London Event Production Planning',
+  slug: 'london-event-production-planning',
+  excerpt: 'A practical way to build a focused event production brief.',
+  content: qualityContent,
+  featuredImage: 'https://res.cloudinary.com/example/image/upload/editorial.webp',
+  featuredImageAlt: 'Editorial event production planning concept',
+  featuredImageKind: 'ai_supporting',
+  published: false,
+  metaTitle: 'London Event Production Planning',
+  metaDescription: 'Build a focused London event production brief around audience, assets and measurable decisions.',
+  keywords: ['London event production'],
+  campaign: 'events',
+  contentType: 'guide',
+  primaryServiceUrl: 'https://wetrends.co.uk/events/',
+  sourceUrls: ['https://example.com/research'],
+  automationStatus: 'drafted',
+};
+assert.equal(blogQualityModule.evaluateBlogDraft(validQualityDraft).pass, true);
+assert.ok(
+  blogQualityModule.evaluateBlogDraft({ ...validQualityDraft, content: `${qualityContent}<p>TODO: add client quote.</p>` }).issues.some((issue) => issue.code === 'placeholder_text'),
+);
+assert.ok(
+  blogQualityModule.evaluateBlogDraft({ ...validQualityDraft, content: `${qualityContent}<p>Results improved by 40%.</p>` }).issues.some((issue) => issue.code === 'statistic_source_missing'),
+);
+assert.ok(
+  blogQualityModule.evaluateBlogDraft({ ...validQualityDraft, content: `${qualityContent}<p>We helped a client increase sales.</p>` }).issues.some((issue) => issue.code === 'first_party_claim_review'),
+);
+assert.ok(
+  !blogQualityModule.evaluateBlogDraft({ ...validQualityDraft, content: `${qualityContent}<p><a href="https://example.com/research">Research</a> reports a 40% change.</p>` }).issues.some((issue) => issue.code === 'statistic_source_missing'),
 );
 assert.equal(
   getPublishedAutomationDisposition(

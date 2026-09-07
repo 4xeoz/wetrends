@@ -165,9 +165,12 @@ export default function BlogManagementPage() {
                           </>
                         )}
                         <span>•</span>
-                        <span className="flex items-center gap-1">
+                        <span
+                          className="flex items-center gap-1"
+                          title="Historical counter includes server renders, crawlers and past builds. Use consented GA4 reporting for traffic decisions."
+                        >
                           <Eye className="h-4 w-4" />
-                          {post.views} views
+                          {post.views} legacy opens
                         </span>
                       </div>
                     </div>

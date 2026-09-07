@@ -137,10 +137,16 @@ A draft is reviewable only when all applicable checks pass:
 - valid internal links to existing pages;
 - no invented quotes, clients, rankings, reviews, awards or office address;
 - source-backed statistics;
+- a source link in the same paragraph as every percentage or multiplier;
 - campaign-specific CTA;
 - image alt text and asset provenance;
 - no placeholder text, Markdown fences or script tags;
+- no first-party client or outcome claim in automated non-case-study content;
 - draft-only CMS state.
+
+The raw draft contains one H1 so the quality gate can validate its structure. At render time the content copy is removed and the page template emits the post title as the single visible H1; blog cards keep non-heading title text so they do not pollute the surrounding page hierarchy.
+
+Planning and duplicate checks use the protected published-content inventory, not `llms.txt`. Every live title can block a near-duplicate, including legacy posts under review, but only evidence-ready inventory entries may be suggested as internal links. `llms.txt` remains the public, trust-filtered generative index.
 
 ## Measurement
 
@@ -156,6 +162,8 @@ The browser sends the same deliberate events to consented analytics destinations
 Recommended dimensions are `service_line`, `content_id`, `lead_source` and `target_location`. Lead and sale events include a GBP value only when it is known or explicitly modelled.
 
 GA4 and PostHog remain disabled until the visitor grants analytics consent. Admin and authentication routes are excluded. PostHog records only the deliberate page-view, page-leave and conversion events above; autocapture, session replay, heatmaps, dead-click detection, Web Vitals, exception capture, surveys and product tours are disabled explicitly.
+
+The historical `BlogPost.views` field is frozen and labelled `legacy opens` in the admin interface. Its old server-side increment ran during metadata rendering, crawlers and static builds, so it is not valid audience evidence. Consented GA4 page views and deliberate conversion events are the source of truth going forward; historical values must not be compared with GA4 as if they share a definition.
 
 ## Backlink programme
 

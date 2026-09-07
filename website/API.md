@@ -299,6 +299,10 @@ AI images must use `imageKind: "ai_supporting"` and must not be described as cli
 
 Runs the same deterministic quality gate used during automated draft creation. It returns a score, word and heading counts, and machine-readable critical or warning issues. A post submitted with `automationStatus: "review_ready"` is rejected with `422` unless this gate passes.
 
+### 8. Read Published Content Inventory — `GET /api/blog/inventory/`
+
+Returns the title, slug and canonical URL of every published post for protected planning and cannibalisation checks. `discoveryReady` is true only for evidence-ready posts that may be suggested as internal links. The endpoint never returns draft copy and requires the API key.
+
 ## n8n Configuration Reference
 
 ### HTTP Request Node Settings
