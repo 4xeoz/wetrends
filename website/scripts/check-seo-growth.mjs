@@ -108,6 +108,9 @@ const duplicateGuardNode = contentWorkflow.nodes.find((node) => node.name === 'D
 assert.ok(imageNode.parameters.jsonBody.includes('"gpt-image-2"'));
 assert.ok(imageNode.parameters.jsonBody.includes('"medium"'));
 assert.ok(imageNode.parameters.jsonBody.includes('"1536x1024"'));
+assert.ok(imageNode.parameters.jsonBody.includes('output_format: "webp"'));
+assert.ok(imageNode.parameters.jsonBody.includes('output_compression: 82'));
+assert.ok(imageNode.parameters.jsonBody.includes('n: 1'));
 assert.equal(queuedTopicNode.parameters.filters.conditions[0].keyValue, 'queued_london');
 assert.ok(draftPackageNode.parameters.jsCode.includes(':topic:'), 'Drafts must retain their topic-row linkage');
 assert.equal(contentInventoryNode.parameters.url, 'https://wetrends.co.uk/api/blog/inventory/');
@@ -168,6 +171,13 @@ assert.deepEqual(
 );
 const buildRegenerationPromptNode = reviewWorkflow.nodes.find((node) => node.name === 'Build Regeneration Prompt');
 const buildRegenerationPrompt = new Function('$input', buildRegenerationPromptNode.parameters.jsCode);
+const regenerateCoverNode = reviewWorkflow.nodes.find((node) => node.name === 'Regenerate Medium Cover');
+assert.ok(regenerateCoverNode.parameters.jsonBody.includes('"gpt-image-2"'));
+assert.ok(regenerateCoverNode.parameters.jsonBody.includes('"medium"'));
+assert.ok(regenerateCoverNode.parameters.jsonBody.includes('"1536x1024"'));
+assert.ok(regenerateCoverNode.parameters.jsonBody.includes('output_format: "webp"'));
+assert.ok(regenerateCoverNode.parameters.jsonBody.includes('output_compression: 82'));
+assert.ok(regenerateCoverNode.parameters.jsonBody.includes('n: 1'));
 assert.throws(
   () => buildRegenerationPrompt({ first: () => ({ json: { post: { id: testPostId, contentType: 'case_study' } } }) }),
   /genuine portfolio proof/,
