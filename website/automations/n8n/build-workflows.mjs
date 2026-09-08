@@ -466,7 +466,7 @@ function markQualityBlocked() {
 function buildContentEngine() {
   const key = 'content-engine-v3';
   const nodes = [
-    scheduleNode(key, 'Mon Wed Fri 09:00 London', [-1_100, 280], '0 9 * * 1,3,5'),
+    scheduleNode(key, 'Tue Thu Sat 09:00 London', [-1_100, 280], '0 9 * * 2,4,6'),
     manualNode(key, [-1_100, 440]),
     makeNode(key, 'Get Next Pending Topic', 'n8n-nodes-base.dataTable', 1, [-900, 360], {
       operation: 'get', dataTableId: dataTableSelector(), matchType: 'allConditions', filters: { conditions: [{ keyName: 'status', condition: 'eq', keyValue: 'queued_london' }] }, returnAll: false, limit: 1,
@@ -528,7 +528,7 @@ function buildContentEngine() {
     }),
   ];
   const connections = {};
-  for (const trigger of ['Mon Wed Fri 09:00 London', 'Manual Test']) connect(connections, trigger, 'Get Next Pending Topic');
+  for (const trigger of ['Tue Thu Sat 09:00 London', 'Manual Test']) connect(connections, trigger, 'Get Next Pending Topic');
   connect(connections, 'Get Next Pending Topic', 'Route Campaign');
   connect(connections, 'Route Campaign', 'Fetch Content Inventory');
   connect(connections, 'Fetch Content Inventory', 'Duplicate Guard');
