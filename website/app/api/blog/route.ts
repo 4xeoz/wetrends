@@ -4,7 +4,10 @@ import { validateApiKey } from "@/lib/api-auth";
 import { createBlogPostSchema } from "@/lib/zod/blog";
 import { revalidatePath } from "next/cache";
 import { evaluateBlogDraft } from "@/lib/blog-quality";
-import { isCreatableAutomationState } from "@/lib/blog-automation-state";
+import {
+  getAutomationRunRetryDisposition,
+  isCreatableAutomationState,
+} from "@/lib/blog-automation-state";
 
 export async function GET(request: NextRequest) {
   const auth = validateApiKey(request);
@@ -90,34 +93,6 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // A workflow retry can arrive after MongoDB committed the draft but before
-  // n8n received the response or updated its topic row. Reuse that private
-  // draft instead of creating another one. The automation status must match so
-  // a quality-blocked retry can never be mistaken for a review-ready draft.
-  if (data.automationRunId) {
-    const existingRun = await prisma.blogPost.findFirst({
-      where: { automationRunId: data.automationRunId },
-    });
-    if (existingRun) {
-      if (existingRun.published || existingRun.automationStatus === "published") {
-        return NextResponse.json(
-          { success: false, message: "This automation run already produced a published post" },
-          { status: 409 }
-        );
-      }
-      if (existingRun.automationStatus !== data.automationStatus) {
-        return NextResponse.json(
-          { success: false, message: "This automation run already produced a draft in a different review state" },
-          { status: 409 }
-        );
-      }
-      return NextResponse.json(
-        { success: true, post: existingRun, quality, idempotent: true },
-        { status: 200 }
-      );
-    }
-  }
-
   // 3. Verify authorId exists (if provided)
   if (data.authorId) {
     const authorExists = await prisma.user.findUnique({
@@ -142,6 +117,76 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { success: false, message: `Category with id '${data.categoryId}' does not exist` },
         { status: 400 }
+      );
+    }
+  }
+
+  // A workflow retry can arrive after MongoDB committed the draft but before
+  // n8n received the response or updated its topic row. Reuse that private
+  // draft instead of creating another one. The only mutating retry is a
+  // quality-blocked -> review-ready recovery for the same stable run and slug;
+  // the complete replacement payload has already passed the quality gate.
+  if (data.automationRunId) {
+    const existingRun = await prisma.blogPost.findFirst({
+      where: { automationRunId: data.automationRunId },
+    });
+    if (existingRun) {
+      if (existingRun.slug !== data.slug) {
+        return NextResponse.json(
+          { success: false, message: "This automation run key cannot be reused for a different slug" },
+          { status: 409 }
+        );
+      }
+
+      const retryDisposition = getAutomationRunRetryDisposition(existingRun, data);
+      if (retryDisposition === "conflict") {
+        return NextResponse.json(
+          { success: false, message: "This automation run already produced a draft in a different review state" },
+          { status: 409 }
+        );
+      }
+      if (retryDisposition === "idempotent") {
+        return NextResponse.json(
+          { success: true, post: existingRun, quality, idempotent: true },
+          { status: 200 }
+        );
+      }
+
+      const post = await prisma.blogPost.update({
+        where: { id: existingRun.id },
+        data: {
+          title: data.title,
+          slug: data.slug,
+          excerpt: data.excerpt,
+          content: data.content,
+          ...(data.featuredImage !== undefined && { featuredImage: data.featuredImage }),
+          ...(data.featuredImageAlt !== undefined && { featuredImageAlt: data.featuredImageAlt }),
+          ...(data.featuredImageKind !== undefined && { featuredImageKind: data.featuredImageKind }),
+          ...(data.featuredImageCredit !== undefined && { featuredImageCredit: data.featuredImageCredit }),
+          published: false,
+          publishedAt: null,
+          ...(data.metaTitle !== undefined && { metaTitle: data.metaTitle }),
+          ...(data.metaDescription !== undefined && { metaDescription: data.metaDescription }),
+          keywords: data.keywords ?? [],
+          ...(data.campaign !== undefined && { campaign: data.campaign }),
+          ...(data.contentType !== undefined && { contentType: data.contentType }),
+          ...(data.primaryServiceUrl !== undefined && { primaryServiceUrl: data.primaryServiceUrl }),
+          sourceUrls: data.sourceUrls ?? [],
+          automationStatus: "review_ready",
+          automationRunId: data.automationRunId,
+          qualityScore: quality.score,
+          ...(data.categoryId !== undefined && { categoryId: data.categoryId }),
+          ...(data.authorId !== undefined && { authorId: data.authorId }),
+        },
+      });
+
+      revalidatePath("/blogs");
+      revalidatePath(`/blogs/${post.slug}`);
+      revalidatePath("/sitemap.xml");
+
+      return NextResponse.json(
+        { success: true, post, quality, promotedFromQualityBlocked: true },
+        { status: 200 }
       );
     }
   }

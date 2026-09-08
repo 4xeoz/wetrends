@@ -11,9 +11,38 @@ type RequestedAutomationState = {
 };
 
 export type PublishedAutomationDisposition = 'mutable' | 'idempotent' | 'blocked';
+export type AutomationRunRetryDisposition = 'idempotent' | 'promote_quality_blocked' | 'conflict';
 
 export function isCreatableAutomationState(status?: string | null) {
   return CREATABLE_STATES.has(status || 'drafted');
+}
+
+/**
+ * A stable automation run may be replayed after an upstream failure. Matching
+ * private drafts are read-only successes, except for one fail-closed recovery:
+ * a quality-blocked draft may become review-ready after the create route has
+ * revalidated the complete replacement payload. All other state changes stay
+ * on their dedicated review endpoints.
+ */
+export function getAutomationRunRetryDisposition(
+  existing: ExistingAutomationState,
+  requested: RequestedAutomationState,
+): AutomationRunRetryDisposition {
+  if (existing.published || existing.automationStatus === 'published') return 'conflict';
+
+  const existingStatus = existing.automationStatus || 'drafted';
+  const requestedStatus = requested.automationStatus || 'drafted';
+  if (existingStatus === requestedStatus) return 'idempotent';
+
+  if (
+    existingStatus === 'quality_blocked' &&
+    requestedStatus === 'review_ready' &&
+    requested.published !== true
+  ) {
+    return 'promote_quality_blocked';
+  }
+
+  return 'conflict';
 }
 
 /**

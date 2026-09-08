@@ -31,6 +31,7 @@ const supportedDataTableOperations = new Set([
 
 const expectedCredentialReferences = new Map([
   ['OpenAI - WeTrends SEO', ['openAiApi', 'Lrj5HIOGIlIosZun']],
+  ['OpenRouter account', ['openRouterApi', 'J9bt6GNogK4tq81D']],
   ['Tavily API', ['httpHeaderAuth', 'gfHlHQLfbKFj5Voi']],
   ['WeTrends Blog API', ['httpHeaderAuth', 'jNOBFrsMFwW2ovdd']],
   ['Google account', ['googleOAuth2Api', 'dsiuhHcD0Kq1Ahao']],
@@ -105,7 +106,9 @@ const queuedTopicNode = contentWorkflow.nodes.find((node) => node.name === 'Get 
 const draftPackageNode = contentWorkflow.nodes.find((node) => node.name === 'Build Draft Package');
 const contentInventoryNode = contentWorkflow.nodes.find((node) => node.name === 'Fetch Content Inventory');
 const duplicateGuardNode = contentWorkflow.nodes.find((node) => node.name === 'Duplicate Guard');
-assert.ok(imageNode.parameters.jsonBody.includes('"gpt-image-2"'));
+assert.equal(imageNode.parameters.url, 'https://openrouter.ai/api/v1/images');
+assert.equal(imageNode.parameters.nodeCredentialType, 'openRouterApi');
+assert.ok(imageNode.parameters.jsonBody.includes('"openai/gpt-image-2"'));
 assert.ok(imageNode.parameters.jsonBody.includes('"medium"'));
 assert.ok(imageNode.parameters.jsonBody.includes('"1536x1024"'));
 assert.ok(imageNode.parameters.jsonBody.includes('output_format: "webp"'));
@@ -217,7 +220,9 @@ assert.deepEqual(
 const buildRegenerationPromptNode = reviewWorkflow.nodes.find((node) => node.name === 'Build Regeneration Prompt');
 const buildRegenerationPrompt = new Function('$input', buildRegenerationPromptNode.parameters.jsCode);
 const regenerateCoverNode = reviewWorkflow.nodes.find((node) => node.name === 'Regenerate Medium Cover');
-assert.ok(regenerateCoverNode.parameters.jsonBody.includes('"gpt-image-2"'));
+assert.equal(regenerateCoverNode.parameters.url, 'https://openrouter.ai/api/v1/images');
+assert.equal(regenerateCoverNode.parameters.nodeCredentialType, 'openRouterApi');
+assert.ok(regenerateCoverNode.parameters.jsonBody.includes('"openai/gpt-image-2"'));
 assert.ok(regenerateCoverNode.parameters.jsonBody.includes('"medium"'));
 assert.ok(regenerateCoverNode.parameters.jsonBody.includes('"1536x1024"'));
 assert.ok(regenerateCoverNode.parameters.jsonBody.includes('output_format: "webp"'));
@@ -346,6 +351,7 @@ const automationStateJavaScript = ts.transpileModule(automationState, {
 }).outputText;
 const automationStateModule = await import(`data:text/javascript;base64,${Buffer.from(automationStateJavaScript).toString('base64')}`);
 const {
+  getAutomationRunRetryDisposition,
   getAutomationTransitionError,
   getPublishedAutomationDisposition,
   isCreatableAutomationState,
@@ -378,8 +384,14 @@ assert.match(createRoute, /New API posts must be created as drafts/);
 assert.match(createRoute, /cannot start in an approved, rejected or published state/);
 assert.match(createRoute, /evaluateBlogDraft/);
 assert.match(createRoute, /where: \{ automationRunId: data\.automationRunId \}/);
-assert.match(createRoute, /existingRun\.automationStatus !== data\.automationStatus/);
+assert.match(createRoute, /getAutomationRunRetryDisposition/);
+assert.match(createRoute, /existingRun\.slug !== data\.slug/);
 assert.match(createRoute, /idempotent: true/);
+assert.match(createRoute, /promotedFromQualityBlocked: true/);
+assert.ok(
+  createRoute.indexOf('const quality = evaluateBlogDraft(data)') < createRoute.indexOf('getAutomationRunRetryDisposition(existingRun, data)'),
+  'A quality-blocked retry must pass the authoritative gate before promotion',
+);
 assert.match(updateRoute, /explicit approved status in this request/);
 assert.match(updateRoute, /getAutomationTransitionError/);
 assert.match(updateRoute, /getPublishedAutomationDisposition/);
@@ -444,6 +456,10 @@ assert.equal(isCreatableAutomationState('review_ready'), true);
 assert.equal(isCreatableAutomationState('approved'), false);
 assert.equal(isCreatableAutomationState('rejected'), false);
 assert.equal(isCreatableAutomationState('published'), false);
+assert.equal(getAutomationRunRetryDisposition({ published: false, automationStatus: 'quality_blocked' }, { published: false, automationStatus: 'review_ready' }), 'promote_quality_blocked');
+assert.equal(getAutomationRunRetryDisposition({ published: false, automationStatus: 'review_ready' }, { published: false, automationStatus: 'review_ready' }), 'idempotent');
+assert.equal(getAutomationRunRetryDisposition({ published: false, automationStatus: 'review_ready' }, { published: false, automationStatus: 'quality_blocked' }), 'conflict');
+assert.equal(getAutomationRunRetryDisposition({ published: true, automationStatus: 'published' }, { published: false, automationStatus: 'review_ready' }), 'conflict');
 assert.equal(getAutomationTransitionError({ published: true, automationStatus: 'published' }, { published: false, automationStatus: 'rejected' })?.status, 409);
 assert.equal(getAutomationTransitionError({ published: false, automationStatus: 'drafted' }, { published: false, automationStatus: 'rejected' })?.status, 409);
 assert.equal(getAutomationTransitionError({ published: false, automationStatus: 'review_ready' }, { published: false, automationStatus: 'rejected' }), null);

@@ -428,12 +428,12 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://api.openai.com/v1/images/generations",
+        "url": "https://openrouter.ai/api/v1/images",
         "authentication": "predefinedCredentialType",
-        "nodeCredentialType": "openAiApi",
+        "nodeCredentialType": "openRouterApi",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ model: \"gpt-image-2\", prompt: $json.prompt, size: \"1536x1024\", quality: \"medium\", output_format: \"webp\", output_compression: 82, n: 1 }) }}",
+        "jsonBody": "={{ JSON.stringify({ model: \"openai/gpt-image-2\", prompt: $json.prompt, size: \"1536x1024\", quality: \"medium\", output_format: \"webp\", output_compression: 82, n: 1 }) }}",
         "options": {}
       },
       "id": "e9f9fc3c-4bce-4152-b024-1e3ba200d38c",
@@ -445,9 +445,9 @@
         680
       ],
       "credentials": {
-        "openAiApi": {
-          "id": "Lrj5HIOGIlIosZun",
-          "name": "OpenAI - WeTrends SEO"
+        "openRouterApi": {
+          "id": "J9bt6GNogK4tq81D",
+          "name": "OpenRouter account"
         }
       },
       "onError": "continueRegularOutput"

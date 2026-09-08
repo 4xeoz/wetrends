@@ -13,6 +13,12 @@ const credentials = {
       name: 'OpenAI - WeTrends SEO',
     },
   },
+  openrouter: {
+    openRouterApi: {
+      id: 'J9bt6GNogK4tq81D',
+      name: 'OpenRouter account',
+    },
+  },
   tavily: {
     httpHeaderAuth: {
       id: 'gfHlHQLfbKFj5Voi',
@@ -488,9 +494,9 @@ function buildContentEngine() {
     modelNode(key, 'OpenAI Luna - Metadata', [1_220, 760]),
     codeNode(key, 'Build Draft Package', [1_440, 520], buildDraftPackage),
     httpNode(key, 'Generate Medium Blog Cover', [1_660, 520], {
-      method: 'POST', url: 'https://api.openai.com/v1/images/generations', authentication: 'predefinedCredentialType', nodeCredentialType: 'openAiApi', sendBody: true, specifyBody: 'json',
-      jsonBody: '={{ JSON.stringify({ model: "gpt-image-2", prompt: $json.imagePrompt, size: "1536x1024", quality: "medium", output_format: "webp", output_compression: 82, n: 1 }) }}', options: {},
-    }, { credentials: credentials.openai, onError: 'continueRegularOutput' }),
+      method: 'POST', url: 'https://openrouter.ai/api/v1/images', authentication: 'predefinedCredentialType', nodeCredentialType: 'openRouterApi', sendBody: true, specifyBody: 'json',
+      jsonBody: '={{ JSON.stringify({ model: "openai/gpt-image-2", prompt: $json.imagePrompt, size: "1536x1024", quality: "medium", output_format: "webp", output_compression: 82, n: 1 }) }}', options: {},
+    }, { credentials: credentials.openrouter, onError: 'continueRegularOutput' }),
     codeNode(key, 'Prepare Image Upload', [1_880, 520], prepareImageUpload),
     ifNode(key, 'Image Ready?', [2_100, 520], '={{ $json.imageReady }}', { type: 'boolean', operation: 'true', singleValue: true }),
     httpNode(key, 'Store Blog Cover', [2_320, 400], {
@@ -602,7 +608,7 @@ function buildApprovalWorkflow() {
     telegramNode(key, 'Confirm Rejection', [860, 440], '=🗑️ Draft rejected and kept private\n\n{{ String($json.post.title || "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;") }}\nDraft ID: {{ $json.post.id }}'),
     syncReviewedTopicNode(key, 'Sync Rejected Topic Status', [1_080, 440], 'rejected', 'Reject Draft'),
     codeNode(key, 'Build Regeneration Prompt', [640, 680], buildRegenerationPrompt),
-    httpNode(key, 'Regenerate Medium Cover', [860, 680], { method: 'POST', url: 'https://api.openai.com/v1/images/generations', authentication: 'predefinedCredentialType', nodeCredentialType: 'openAiApi', sendBody: true, specifyBody: 'json', jsonBody: '={{ JSON.stringify({ model: "gpt-image-2", prompt: $json.prompt, size: "1536x1024", quality: "medium", output_format: "webp", output_compression: 82, n: 1 }) }}', options: {} }, { credentials: credentials.openai, onError: 'continueRegularOutput' }),
+    httpNode(key, 'Regenerate Medium Cover', [860, 680], { method: 'POST', url: 'https://openrouter.ai/api/v1/images', authentication: 'predefinedCredentialType', nodeCredentialType: 'openRouterApi', sendBody: true, specifyBody: 'json', jsonBody: '={{ JSON.stringify({ model: "openai/gpt-image-2", prompt: $json.prompt, size: "1536x1024", quality: "medium", output_format: "webp", output_compression: 82, n: 1 }) }}', options: {} }, { credentials: credentials.openrouter, onError: 'continueRegularOutput' }),
     codeNode(key, 'Prepare Regenerated Image', [1_080, 680], prepareRegeneratedImage),
     ifNode(key, 'Regenerated Image Ready?', [1_300, 680], '={{ $json.imageReady }}', { type: 'boolean', operation: 'true', singleValue: true }),
     httpNode(key, 'Store Regenerated Cover', [1_520, 600], { method: 'POST', url: 'https://wetrends.co.uk/api/blog/media/', authentication: 'genericCredentialType', genericAuthType: 'httpHeaderAuth', sendBody: true, specifyBody: 'json', jsonBody: '={{ JSON.stringify($json.mediaPayload) }}', options: {} }, { credentials: credentials.blog }),

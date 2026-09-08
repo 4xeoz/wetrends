@@ -74,6 +74,8 @@ The generated JSON files in `automations/n8n/` remain the implementation source 
 
 Older similarly named workflows are preserved as historical copies and are not rollout targets. The legacy `WeTrends SEO + GEO Smart Draft System v2 (London)` workflow (`ieJd5NrbwH130x09`) is still published and draft-only. At cutover, deactivate that scheduler before activating the new Content Engine so two workflows cannot consume the topic queue or create parallel drafts. Do not make that cutover until the preview deployment and draft-only end-to-end gates pass.
 
+The separate `WeTrends Content Engine v3 — PREVIEW E2E Manual Only` workflow (`qoc35Yh3PdEsWDq5`) is an inactive test harness whose CMS requests target the Vercel preview deployment. It is not a scheduled rollout target.
+
 ### Legacy published-content recovery
 
 The authenticated `GET /api/blog/audit/` endpoint is read-only. It inventories every published post, reports missing sources, provenance, campaign routing, CTA, metadata and quality scores, and flags outcome language for evidence review. It returns titles, slugs and risk codes for the highest-priority items but never returns article bodies to Telegram.
@@ -101,7 +103,8 @@ Changing or bulk-migrating legacy `pending` rows requires a separate content rev
 
 n8n stores the secret values; exported workflow JSON contains credential references only:
 
-- `OpenAI - WeTrends SEO` for Luna text work and GPT Image 2;
+- `OpenAI - WeTrends SEO` for Luna text work;
+- `OpenRouter account` for GPT Image 2 cover generation and regeneration;
 - `Google account` with read-only Search Console and Analytics scopes;
 - `Telegram account` for the private review chat;
 - `Tavily API` for research and opportunity discovery;
@@ -116,7 +119,7 @@ Telegram send nodes use explicit HTML mode, escape dynamic external text and dis
 - Content may be researched, scored, drafted, illustrated and saved automatically.
 - New articles remain drafts until an explicit Telegram approval.
 - A publish action must use the exact CMS post ID returned when the draft was created. It must never publish by title alone.
-- Each queued topic has a stable automation run key and deterministic slug. If n8n retries after the CMS committed a draft but before the response or topic update completed, the create endpoint returns the same private draft instead of creating another one.
+- Each queued topic has a stable automation run key and deterministic slug. If n8n retries after the CMS committed a draft but before the response or topic update completed, the create endpoint returns the same private draft instead of creating another one. A `quality_blocked` draft can be promoted to `review_ready` only when the retry uses that same run key and slug, remains unpublished, and the complete replacement payload passes the website quality gate again.
 - Published posts are read-only to the automation API. An exact two-field replay of an already-successful approval is a no-op success, while any attempt to change live copy, metadata or media is rejected.
 - The automation API may delete only unpublished drafts. Human administrators retain the separate session-authenticated deletion path for any deliberate live-content decision.
 - Reject and regenerate commands apply only to review-ready drafts. The automation API cannot unpublish an article that is already live.
@@ -207,8 +210,8 @@ Paid-link networks, automated guest-post blasts, reciprocal-link farms and irrel
 
 - GA4 property `553107339` and the `WeTrends Website` web stream (`15735914465`) were created on 7 September 2026. Its measurement ID is `G-8L4SZJWV8R`; set that value as `NEXT_PUBLIC_GA_MEASUREMENT_ID` in each Vercel environment before deployment.
 - The owner accepted the Google Analytics service and required data-processing terms on 7 September 2026.
-- A complete Cloudinary server credential triplet is configured for both Production and Preview. Blog media prefers the dedicated public triplet when present and otherwise uses the complete event triplet atomically; it never combines a cloud name and key from different accounts. Preview upload and delivery still require an end-to-end test.
-- Verified OpenAI API organisation access for GPT Image models.
-- n8n credentials for OpenAI, Google, Telegram, Tavily and the WeTrends API.
+- A complete Cloudinary server credential triplet is configured for both Production and Preview. Blog media prefers the dedicated public triplet when present and otherwise uses the complete event triplet atomically; it never combines a cloud name and key from different accounts. A 1536x1024 WebP upload and Cloudinary delivery URL were verified through the preview workflow on 8 September 2026.
+- A funded OpenRouter account with access to `openai/gpt-image-2`; the connected n8n credential generated a medium 1536x1024 WebP successfully through the preview workflow on 8 September 2026.
+- n8n credentials for OpenAI, OpenRouter, Google, Telegram, Tavily and the WeTrends API.
 - Genuine portfolio images and usage permission for proof-led case studies.
 - Confirmation of the controller's full legal/contact identity and a precise retention schedule before treating the privacy notice as legally final.
