@@ -90,6 +90,34 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  // A workflow retry can arrive after MongoDB committed the draft but before
+  // n8n received the response or updated its topic row. Reuse that private
+  // draft instead of creating another one. The automation status must match so
+  // a quality-blocked retry can never be mistaken for a review-ready draft.
+  if (data.automationRunId) {
+    const existingRun = await prisma.blogPost.findFirst({
+      where: { automationRunId: data.automationRunId },
+    });
+    if (existingRun) {
+      if (existingRun.published || existingRun.automationStatus === "published") {
+        return NextResponse.json(
+          { success: false, message: "This automation run already produced a published post" },
+          { status: 409 }
+        );
+      }
+      if (existingRun.automationStatus !== data.automationStatus) {
+        return NextResponse.json(
+          { success: false, message: "This automation run already produced a draft in a different review state" },
+          { status: 409 }
+        );
+      }
+      return NextResponse.json(
+        { success: true, post: existingRun, quality, idempotent: true },
+        { status: 200 }
+      );
+    }
+  }
+
   // 3. Verify authorId exists (if provided)
   if (data.authorId) {
     const authorExists = await prisma.user.findUnique({

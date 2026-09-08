@@ -373,7 +373,10 @@ function buildDraftPackage() {
   const context = $('Build Metadata Brief').first().json;
   const clean = (value, limit) => String(value || '').replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim().slice(0, limit);
   const escapeHtml = (value) => String(value || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
-  const slug = clean(metadata.slug || metadata.title || context.topic, 100).toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '').slice(0, 90);
+  // Derive the slug from the queued topic, not the model response. This makes
+  // retries for the same topic converge on the database's unique slug instead
+  // of creating parallel drafts with slightly different model-generated URLs.
+  const slug = clean(context.topic, 100).toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '').slice(0, 90);
   const faq = Array.isArray(metadata.faq) ? metadata.faq.slice(0, 3) : [];
   const faqHtml = faq.length ? `<h2>Frequently asked questions</h2>${faq.map((item) => `<h3>${escapeHtml(item.q)}</h3><p>${escapeHtml(item.a)}</p>`).join('')}` : '';
   let content = `${context.draft}${faqHtml}`;
@@ -396,7 +399,10 @@ function buildDraftPackage() {
     primaryServiceUrl: context.primaryServiceUrl,
     sourceUrls: context.sourceUrls,
     automationStatus: 'drafted',
-    automationRunId: `${String($execution.id)}:topic:${String(context.rowId)}`,
+    // The topic row is the durable unit of work. A stable key lets the website
+    // return an earlier successful draft when n8n retries after a lost response
+    // or a downstream Data Table/Telegram failure.
+    automationRunId: `seo-v3:topic:${String(context.rowId)}`,
   };
   return [{ json: { rowId: context.rowId, imageAlt, imagePrompt, corePayload } }];
 }

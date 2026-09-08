@@ -113,6 +113,51 @@ assert.ok(imageNode.parameters.jsonBody.includes('output_compression: 82'));
 assert.ok(imageNode.parameters.jsonBody.includes('n: 1'));
 assert.equal(queuedTopicNode.parameters.filters.conditions[0].keyValue, 'queued_london');
 assert.ok(draftPackageNode.parameters.jsCode.includes(':topic:'), 'Drafts must retain their topic-row linkage');
+assert.ok(
+  draftPackageNode.parameters.jsCode.includes('clean(context.topic, 100)'),
+  'Draft slugs must be deterministic for the queued topic',
+);
+assert.ok(
+  draftPackageNode.parameters.jsCode.includes('seo-v3:topic:${String(context.rowId)}'),
+  'Draft retries must use a stable topic idempotency key',
+);
+const buildDraftPackage = new Function('$input', '$', draftPackageNode.parameters.jsCode);
+const draftPackage = buildDraftPackage(
+  {
+    first: () => ({
+      json: {
+        text: JSON.stringify({
+          title: 'A stronger generated title',
+          slug: 'model-generated-slug-must-not-win',
+          excerpt: 'A useful excerpt.',
+          metaTitle: 'A stronger generated title',
+          metaDescription: 'A useful description for the intended London buyer.',
+          keywords: ['London event planning'],
+          imageAlt: 'Editorial planning concept',
+          faq: [],
+        }),
+      },
+    }),
+  },
+  (name) => ({
+    first: () => ({
+      json: name === 'Build Metadata Brief'
+        ? {
+            rowId: 374,
+            topic: 'London Event Planning For Product Launches',
+            draft: '<h1>London event planning</h1><p>Direct answer.</p>',
+            campaign: 'events',
+            contentType: 'guide',
+            keywords: 'London event planning',
+            primaryServiceUrl: 'https://wetrends.co.uk/events/',
+            sourceUrls: ['https://example.com/research'],
+          }
+        : {},
+    }),
+  }),
+)[0].json;
+assert.equal(draftPackage.corePayload.slug, 'london-event-planning-for-product-launches');
+assert.equal(draftPackage.corePayload.automationRunId, 'seo-v3:topic:374');
 assert.equal(contentInventoryNode.parameters.url, 'https://wetrends.co.uk/api/blog/inventory/');
 assert.equal(contentInventoryNode.parameters.genericAuthType, 'httpHeaderAuth');
 assert.ok(duplicateGuardNode.parameters.jsCode.includes('post.discoveryReady'));
@@ -332,6 +377,9 @@ const caseStudyModule = await import(`data:text/javascript;base64,${Buffer.from(
 assert.match(createRoute, /New API posts must be created as drafts/);
 assert.match(createRoute, /cannot start in an approved, rejected or published state/);
 assert.match(createRoute, /evaluateBlogDraft/);
+assert.match(createRoute, /where: \{ automationRunId: data\.automationRunId \}/);
+assert.match(createRoute, /existingRun\.automationStatus !== data\.automationStatus/);
+assert.match(createRoute, /idempotent: true/);
 assert.match(updateRoute, /explicit approved status in this request/);
 assert.match(updateRoute, /getAutomationTransitionError/);
 assert.match(updateRoute, /getPublishedAutomationDisposition/);

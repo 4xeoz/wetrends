@@ -116,6 +116,7 @@ Telegram send nodes use explicit HTML mode, escape dynamic external text and dis
 - Content may be researched, scored, drafted, illustrated and saved automatically.
 - New articles remain drafts until an explicit Telegram approval.
 - A publish action must use the exact CMS post ID returned when the draft was created. It must never publish by title alone.
+- Each queued topic has a stable automation run key and deterministic slug. If n8n retries after the CMS committed a draft but before the response or topic update completed, the create endpoint returns the same private draft instead of creating another one.
 - Published posts are read-only to the automation API. An exact two-field replay of an already-successful approval is a no-op success, while any attempt to change live copy, metadata or media is rejected.
 - The automation API may delete only unpublished drafts. Human administrators retain the separate session-authenticated deletion path for any deliberate live-content decision.
 - Reject and regenerate commands apply only to review-ready drafts. The automation API cannot unpublish an article that is already live.
