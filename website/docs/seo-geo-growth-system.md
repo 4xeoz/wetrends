@@ -62,15 +62,17 @@ All imported workflows use the `Europe/London` timezone and must remain inactive
 
 ### Canonical n8n workflow registry
 
-The generated JSON files in `automations/n8n/` remain the implementation source of truth. These are the canonical imported safety copies in the current n8n project:
+The generated JSON files in `automations/n8n/` remain the implementation source of truth. These are the current staged workflows in the n8n project:
 
 | Workflow | n8n workflow ID | Imported state |
 | --- | --- | --- |
 | Topic Planner | `LzR6taoMpC3k68Qw` | Inactive safety copy |
-| Content Engine | `Vuc77VC0jfE12Pob` | Inactive safety copy |
-| Telegram Review | `h63iI564uWZSD2tT` | Inactive 24-node restored safety copy |
+| Content Engine | `DbXYFTeNUU8bzh2q` | Inactive OpenRouter rollout target |
+| Telegram Review | `iw2af7CkxL99ZogM` | Inactive OpenRouter rollout target |
 | Authority Scout | `fhis4BW52hTkOoLK` | Inactive safety copy |
 | Growth Monitor | `TVEVL2vFZDPxsM9i` | Inactive safety copy |
+
+The prior Content Engine (`Vuc77VC0jfE12Pob`) and Telegram Review (`h63iI564uWZSD2tT`) workflows remain inactive safety copies. On 8 September 2026, the staged imports were verified in n8n with `OpenRouter account` mapped to both GPT Image 2 nodes and `Telegram account` mapped to the private review trigger; neither workflow was published.
 
 Older similarly named workflows are preserved as historical copies and are not rollout targets. The legacy `WeTrends SEO + GEO Smart Draft System v2 (London)` workflow (`ieJd5NrbwH130x09`) is still published and draft-only. At cutover, deactivate that scheduler before activating the new Content Engine so two workflows cannot consume the topic queue or create parallel drafts. Do not make that cutover until the preview deployment and draft-only end-to-end gates pass.
 
