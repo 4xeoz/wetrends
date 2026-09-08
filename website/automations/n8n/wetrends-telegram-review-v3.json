@@ -533,7 +533,7 @@
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ published: false, automationStatus: \"review_ready\", featuredImage: $json.image.url, featuredImageAlt: $json.image.alt, featuredImageKind: $json.image.kind, featuredImageCredit: $json.image.credit }) }}",
+        "jsonBody": "={{ JSON.stringify({ featuredImage: $json.image.url, featuredImageAlt: $json.image.alt, featuredImageKind: $json.image.kind, featuredImageCredit: $json.image.credit }) }}",
         "options": {}
       },
       "id": "7941f158-3ab4-4e07-a933-6c2b70efb3e7",
@@ -543,6 +543,106 @@
       "position": [
         1740,
         600
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "jNOBFrsMFwW2ovdd",
+          "name": "WeTrends Blog API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const response = $('Update Draft Cover').first().json;\n  const post = response.post;\n  if (!post) throw new Error('Updated draft response did not include the post.');\n  // Re-run the authoritative quality gate after the image-only update. The\n  // request deliberately asks for review_ready so the API can promote a\n  // quality_blocked draft only after validating the complete replacement\n  // payload; the PATCH itself never changes the review state.\n  return [{ json: { ...post, published: false, automationStatus: 'review_ready' } }];"
+      },
+      "id": "b85cc2a0-e1bd-47c8-99d0-48c644619a8e",
+      "name": "Build Regeneration Quality Payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1960,
+        600
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://wetrends.co.uk/api/blog/quality/",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "id": "37ef2f7a-8e8e-41d1-8dca-505c0171b707",
+      "name": "Recheck Regenerated Draft",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2180,
+        600
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "jNOBFrsMFwW2ovdd",
+          "name": "WeTrends Blog API"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e4ee20ad-f44c-40ba-8d89-be5bdb7e0ebc",
+              "leftValue": "={{ $json.quality && $json.quality.pass === true }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "a39b2b91-9ff4-41b9-b913-d5c29ce8187c",
+      "name": "Recheck Pass?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2400,
+        600
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://wetrends.co.uk/api/blog/",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify(Object.assign({}, $(\"Build Regeneration Quality Payload\").first().json, { published: false, automationStatus: \"review_ready\" })) }}",
+        "options": {}
+      },
+      "id": "223b1ebf-5edc-4e32-bd6d-114659c7810d",
+      "name": "Promote Rechecked Draft",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2620,
+        520
       ],
       "credentials": {
         "httpHeaderAuth": {
@@ -565,8 +665,32 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        1960,
-        600
+        2840,
+        520
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "7jUWAXImCuClzxG5",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "6833948326",
+        "text": "=⚠️ Cover regenerated, but the draft remains blocked by the quality gate\n\nDraft ID: {{ $(\"Parse and Authorise Command\").first().json.postId }}\nIssues: {{ String(JSON.stringify($(\"Recheck Regenerated Draft\").first().json.quality?.issues || [{ message: \"The draft still requires content review.\" }])).replaceAll(\"&\", \"&amp;\").replaceAll(\"<\", \"&lt;\").replaceAll(\">\", \"&gt;\").slice(0, 1800).replace(/&(?:a(?:m(?:p)?)?|l(?:t)?|g(?:t)?)?$/, \"\") }}\n\nThe image was updated safely. Fix the content issue and submit the complete draft for recheck before approval.",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "39efde9f-ed01-4629-9dd3-ec8f54de66fe",
+      "name": "Report Regeneration Quality Block",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2620,
+        760
       ],
       "credentials": {
         "telegramApi": {
@@ -817,6 +941,57 @@
       ]
     },
     "Update Draft Cover": {
+      "main": [
+        [
+          {
+            "node": "Build Regeneration Quality Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Regeneration Quality Payload": {
+      "main": [
+        [
+          {
+            "node": "Recheck Regenerated Draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recheck Regenerated Draft": {
+      "main": [
+        [
+          {
+            "node": "Recheck Pass?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recheck Pass?": {
+      "main": [
+        [
+          {
+            "node": "Promote Rechecked Draft",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Report Regeneration Quality Block",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Promote Rechecked Draft": {
       "main": [
         [
           {

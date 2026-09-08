@@ -240,6 +240,21 @@ assert.match(
   /no implication this is client portfolio work/,
   'Supporting image prompts must preserve the non-portfolio disclosure boundary',
 );
+const updateDraftCoverNode = reviewWorkflow.nodes.find((node) => node.name === 'Update Draft Cover');
+assert.ok(updateDraftCoverNode, 'The Telegram reviewer must retain an image update node');
+assert.ok(!updateDraftCoverNode.parameters.jsonBody.includes('automationStatus'), 'Image-only regeneration must not force a review state transition');
+assert.ok(reviewWorkflow.nodes.some((node) => node.name === 'Recheck Regenerated Draft'), 'Regeneration must re-run the authoritative quality gate');
+assert.ok(reviewWorkflow.nodes.some((node) => node.name === 'Promote Rechecked Draft'), 'A passing recheck must promote a blocked draft through the idempotent create path');
+assert.deepEqual(
+  new Set(reviewWorkflow.connections['Recheck Pass?'].main[0].map((edge) => edge.node)),
+  new Set(['Promote Rechecked Draft']),
+  'A passing regeneration recheck must promote before notifying Telegram',
+);
+assert.deepEqual(
+  new Set(reviewWorkflow.connections['Recheck Pass?'].main[1].map((edge) => edge.node)),
+  new Set(['Report Regeneration Quality Block']),
+  'A failed regeneration recheck must remain blocked and report the quality issues',
+);
 for (const nodeName of ['Confirm Publication', 'Confirm Rejection', 'Send Regenerated Cover']) {
   const node = reviewWorkflow.nodes.find((item) => item.name === nodeName);
   assert.ok(node.parameters.text.includes('.replaceAll("&", "&amp;")'), `${nodeName} must HTML-escape external text`);

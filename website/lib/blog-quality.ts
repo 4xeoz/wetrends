@@ -81,9 +81,15 @@ export function evaluateBlogDraft(draft: CreateBlogPostInput) {
     add('statistic_source_missing', 'critical', 'Every percentage or multiplier needs a source link in the same paragraph.');
   }
 
+  // Do not reject ordinary editorial language such as "best fit" or "best
+  // practice". The old rule matched the bare word "best" anywhere in the
+  // article, which incorrectly blocked otherwise compliant drafts. Keep the
+  // guard strict for claims about WeTrends and for superlatives attached to a
+  // supplier/service noun.
   const unsupportedClaimPatterns = [
-    /\b(?:best|leading|number one|#1|award[- ]winning)\b/i,
-    /\b(?:based in|our office in|our london studio)\s+london\b/i,
+    /\b(?:we|our|wetrends|this agency|the company)\b[^.!?]{0,80}\b(?:best|leading|number one|#1|award[- ]winning)\b/i,
+    /\b(?:best|leading|number one|#1|award[- ]winning)\s+(?:agency|company|studio|provider|partner|production company|service)\b/i,
+    /\b(?:based in|located in|our office in|our studio in)\s+london\b/i,
     /\bguarantee(?:d|s)?\b/i,
   ];
   if (unsupportedClaimPatterns.some((pattern) => pattern.test(text))) {

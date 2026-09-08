@@ -585,6 +585,17 @@ function prepareRegeneratedImage() {
   return [{ json: { imageReady: Boolean(base64), postId: context.postId, mediaPayload: base64 ? { base64, contentType: 'image/webp', filename: `${context.postId}-regenerated-cover.webp`, alt: context.alt, imageKind: 'ai_supporting', credit: 'AI-assisted editorial image generated with OpenAI GPT Image 2' } : null } }];
 }
 
+function buildRegenerationQualityPayload() {
+  const response = $('Update Draft Cover').first().json;
+  const post = response.post;
+  if (!post) throw new Error('Updated draft response did not include the post.');
+  // Re-run the authoritative quality gate after the image-only update. The
+  // request deliberately asks for review_ready so the API can promote a
+  // quality_blocked draft only after validating the complete replacement
+  // payload; the PATCH itself never changes the review state.
+  return [{ json: { ...post, published: false, automationStatus: 'review_ready' } }];
+}
+
 function ignoreUnauthorised() {
   return [];
 }
@@ -612,8 +623,13 @@ function buildApprovalWorkflow() {
     codeNode(key, 'Prepare Regenerated Image', [1_080, 680], prepareRegeneratedImage),
     ifNode(key, 'Regenerated Image Ready?', [1_300, 680], '={{ $json.imageReady }}', { type: 'boolean', operation: 'true', singleValue: true }),
     httpNode(key, 'Store Regenerated Cover', [1_520, 600], { method: 'POST', url: 'https://wetrends.co.uk/api/blog/media/', authentication: 'genericCredentialType', genericAuthType: 'httpHeaderAuth', sendBody: true, specifyBody: 'json', jsonBody: '={{ JSON.stringify($json.mediaPayload) }}', options: {} }, { credentials: credentials.blog }),
-    httpNode(key, 'Update Draft Cover', [1_740, 600], { method: 'PATCH', url: '=https://wetrends.co.uk/api/blog/{{ $("Parse and Authorise Command").first().json.postId }}/', authentication: 'genericCredentialType', genericAuthType: 'httpHeaderAuth', sendBody: true, specifyBody: 'json', jsonBody: '={{ JSON.stringify({ published: false, automationStatus: "review_ready", featuredImage: $json.image.url, featuredImageAlt: $json.image.alt, featuredImageKind: $json.image.kind, featuredImageCredit: $json.image.credit }) }}', options: {} }, { credentials: credentials.blog }),
-    telegramNode(key, 'Send Regenerated Cover', [1_960, 600], '=🖼️ New medium-quality cover ready\n\n{{ String($json.post.title || "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;") }}\n{{ String($json.post.featuredImage || "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;") }}\n\nApprove: /approve {{ $json.post.id }}\nRegenerate again: /regenerate {{ $json.post.id }}\nReject: /reject {{ $json.post.id }}'),
+    httpNode(key, 'Update Draft Cover', [1_740, 600], { method: 'PATCH', url: '=https://wetrends.co.uk/api/blog/{{ $("Parse and Authorise Command").first().json.postId }}/', authentication: 'genericCredentialType', genericAuthType: 'httpHeaderAuth', sendBody: true, specifyBody: 'json', jsonBody: '={{ JSON.stringify({ featuredImage: $json.image.url, featuredImageAlt: $json.image.alt, featuredImageKind: $json.image.kind, featuredImageCredit: $json.image.credit }) }}', options: {} }, { credentials: credentials.blog }),
+    codeNode(key, 'Build Regeneration Quality Payload', [1_960, 600], buildRegenerationQualityPayload),
+    httpNode(key, 'Recheck Regenerated Draft', [2_180, 600], { method: 'POST', url: 'https://wetrends.co.uk/api/blog/quality/', authentication: 'genericCredentialType', genericAuthType: 'httpHeaderAuth', sendBody: true, specifyBody: 'json', jsonBody: '={{ JSON.stringify($json) }}', options: {} }, { credentials: credentials.blog, onError: 'continueRegularOutput' }),
+    ifNode(key, 'Recheck Pass?', [2_400, 600], '={{ $json.quality && $json.quality.pass === true }}', { type: 'boolean', operation: 'true', singleValue: true }),
+    httpNode(key, 'Promote Rechecked Draft', [2_620, 520], { method: 'POST', url: 'https://wetrends.co.uk/api/blog/', authentication: 'genericCredentialType', genericAuthType: 'httpHeaderAuth', sendBody: true, specifyBody: 'json', jsonBody: '={{ JSON.stringify(Object.assign({}, $("Build Regeneration Quality Payload").first().json, { published: false, automationStatus: "review_ready" })) }}', options: {} }, { credentials: credentials.blog }),
+    telegramNode(key, 'Send Regenerated Cover', [2_840, 520], '=🖼️ New medium-quality cover ready\n\n{{ String($json.post.title || "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;") }}\n{{ String($json.post.featuredImage || "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;") }}\n\nApprove: /approve {{ $json.post.id }}\nRegenerate again: /regenerate {{ $json.post.id }}\nReject: /reject {{ $json.post.id }}'),
+    telegramNode(key, 'Report Regeneration Quality Block', [2_620, 760], '=⚠️ Cover regenerated, but the draft remains blocked by the quality gate\n\nDraft ID: {{ $("Parse and Authorise Command").first().json.postId }}\nIssues: {{ String(JSON.stringify($("Recheck Regenerated Draft").first().json.quality?.issues || [{ message: "The draft still requires content review." }])).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").slice(0, 1800).replace(/&(?:a(?:m(?:p)?)?|l(?:t)?|g(?:t)?)?$/, "") }}\n\nThe image was updated safely. Fix the content issue and submit the complete draft for recheck before approval.'),
     telegramNode(key, 'Report Regeneration Failure', [1_520, 820], '=⚠️ The image could not be regenerated. The draft remains private and unchanged.\nDraft ID: {{ $("Parse and Authorise Command").first().json.postId }}'),
     makeNode(key, 'Approval Contract', 'n8n-nodes-base.stickyNote', 1, [-900, 840], { content: '## Approval contract\n\nOnly private Telegram chat 6833948326 is accepted. Publishing requires `/approve <draft-id>`. The website re-runs its quality gate immediately before publication. Regeneration changes only the supporting image. Rejection keeps the draft private.', height: 260, width: 620, color: 5 }),
   ];
@@ -638,7 +654,12 @@ function buildApprovalWorkflow() {
   connect(connections, 'Prepare Regenerated Image', 'Regenerated Image Ready?');
   connect(connections, 'Regenerated Image Ready?', 'Store Regenerated Cover', 'main', 0);
   connect(connections, 'Store Regenerated Cover', 'Update Draft Cover');
-  connect(connections, 'Update Draft Cover', 'Send Regenerated Cover');
+  connect(connections, 'Update Draft Cover', 'Build Regeneration Quality Payload');
+  connect(connections, 'Build Regeneration Quality Payload', 'Recheck Regenerated Draft');
+  connect(connections, 'Recheck Regenerated Draft', 'Recheck Pass?');
+  connect(connections, 'Recheck Pass?', 'Promote Rechecked Draft', 'main', 0);
+  connect(connections, 'Promote Rechecked Draft', 'Send Regenerated Cover');
+  connect(connections, 'Recheck Pass?', 'Report Regeneration Quality Block', 'main', 1);
   connect(connections, 'Regenerated Image Ready?', 'Report Regeneration Failure', 'main', 1);
   return workflow('WeTrends Telegram Review v3 — Approve + Regenerate + Reject', nodes, connections);
 }
