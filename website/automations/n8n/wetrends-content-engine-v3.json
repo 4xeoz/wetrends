@@ -493,68 +493,7 @@
     },
     {
       "parameters": {
-        "method": "POST",
-        "url": "https://wetrends.co.uk/api/blog/quality/",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify($json) }}",
-        "options": {}
-      },
-      "id": "aea184fa-9682-42dc-a5a2-fa6b2458e5d0",
-      "name": "Run Website Quality Gate",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        2980,
-        520
-      ],
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "jNOBFrsMFwW2ovdd",
-          "name": "WeTrends Blog API"
-        }
-      },
-      "onError": "continueRegularOutput"
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 2
-          },
-          "conditions": [
-            {
-              "id": "f4f0fd4b-035b-4bfd-a690-14d3b4236afe",
-              "leftValue": "={{ $json.quality && $json.quality.pass === true }}",
-              "rightValue": "",
-              "operator": {
-                "type": "boolean",
-                "operation": "true",
-                "singleValue": true
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "id": "e53c2657-d949-463e-b2a1-806714324e5e",
-      "name": "Quality Pass?",
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.2,
-      "position": [
-        3200,
-        520
-      ]
-    },
-    {
-      "parameters": {
-        "jsCode": "const quality = $input.first().json.quality;\n  if (!quality?.pass) throw new Error('Quality result did not pass.');\n  return [{ json: { ...$('Normalise Final Draft').first().json, automationStatus: 'review_ready', qualityScore: quality.score } }];"
+        "jsCode": "return [{ json: { ...$('Normalise Final Draft').first().json, automationStatus: 'review_ready' } }];"
       },
       "id": "9aaf6a65-c571-4ba7-bd8b-9edc619e1b4b",
       "name": "Prepare Review-Ready Draft",
@@ -634,7 +573,7 @@
     {
       "parameters": {
         "chatId": "6833948326",
-        "text": "=📝 WeTrends draft ready\n\n{{ String($(\"Create Review-Ready Draft\").first().json.post.title || \"\").replaceAll(\"&\", \"&amp;\").replaceAll(\"<\", \"&lt;\").replaceAll(\">\", \"&gt;\") }}\nCampaign: {{ String($(\"Prepare Review-Ready Draft\").first().json.campaign || \"\").replaceAll(\"&\", \"&amp;\").replaceAll(\"<\", \"&lt;\").replaceAll(\">\", \"&gt;\") }}\nQuality: {{ $(\"Prepare Review-Ready Draft\").first().json.qualityScore }}/100\nImage: {{ String($(\"Prepare Review-Ready Draft\").first().json.featuredImage || \"\").replaceAll(\"&\", \"&amp;\").replaceAll(\"<\", \"&lt;\").replaceAll(\">\", \"&gt;\") }}\n\nDraft ID: {{ $(\"Create Review-Ready Draft\").first().json.post.id }}\n\nApprove: /approve {{ $(\"Create Review-Ready Draft\").first().json.post.id }}\nRegenerate image: /regenerate {{ $(\"Create Review-Ready Draft\").first().json.post.id }}\nReject: /reject {{ $(\"Create Review-Ready Draft\").first().json.post.id }}\n\nNothing is public until you approve.",
+        "text": "=📝 WeTrends draft ready\n\n{{ String($(\"Create Review-Ready Draft\").first().json.post.title || \"\").replaceAll(\"&\", \"&amp;\").replaceAll(\"<\", \"&lt;\").replaceAll(\">\", \"&gt;\") }}\nCampaign: {{ String($(\"Prepare Review-Ready Draft\").first().json.campaign || \"\").replaceAll(\"&\", \"&amp;\").replaceAll(\"<\", \"&lt;\").replaceAll(\">\", \"&gt;\") }}\nQuality: advisory only (not blocking)\nImage: {{ String($(\"Prepare Review-Ready Draft\").first().json.featuredImage || \"\").replaceAll(\"&\", \"&amp;\").replaceAll(\"<\", \"&lt;\").replaceAll(\">\", \"&gt;\") }}\n\nDraft ID: {{ $(\"Create Review-Ready Draft\").first().json.post.id }}\n\nApprove: /approve {{ $(\"Create Review-Ready Draft\").first().json.post.id }}\nRegenerate image: /regenerate {{ $(\"Create Review-Ready Draft\").first().json.post.id }}\nReject: /reject {{ $(\"Create Review-Ready Draft\").first().json.post.id }}\n\nNothing is public until you approve.",
         "additionalFields": {
           "appendAttribution": false,
           "parse_mode": "HTML"
@@ -657,110 +596,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const response = $input.first().json;\n  const quality = response.quality || { score: 0, issues: [{ code: 'quality_api_error', message: response.message || 'Quality API failed.' }] };\n  return [{ json: { ...$('Normalise Final Draft').first().json, automationStatus: 'quality_blocked', qualityScore: Number(quality.score || 0), qualityIssues: quality.issues || [] } }];"
-      },
-      "id": "c290da6e-1689-4b4d-82fa-45b88f1724e1",
-      "name": "Prepare Quality-Blocked Draft",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        3420,
-        660
-      ]
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "https://wetrends.co.uk/api/blog/",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify(Object.fromEntries(Object.entries($json).filter(([key]) => key !== \"qualityIssues\"))) }}",
-        "options": {}
-      },
-      "id": "25df41e2-2438-4767-81f8-e5bb71602fac",
-      "name": "Save Quality-Blocked Draft",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        3640,
-        660
-      ],
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "jNOBFrsMFwW2ovdd",
-          "name": "WeTrends Blog API"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "operation": "update",
-        "dataTableId": {
-          "__rl": true,
-          "value": "blog_topics",
-          "mode": "name"
-        },
-        "matchType": "allConditions",
-        "filters": {
-          "conditions": [
-            {
-              "keyName": "id",
-              "condition": "eq",
-              "keyValue": "={{ $('Build Draft Package').first().json.rowId }}"
-            }
-          ]
-        },
-        "columns": {
-          "mappingMode": "defineBelow",
-          "value": {
-            "status": "quality_blocked",
-            "published_url": ""
-          },
-          "matchingColumns": [],
-          "schema": [],
-          "attemptToConvertTypes": false,
-          "convertFieldsToString": false
-        },
-        "options": {}
-      },
-      "id": "766cc6df-1e26-41d6-aeac-34503f9056a9",
-      "name": "Mark Topic Quality Blocked",
-      "type": "n8n-nodes-base.dataTable",
-      "typeVersion": 1,
-      "position": [
-        3860,
-        660
-      ]
-    },
-    {
-      "parameters": {
-        "chatId": "6833948326",
-        "text": "=⚠️ WeTrends draft saved but blocked\n\n{{ String($(\"Save Quality-Blocked Draft\").first().json.post.title || \"\").replaceAll(\"&\", \"&amp;\").replaceAll(\"<\", \"&lt;\").replaceAll(\">\", \"&gt;\") }}\nQuality: {{ $(\"Prepare Quality-Blocked Draft\").first().json.qualityScore }}/100\nIssues: {{ String(JSON.stringify($(\"Prepare Quality-Blocked Draft\").first().json.qualityIssues)).replaceAll(\"&\", \"&amp;\").replaceAll(\"<\", \"&lt;\").replaceAll(\">\", \"&gt;\").slice(0, 1800).replace(/&(?:a(?:m(?:p)?)?|l(?:t)?|g(?:t)?)?$/, \"\") }}\n\nDraft ID: {{ $(\"Save Quality-Blocked Draft\").first().json.post.id }}\nIt cannot be published until corrected and rechecked.",
-        "additionalFields": {
-          "appendAttribution": false,
-          "parse_mode": "HTML"
-        }
-      },
-      "id": "7e2a9e91-63cd-4f73-8c26-74cbe8879f1f",
-      "name": "Send Quality Block to Telegram",
-      "type": "n8n-nodes-base.telegram",
-      "typeVersion": 1.2,
-      "position": [
-        4080,
-        660
-      ],
-      "credentials": {
-        "telegramApi": {
-          "id": "7jUWAXImCuClzxG5",
-          "name": "Telegram account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "content": "## Safety contract\n\n- New posts are always drafts.\n- GPT Image 2 uses medium quality at 1536×1024.\n- AI covers are labelled supporting editorial art.\n- Case studies require real portfolio proof and are not auto-generated.\n- London is a service area during the move; no unverified office claim.\n- Website quality API is authoritative.\n- Telegram approval is required to publish.",
+        "content": "## Safety contract\n\n- New posts are always drafts.\n- GPT Image 2 uses medium quality at 1536×1024.\n- AI covers are labelled supporting editorial art.\n- Case studies require real portfolio proof and are not auto-generated.\n- London is a service area during the move.\n- Quality scoring is advisory, not a publication gate.\n- Telegram approval is required to publish.",
         "height": 360,
         "width": 620,
         "color": 5
@@ -1036,36 +872,7 @@
       "main": [
         [
           {
-            "node": "Run Website Quality Gate",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Run Website Quality Gate": {
-      "main": [
-        [
-          {
-            "node": "Quality Pass?",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Quality Pass?": {
-      "main": [
-        [
-          {
             "node": "Prepare Review-Ready Draft",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Prepare Quality-Blocked Draft",
             "type": "main",
             "index": 0
           }
@@ -1099,39 +906,6 @@
         [
           {
             "node": "Send Draft Review to Telegram",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Prepare Quality-Blocked Draft": {
-      "main": [
-        [
-          {
-            "node": "Save Quality-Blocked Draft",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Save Quality-Blocked Draft": {
-      "main": [
-        [
-          {
-            "node": "Mark Topic Quality Blocked",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Mark Topic Quality Blocked": {
-      "main": [
-        [
-          {
-            "node": "Send Quality Block to Telegram",
             "type": "main",
             "index": 0
           }

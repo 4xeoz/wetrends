@@ -167,17 +167,20 @@ assert.ok(duplicateGuardNode.parameters.jsCode.includes('post.discoveryReady'));
 assert.ok(duplicateGuardNode.parameters.jsCode.includes('top.containment >= 0.7'));
 assert.match(contentWorkflowSource, /automationStatus: 'review_ready'/);
 assert.match(contentWorkflowSource, /Nothing is public until you approve/);
+assert.ok(!contentWorkflow.nodes.some((node) => node.name === 'Quality Pass?'), 'Content quality must not block draft creation');
+assert.ok(!contentWorkflow.nodes.some((node) => node.name === 'Send Quality Block to Telegram'), 'Quality-blocked branch must be removed');
+assert.deepEqual(
+  new Set(contentWorkflow.connections['Normalise Final Draft'].main[0].map((edge) => edge.node)),
+  new Set(['Prepare Review-Ready Draft']),
+  'Every generated draft must go directly to review-ready status',
+);
 
 const contentTelegramNamesWithExternalText = new Set([
   'Send Draft Review to Telegram',
-  'Send Quality Block to Telegram',
 ]);
 for (const node of contentWorkflow.nodes.filter((item) => contentTelegramNamesWithExternalText.has(item.name))) {
   assert.ok(node.parameters.text.includes('.replaceAll("&", "&amp;")'), `${node.name} must HTML-escape external text`);
 }
-const qualityBlockText = contentWorkflow.nodes.find((node) => node.name === 'Send Quality Block to Telegram').parameters.text;
-assert.ok(qualityBlockText.indexOf('.replaceAll("&", "&amp;")') < qualityBlockText.indexOf('.slice(0, 1800)'), 'Quality issues must be escaped before the Telegram length cap');
-
 const reviewWorkflowSource = read('automations/n8n/wetrends-telegram-review-v3.json');
 const reviewWorkflow = JSON.parse(reviewWorkflowSource);
 assert.match(reviewWorkflowSource, /chatId === '6833948326'/);
@@ -243,17 +246,12 @@ assert.match(
 const updateDraftCoverNode = reviewWorkflow.nodes.find((node) => node.name === 'Update Draft Cover');
 assert.ok(updateDraftCoverNode, 'The Telegram reviewer must retain an image update node');
 assert.ok(!updateDraftCoverNode.parameters.jsonBody.includes('automationStatus'), 'Image-only regeneration must not force a review state transition');
-assert.ok(reviewWorkflow.nodes.some((node) => node.name === 'Recheck Regenerated Draft'), 'Regeneration must re-run the authoritative quality gate');
-assert.ok(reviewWorkflow.nodes.some((node) => node.name === 'Promote Rechecked Draft'), 'A passing recheck must promote a blocked draft through the idempotent create path');
+assert.ok(reviewWorkflow.nodes.some((node) => node.name === 'Build Regeneration Quality Payload'), 'Regeneration must preserve the complete draft payload');
+assert.ok(reviewWorkflow.nodes.some((node) => node.name === 'Promote Rechecked Draft'), 'Regeneration must preserve the draft through the idempotent create path');
 assert.deepEqual(
-  new Set(reviewWorkflow.connections['Recheck Pass?'].main[0].map((edge) => edge.node)),
+  new Set(reviewWorkflow.connections['Build Regeneration Quality Payload'].main[0].map((edge) => edge.node)),
   new Set(['Promote Rechecked Draft']),
-  'A passing regeneration recheck must promote before notifying Telegram',
-);
-assert.deepEqual(
-  new Set(reviewWorkflow.connections['Recheck Pass?'].main[1].map((edge) => edge.node)),
-  new Set(['Report Regeneration Quality Block']),
-  'A failed regeneration recheck must remain blocked and report the quality issues',
+  'Regeneration must promote without a blocking quality branch',
 );
 for (const nodeName of ['Confirm Publication', 'Confirm Rejection', 'Send Regenerated Cover']) {
   const node = reviewWorkflow.nodes.find((item) => item.name === nodeName);
@@ -403,10 +401,7 @@ assert.match(createRoute, /getAutomationRunRetryDisposition/);
 assert.match(createRoute, /existingRun\.slug !== data\.slug/);
 assert.match(createRoute, /idempotent: true/);
 assert.match(createRoute, /promotedFromQualityBlocked: true/);
-assert.ok(
-  createRoute.indexOf('const quality = evaluateBlogDraft(data)') < createRoute.indexOf('getAutomationRunRetryDisposition(existingRun, data)'),
-  'A quality-blocked retry must pass the authoritative gate before promotion',
-);
+assert.match(createRoute, /Quality is retained as advisory metadata/);
 assert.match(updateRoute, /explicit approved status in this request/);
 assert.match(updateRoute, /getAutomationTransitionError/);
 assert.match(updateRoute, /getPublishedAutomationDisposition/);
@@ -417,7 +412,7 @@ assert.match(updateRoute, /const session = await auth\(\)/);
 assert.match(automationState, /cannot unpublish an already-published post/);
 assert.match(automationState, /Only a review-ready draft can be rejected/);
 assert.match(automationState, /Only a review-ready draft can receive a regenerated cover/);
-assert.match(updateRoute, /Draft no longer passes the publication quality gate/);
+assert.match(updateRoute, /Only a private draft can be published/);
 assert.match(qualityRoute, /validateApiKey/);
 assert.match(mediaRoute, /validateApiKey/);
 assert.match(inventoryRoute, /validateApiKey/);

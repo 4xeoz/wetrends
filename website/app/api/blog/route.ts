@@ -85,13 +85,10 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  // Quality is retained as advisory metadata. Publication approval is a
+  // deliberate Telegram action and is no longer blocked by this content
+  // heuristic gate.
   const quality = evaluateBlogDraft(data);
-  if (data.automationStatus === "review_ready" && !quality.pass) {
-    return NextResponse.json(
-      { success: false, message: "Draft failed the quality gate", quality },
-      { status: 422 }
-    );
-  }
 
   // 3. Verify authorId exists (if provided)
   if (data.authorId) {
@@ -124,8 +121,8 @@ export async function POST(request: NextRequest) {
   // A workflow retry can arrive after MongoDB committed the draft but before
   // n8n received the response or updated its topic row. Reuse that private
   // draft instead of creating another one. The only mutating retry is a
-  // quality-blocked -> review-ready recovery for the same stable run and slug;
-  // the complete replacement payload has already passed the quality gate.
+  // A stable automation run may be replayed to update the same private draft
+  // without creating duplicates.
   if (data.automationRunId) {
     const existingRun = await prisma.blogPost.findFirst({
       where: { automationRunId: data.automationRunId },

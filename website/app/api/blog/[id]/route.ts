@@ -3,7 +3,6 @@ import { prisma } from "@/prisma/prisma";
 import { validateApiKey } from "@/lib/api-auth";
 import { createBlogPostSchema, updateBlogPostSchema } from "@/lib/zod/blog";
 import { revalidatePath } from "next/cache";
-import { evaluateBlogDraft } from "@/lib/blog-quality";
 import {
   getAutomationTransitionError,
   getPublishedAutomationDisposition,
@@ -136,9 +135,9 @@ export async function PATCH(
         );
       }
 
-      if (!['review_ready', 'approved', 'published'].includes(existingPost.automationStatus ?? '')) {
+      if (!['drafted', 'quality_blocked', 'review_ready', 'approved', 'published'].includes(existingPost.automationStatus ?? '')) {
         return NextResponse.json(
-          { success: false, message: "Only a review-ready draft can be published" },
+          { success: false, message: "Only a private draft can be published" },
           { status: 409 }
         );
       }
@@ -174,13 +173,6 @@ export async function PATCH(
             message: "Draft is not publication-ready",
             errors: candidateParsed.error.flatten().fieldErrors,
           },
-          { status: 422 }
-        );
-      }
-      const quality = evaluateBlogDraft(candidateParsed.data);
-      if (!quality.pass) {
-        return NextResponse.json(
-          { success: false, message: "Draft no longer passes the publication quality gate", quality },
           { status: 422 }
         );
       }
