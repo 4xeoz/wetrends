@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { motion, useScroll, useSpring } from 'motion/react';
 import Link from 'next/link';
+import Image from 'next/image';
 import {
   ArrowLeft,
   ArrowUpRight,
@@ -185,73 +186,93 @@ export function BlogPostContent({ post, html, toc, relatedPosts, serviceCta }: B
     <article className="min-h-[100svh] bg-white">
       <ReadingProgress />
 
-      {/* Hero Section */}
-      <section className="relative min-h-[55vh] w-full overflow-hidden sm:min-h-[60vh] lg:min-h-[65vh]">
-        <BlogCover
-          title={post.title}
-          category={post.category?.name}
-          slug={post.slug}
-          imageUrl={post.featuredImage}
-          imageAlt={post.featuredImageAlt}
-          size="hero"
-          className="absolute inset-0"
-          meta={
-            <>
-              <span className="flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10">
-                  <User className="h-4 w-4 text-white" />
-                </div>
-                <span className="font-medium text-white">{post.author?.name || 'WeTrends'}</span>
-              </span>
-              <span className="flex items-center gap-1.5">
-                <Calendar className="h-4 w-4" />
-                {post.publishedAt ? (
-                  <time dateTime={new Date(post.publishedAt).toISOString()}>
-                    {format(new Date(post.publishedAt), 'MMMM d, yyyy')}
-                  </time>
-                ) : (
-                  'Draft'
-                )}
-              </span>
-              <span className="flex items-center gap-1.5">
-                <Clock className="h-4 w-4" />
-                {Math.ceil(post.content.split(' ').length / 200)} min read
-              </span>
-              {post.featuredImageKind === 'ai_supporting' && (
-                <span className="rounded-full border border-white/20 px-3 py-1 text-xs">
-                  AI-assisted editorial cover
-                </span>
-              )}
-            </>
-          }
-        />
-
-        {/* Back link */}
-        <div className="absolute left-0 right-0 top-0 z-20 px-5 py-5 sm:px-8 sm:py-6">
+      {/* Editorial hero: keep the headline readable and let the cover breathe. */}
+      <section className="border-b border-[#dedbd8] bg-[#f5f1ef]">
+        <div className="mx-auto max-w-7xl px-5 pb-12 pt-28 sm:px-8 sm:pb-16 sm:pt-32 lg:px-10 lg:pb-20">
           <Link
             href="/blogs"
-            className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-black/20 px-4 py-2 text-sm font-medium text-white backdrop-blur-sm transition-colors hover:bg-white/10"
+            className="inline-flex items-center gap-2 rounded-full border border-slate-300/80 bg-white/70 px-4 py-2 text-sm font-semibold text-slate-700 transition-colors hover:border-[#C72C5B] hover:text-[#C72C5B]"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to Blog
           </Link>
+
+          <div className="mt-10 grid items-center gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(420px,1.1fr)] lg:gap-16">
+            <div className="max-w-2xl">
+              {post.category && (
+                <span className="inline-flex rounded-full bg-[#C72C5B]/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-[#A3244A]">
+                  {post.category.name}
+                </span>
+              )}
+              <h1 className="mt-5 text-[clamp(2.7rem,6vw,5.75rem)] font-bold leading-[0.96] tracking-[-0.045em] text-[#171717]">
+                {post.title}
+              </h1>
+              <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3 text-sm font-medium text-slate-600">
+                <span className="flex items-center gap-2">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#C72C5B]/10 text-[#C72C5B]">
+                    <User className="h-4 w-4" />
+                  </span>
+                  {post.author?.name || 'WeTrends'}
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <Calendar className="h-4 w-4 text-[#C72C5B]" />
+                  {post.publishedAt ? (
+                    <time dateTime={new Date(post.publishedAt).toISOString()}>
+                      {format(new Date(post.publishedAt), 'MMMM d, yyyy')}
+                    </time>
+                  ) : (
+                    'Draft'
+                  )}
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <Clock className="h-4 w-4 text-[#C72C5B]" />
+                  {Math.ceil(post.content.split(' ').length / 200)} min read
+                </span>
+              </div>
+              <p className="mt-8 max-w-xl text-lg leading-relaxed text-slate-600 sm:text-xl">
+                {post.excerpt}
+              </p>
+            </div>
+
+            <div className="relative aspect-[4/3] overflow-hidden rounded-[28px] bg-slate-200 shadow-[0_24px_70px_rgba(15,23,42,0.18)]">
+              <Image
+                src={post.featuredImage || '/images/hero_background.webp'}
+                alt={post.featuredImage ? post.featuredImageAlt || post.title : ''}
+                fill
+                priority
+                sizes="(max-width: 1024px) 100vw, 52vw"
+                className="object-cover"
+              />
+              <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent" />
+              {post.featuredImageKind === 'ai_supporting' && (
+                <span className="absolute bottom-5 left-5 rounded-full border border-white/30 bg-black/35 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur-sm">
+                  AI-assisted editorial cover
+                </span>
+              )}
+            </div>
+          </div>
         </div>
       </section>
 
       {/* Content */}
-      <div className="mx-auto max-w-[720px] px-5 py-12 sm:px-6 sm:py-16">
+      <div className={`mx-auto max-w-6xl px-5 py-14 sm:px-8 sm:py-20 ${toc.length >= 2 ? 'lg:grid lg:grid-cols-[220px_minmax(0,760px)] lg:gap-16 lg:px-10' : ''}`}>
+        {toc.length >= 2 && (
+          <aside className="hidden lg:block">
+            <div className="sticky top-28">
+              <TableOfContents toc={toc} />
+            </div>
+          </aside>
+        )}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
+          className="mx-auto w-full max-w-[760px]"
         >
-          {/* Excerpt */}
-          <p className="mb-10 text-xl font-medium leading-relaxed text-gray-700 sm:text-2xl">
-            {post.excerpt}
-          </p>
-
-          {/* Table of contents */}
-          <TableOfContents toc={toc} />
+          {/* Compact mobile contents; desktop uses the sticky rail. */}
+          <div className="lg:hidden">
+            <TableOfContents toc={toc} />
+          </div>
 
           {/* Content — optimized reading experience */}
           <div
