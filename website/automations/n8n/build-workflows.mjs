@@ -126,6 +126,12 @@ function modelNode(workflowKey, name, position) {
   );
 }
 
+function openRouterTextModelNode(workflowKey, name, position) {
+  return makeNode(workflowKey, name, '@n8n/n8n-nodes-langchain.lmChatOpenRouter', 1, position, {
+    model: 'openai/gpt-5.6-luna', options: {},
+  }, { credentials: credentials.openrouter });
+}
+
 function llmChainNode(workflowKey, name, position, textExpression) {
   return makeNode(workflowKey, name, '@n8n/n8n-nodes-langchain.chainLlm', 1.5, position, {
     promptType: 'define',
@@ -382,7 +388,8 @@ function buildDraftPackage() {
   // Derive the slug from the queued topic, not the model response. This makes
   // retries for the same topic converge on the database's unique slug instead
   // of creating parallel drafts with slightly different model-generated URLs.
-  const slug = clean(context.topic, 100).toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '').slice(0, 90);
+  const slug = clean(context.topic, 100).toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '').slice(0, 90).replace(/-+$/g, '');
+  if (!slug) throw new Error('Topic did not produce a URL-safe slug.');
   const faq = Array.isArray(metadata.faq) ? metadata.faq.slice(0, 3) : [];
   const faqHtml = faq.length ? `<h2>Frequently asked questions</h2>${faq.map((item) => `<h3>${escapeHtml(item.q)}</h3><p>${escapeHtml(item.a)}</p>`).join('')}` : '';
   let content = `${context.draft}${faqHtml}`;
@@ -452,19 +459,19 @@ function normaliseDraft() {
 }
 
 function markReviewReady() {
-  return [{ json: { ...$('Normalise Final Draft').first().json, automationStatus: 'review_ready' } }];
+  return [{ json: { ...$('Normalise Final Draft').first().json, automationStatus: 'review_ready', qualityScore: $('Check Draft Quality').first().json.quality.score } }];
 }
 
 function markQualityBlocked() {
   const response = $input.first().json;
   const quality = response.quality || { score: 0, issues: [{ code: 'quality_api_error', message: response.message || 'Quality API failed.' }] };
-  return [{ json: { ...$('Normalise Final Draft').first().json, automationStatus: 'quality_blocked', qualityScore: Number(quality.score || 0), qualityIssues: quality.issues || [] } }];
+  return [{ json: { ...$('Normalise Final Draft').first().json, automationStatus: 'quality_blocked', qualityScore: Number(quality.score || 0) } }];
 }
 
 function buildContentEngine() {
   const key = 'content-engine-v3';
   const nodes = [
-    scheduleNode(key, 'Tue Thu Sat 09:00 London', [-1_100, 280], '0 9 * * 2,4,6'),
+    scheduleNode(key, 'Weekdays 09:00 London', [-1_100, 280], '0 9 * * 1,2,3,4,5'),
     manualNode(key, [-1_100, 440]),
     makeNode(key, 'Get Next Pending Topic', 'n8n-nodes-base.dataTable', 1, [-900, 360], {
       operation: 'get', dataTableId: dataTableSelector(), matchType: 'allConditions', filters: { conditions: [{ keyName: 'status', condition: 'eq', keyValue: 'queued_london' }] }, returnAll: false, limit: 1,
@@ -486,10 +493,10 @@ function buildContentEngine() {
     }, { credentials: credentials.google, onError: 'continueRegularOutput' }),
     codeNode(key, 'Build Writer Brief', [560, 520], buildWriterPrompt),
     llmChainNode(key, 'Write Evidence-Led Draft', [780, 520], '={{ $json.writePrompt }}'),
-    modelNode(key, 'OpenAI Luna - Writer', [780, 760]),
+    openRouterTextModelNode(key, 'OpenRouter Luna - Writer', [780, 760]),
     codeNode(key, 'Build Metadata Brief', [1_000, 520], buildMetadataPrompt),
     llmChainNode(key, 'Generate SEO and GEO Metadata', [1_220, 520], '={{ $json.seoPrompt }}'),
-    modelNode(key, 'OpenAI Luna - Metadata', [1_220, 760]),
+    openRouterTextModelNode(key, 'OpenRouter Luna - Metadata', [1_220, 760]),
     codeNode(key, 'Build Draft Package', [1_440, 520], buildDraftPackage),
     httpNode(key, 'Generate Medium Blog Cover', [1_660, 520], {
       method: 'POST', url: 'https://openrouter.ai/api/v1/images', authentication: 'predefinedCredentialType', nodeCredentialType: 'openRouterApi', sendBody: true, specifyBody: 'json',
@@ -504,18 +511,33 @@ function buildContentEngine() {
     codeNode(key, 'Attach Image to Draft', [2_540, 400], attachImageToDraft),
     codeNode(key, 'Draft Without Image', [2_540, 640], draftWithoutImage),
     codeNode(key, 'Normalise Final Draft', [2_760, 520], normaliseDraft),
+    httpNode(key, 'Check Draft Quality', [2_980, 520], {
+      method: 'POST', url: 'https://wetrends.co.uk/api/blog/quality/', authentication: 'genericCredentialType', genericAuthType: 'httpHeaderAuth', sendBody: true, specifyBody: 'json', jsonBody: '={{ JSON.stringify($json) }}', options: {},
+    }, { credentials: credentials.blog }),
+    ifNode(key, 'Quality Pass?', [3_200, 520], '={{ $json.quality.pass === true && $("Normalise Final Draft").first().json.contentType !== "case_study" && $("Normalise Final Draft").first().json.sourceUrls.length > 0 }}', { type: 'boolean', operation: 'true', singleValue: true }),
     codeNode(key, 'Prepare Review-Ready Draft', [3_420, 400], markReviewReady),
     httpNode(key, 'Create Review-Ready Draft', [3_640, 400], {
       method: 'POST', url: 'https://wetrends.co.uk/api/blog/', authentication: 'genericCredentialType', genericAuthType: 'httpHeaderAuth', sendBody: true, specifyBody: 'json', jsonBody: '={{ JSON.stringify($json) }}', options: {},
     }, { credentials: credentials.blog }),
-    updateTopicNode(key, 'Mark Topic Review Ready', [3_860, 400], 'review_ready', 'Build Draft Package'),
-    telegramNode(key, 'Send Draft Review to Telegram', [4_080, 400], '=📝 WeTrends draft ready\n\n{{ String($("Create Review-Ready Draft").first().json.post.title || "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;") }}\nCampaign: {{ String($("Prepare Review-Ready Draft").first().json.campaign || "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;") }}\nQuality: advisory only (not blocking)\nImage: {{ String($("Prepare Review-Ready Draft").first().json.featuredImage || "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;") }}\n\nDraft ID: {{ $("Create Review-Ready Draft").first().json.post.id }}\n\nApprove: /approve {{ $("Create Review-Ready Draft").first().json.post.id }}\nRegenerate image: /regenerate {{ $("Create Review-Ready Draft").first().json.post.id }}\nReject: /reject {{ $("Create Review-Ready Draft").first().json.post.id }}\n\nNothing is public until you approve.'),
+    httpNode(key, 'Publish Automatic Draft', [3_860, 400], {
+      method: 'PATCH', url: '=https://wetrends.co.uk/api/blog/{{ $json.post.id }}/', authentication: 'genericCredentialType', genericAuthType: 'httpHeaderAuth', sendBody: true, specifyBody: 'json', jsonBody: '={{ JSON.stringify({ published: true, automationStatus: "auto_publish" }) }}', options: {},
+    }, { credentials: credentials.blog, onError: 'continueRegularOutput' }),
+    ifNode(key, 'Publication Succeeded?', [4_080, 400], '={{ $json.success === true && $json.post?.published === true }}', { type: 'boolean', operation: 'true', singleValue: true }),
+    syncReviewedTopicNode(key, 'Mark Topic Published', [4_300, 300], 'published', 'Publish Automatic Draft', `={{ 'https://wetrends.co.uk/blogs/' + $('Publish Automatic Draft').first().json.post.slug + '/' }}`),
+    telegramNode(key, 'Confirm Automatic Publication', [4_300, 500], '=✅ Published automatically after quality checks\n\n{{ String($json.post.title || "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;") }}\nhttps://wetrends.co.uk/blogs/{{ $json.post.slug }}/'),
+    telegramNode(key, 'Report Publication Failure', [4_300, 700], '=⚠️ Automatic publication failed. The draft is private and its topic will be retried.\nDraft ID: {{ $("Create Review-Ready Draft").first().json.post.id }}\nCheck the Content Engine execution in n8n.'),
+    codeNode(key, 'Prepare Quality-Blocked Draft', [3_420, 700], markQualityBlocked),
+    httpNode(key, 'Create Quality-Blocked Draft', [3_640, 700], {
+      method: 'POST', url: 'https://wetrends.co.uk/api/blog/', authentication: 'genericCredentialType', genericAuthType: 'httpHeaderAuth', sendBody: true, specifyBody: 'json', jsonBody: '={{ JSON.stringify($json) }}', options: {},
+    }, { credentials: credentials.blog }),
+    updateTopicNode(key, 'Mark Topic Quality Blocked', [3_860, 700], 'quality_blocked', 'Build Draft Package'),
+    telegramNode(key, 'Send Quality Block to Telegram', [4_080, 900], '=⚠️ Draft kept private for evidence or quality review\n\n{{ String($("Create Quality-Blocked Draft").first().json.post.title || "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;") }}\nDraft ID: {{ $("Create Quality-Blocked Draft").first().json.post.id }}\n{{ String($("Check Draft Quality").first().json.quality.issues.slice(0, 3).map(issue => issue.message).join("; ") || "A source or case-study evidence review is required.").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;") }}'),
     makeNode(key, 'Safety Contract', 'n8n-nodes-base.stickyNote', 1, [-1_100, 880], {
-      content: '## Safety contract\n\n- New posts are always drafts.\n- GPT Image 2 uses medium quality at 1536×1024.\n- AI covers are labelled supporting editorial art.\n- Case studies require real portfolio proof and are not auto-generated.\n- London is a service area during the move.\n- Quality scoring is advisory, not a publication gate.\n- Telegram approval is required to publish.', height: 360, width: 620, color: 5,
+      content: '## Automatic publication contract\n\n- Create a private draft first, then auto-publish only when the website quality gate passes.\n- Missing sources, failed checks and case studies remain private.\n- GPT Image 2 covers are labelled supporting editorial art, never client work.\n- London is a service area during the move.\n- Telegram reports outcomes; manual commands remain available for exceptions.', height: 360, width: 620, color: 5,
     }),
   ];
   const connections = {};
-  for (const trigger of ['Tue Thu Sat 09:00 London', 'Manual Test']) connect(connections, trigger, 'Get Next Pending Topic');
+  for (const trigger of ['Weekdays 09:00 London', 'Manual Test']) connect(connections, trigger, 'Get Next Pending Topic');
   connect(connections, 'Get Next Pending Topic', 'Route Campaign');
   connect(connections, 'Route Campaign', 'Fetch Content Inventory');
   connect(connections, 'Fetch Content Inventory', 'Duplicate Guard');
@@ -525,10 +547,10 @@ function buildContentEngine() {
   connect(connections, 'Research Topic', 'Search Console Context');
   connect(connections, 'Search Console Context', 'Build Writer Brief');
   connect(connections, 'Build Writer Brief', 'Write Evidence-Led Draft');
-  connect(connections, 'OpenAI Luna - Writer', 'Write Evidence-Led Draft', 'ai_languageModel');
+  connect(connections, 'OpenRouter Luna - Writer', 'Write Evidence-Led Draft', 'ai_languageModel');
   connect(connections, 'Write Evidence-Led Draft', 'Build Metadata Brief');
   connect(connections, 'Build Metadata Brief', 'Generate SEO and GEO Metadata');
-  connect(connections, 'OpenAI Luna - Metadata', 'Generate SEO and GEO Metadata', 'ai_languageModel');
+  connect(connections, 'OpenRouter Luna - Metadata', 'Generate SEO and GEO Metadata', 'ai_languageModel');
   connect(connections, 'Generate SEO and GEO Metadata', 'Build Draft Package');
   connect(connections, 'Build Draft Package', 'Generate Medium Blog Cover');
   connect(connections, 'Generate Medium Blog Cover', 'Prepare Image Upload');
@@ -538,11 +560,20 @@ function buildContentEngine() {
   connect(connections, 'Store Blog Cover', 'Attach Image to Draft');
   connect(connections, 'Attach Image to Draft', 'Normalise Final Draft');
   connect(connections, 'Draft Without Image', 'Normalise Final Draft');
-  connect(connections, 'Normalise Final Draft', 'Prepare Review-Ready Draft');
+  connect(connections, 'Normalise Final Draft', 'Check Draft Quality');
+  connect(connections, 'Check Draft Quality', 'Quality Pass?');
+  connect(connections, 'Quality Pass?', 'Prepare Review-Ready Draft', 'main', 0);
+  connect(connections, 'Quality Pass?', 'Prepare Quality-Blocked Draft', 'main', 1);
   connect(connections, 'Prepare Review-Ready Draft', 'Create Review-Ready Draft');
-  connect(connections, 'Create Review-Ready Draft', 'Mark Topic Review Ready');
-  connect(connections, 'Mark Topic Review Ready', 'Send Draft Review to Telegram');
-  return workflow('WeTrends Content Engine v3 — Draft + Image + Quality', nodes, connections);
+  connect(connections, 'Create Review-Ready Draft', 'Publish Automatic Draft');
+  connect(connections, 'Publish Automatic Draft', 'Publication Succeeded?');
+  connect(connections, 'Publication Succeeded?', 'Mark Topic Published', 'main', 0);
+  connect(connections, 'Publication Succeeded?', 'Confirm Automatic Publication', 'main', 0);
+  connect(connections, 'Publication Succeeded?', 'Report Publication Failure', 'main', 1);
+  connect(connections, 'Prepare Quality-Blocked Draft', 'Create Quality-Blocked Draft');
+  connect(connections, 'Create Quality-Blocked Draft', 'Mark Topic Quality Blocked');
+  connect(connections, 'Mark Topic Quality Blocked', 'Send Quality Block to Telegram');
+  return workflow('WeTrends Content Engine v3 — Automatic Publishing', nodes, connections);
 }
 
 function parseTelegramCommand() {
@@ -606,7 +637,7 @@ function buildApprovalWorkflow() {
     httpNode(key, 'Promote Rechecked Draft', [2_620, 520], { method: 'POST', url: 'https://wetrends.co.uk/api/blog/', authentication: 'genericCredentialType', genericAuthType: 'httpHeaderAuth', sendBody: true, specifyBody: 'json', jsonBody: '={{ JSON.stringify(Object.assign({}, $("Build Regeneration Quality Payload").first().json, { published: false, automationStatus: "review_ready" })) }}', options: {} }, { credentials: credentials.blog }),
     telegramNode(key, 'Send Regenerated Cover', [2_840, 520], '=🖼️ New medium-quality cover ready\n\n{{ String($json.post.title || "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;") }}\n{{ String($json.post.featuredImage || "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;") }}\n\nApprove: /approve {{ $json.post.id }}\nRegenerate again: /regenerate {{ $json.post.id }}\nReject: /reject {{ $json.post.id }}'),
     telegramNode(key, 'Report Regeneration Failure', [1_520, 820], '=⚠️ The image could not be regenerated. The draft remains private and unchanged.\nDraft ID: {{ $("Parse and Authorise Command").first().json.postId }}'),
-    makeNode(key, 'Approval Contract', 'n8n-nodes-base.stickyNote', 1, [-900, 840], { content: '## Approval contract\n\nOnly private Telegram chat 6833948326 is accepted. Publishing requires `/approve <draft-id>`. Content quality scoring is advisory. Regeneration changes only the supporting image. Rejection keeps the draft private.', height: 260, width: 620, color: 5 }),
+    makeNode(key, 'Approval Contract', 'n8n-nodes-base.stickyNote', 1, [-900, 840], { content: '## Manual exception contract\n\nRoutine articles publish automatically only after the website quality gate passes. This workflow accepts commands only from the private configured Telegram chat. `/approve <draft-id>` is a deliberate manual exception for a private draft; regeneration changes only its supporting image and rejection keeps it private.', height: 260, width: 620, color: 5 }),
   ];
   const connections = {};
   connect(connections, 'Telegram Review Commands', 'Parse and Authorise Command');
@@ -633,7 +664,7 @@ function buildApprovalWorkflow() {
   connect(connections, 'Build Regeneration Quality Payload', 'Promote Rechecked Draft');
   connect(connections, 'Promote Rechecked Draft', 'Send Regenerated Cover');
   connect(connections, 'Regenerated Image Ready?', 'Report Regeneration Failure', 'main', 1);
-  return workflow('WeTrends Telegram Review v3 — Approve + Regenerate + Reject', nodes, connections);
+  return workflow('WeTrends Telegram Exceptions v3 — Approve + Regenerate + Reject', nodes, connections);
 }
 
 function buildTopicPlannerPrompt() {
@@ -673,7 +704,7 @@ function parseTopicPlan() {
 function buildTopicPlanner() {
   const key = 'topic-planner-v1';
   const nodes = [
-    scheduleNode(key, 'Sunday 18:00 London', [-800, 360], '0 18 * * 0'), manualNode(key, [-800, 520]),
+    scheduleNode(key, 'Monday 07:00 London', [-800, 360], '0 7 * * 1'), manualNode(key, [-800, 520]),
     httpNode(key, 'Fetch Content Inventory', [-580, 400], {
       url: 'https://wetrends.co.uk/api/blog/inventory/', authentication: 'genericCredentialType', genericAuthType: 'httpHeaderAuth', options: {},
     }, { credentials: credentials.blog }),
@@ -681,19 +712,19 @@ function buildTopicPlanner() {
     makeNode(key, 'Read Open London Topics', 'n8n-nodes-base.dataTable', 1, [-140, 400], { operation: 'get', dataTableId: dataTableSelector(), matchType: 'anyCondition', filters: { conditions: [{ keyName: 'status', condition: 'eq', keyValue: 'queued_london' }, { keyName: 'status', condition: 'eq', keyValue: 'review_ready' }, { keyName: 'status', condition: 'eq', keyValue: 'quality_blocked' }] }, returnAll: true }, { alwaysOutputData: true }),
     codeNode(key, 'Build Topic Planner Brief', [80, 400], buildTopicPlannerPrompt),
     llmChainNode(key, 'Plan Three Campaign Topics', [300, 400], '={{ $json.plannerPrompt }}'),
-    modelNode(key, 'OpenAI Luna - Planner', [300, 640]),
+    openRouterTextModelNode(key, 'OpenRouter Luna - Planner', [300, 640]),
     codeNode(key, 'Validate Topic Plan', [520, 400], parseTopicPlan),
     makeNode(key, 'Skip Existing Topic', 'n8n-nodes-base.dataTable', 1, [740, 400], { operation: 'rowNotExists', dataTableId: dataTableSelector(), matchType: 'allConditions', filters: { conditions: [{ keyName: 'topic', condition: 'eq', keyValue: '={{ $json.topic }}' }] }, options: {} }),
     makeNode(key, 'Insert Pending Topics', 'n8n-nodes-base.dataTable', 1, [960, 400], { operation: 'insert', dataTableId: dataTableSelector(), columns: { mappingMode: 'defineBelow', value: { topic: '={{ $json.topic }}', keywords: '={{ $json.keywords }}', icp_angle: '={{ $json.icp_angle }}', intent: '={{ $json.intent }}', status: 'queued_london', published_url: '' }, matchingColumns: [], schema: [], attemptToConvertTypes: false, convertFieldsToString: false }, options: {} }),
-    telegramNode(key, 'Confirm Topic Queue', [1_180, 400], '=📚 Added a balanced weekly London content topic to the queue:\n{{ String($json.topic || $("Validate Topic Plan").item.json.topic || "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;") }}\n\nThe content engine will process queued London topics as drafts only.'),
+    telegramNode(key, 'Confirm Topic Queue', [1_180, 400], '=📚 Added a balanced weekly London content topic to the queue:\n{{ String($json.topic || $("Validate Topic Plan").item.json.topic || "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;") }}\n\nThe content engine will publish only drafts that pass its quality checks.'),
   ];
   const connections = {};
-  for (const trigger of ['Sunday 18:00 London', 'Manual Test']) connect(connections, trigger, 'Fetch Content Inventory');
+  for (const trigger of ['Monday 07:00 London', 'Manual Test']) connect(connections, trigger, 'Fetch Content Inventory');
   connect(connections, 'Fetch Content Inventory', 'Read Search Opportunities');
   connect(connections, 'Read Search Opportunities', 'Read Open London Topics');
   connect(connections, 'Read Open London Topics', 'Build Topic Planner Brief');
   connect(connections, 'Build Topic Planner Brief', 'Plan Three Campaign Topics');
-  connect(connections, 'OpenAI Luna - Planner', 'Plan Three Campaign Topics', 'ai_languageModel');
+  connect(connections, 'OpenRouter Luna - Planner', 'Plan Three Campaign Topics', 'ai_languageModel');
   connect(connections, 'Plan Three Campaign Topics', 'Validate Topic Plan');
   connect(connections, 'Validate Topic Plan', 'Skip Existing Topic');
   connect(connections, 'Skip Existing Topic', 'Insert Pending Topics');

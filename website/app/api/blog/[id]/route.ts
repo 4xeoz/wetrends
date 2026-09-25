@@ -4,10 +4,12 @@ import { validateApiKey } from "@/lib/api-auth";
 import { createBlogPostSchema, updateBlogPostSchema } from "@/lib/zod/blog";
 import { revalidatePath } from "next/cache";
 import {
+  getAutoPublicationError,
   getAutomationTransitionError,
   getPublishedAutomationDisposition,
 } from "@/lib/blog-automation-state";
 import { auth } from "@/lib/auth";
+import { evaluateBlogDraft } from "@/lib/blog-quality";
 
 // ─────────────────────────────────────────────
 // GET — an authenticated admin session or API key is required so drafts are
@@ -127,10 +129,11 @@ export async function PATCH(
       );
     }
 
+    let automaticQualityScore: number | undefined;
     if (data.published === true) {
-      if (data.automationStatus !== "approved") {
+      if (data.automationStatus !== "approved" && data.automationStatus !== "auto_publish") {
         return NextResponse.json(
-          { success: false, message: "API publication requires an explicit approved status in this request" },
+          { success: false, message: "API publication requires an explicit approved or auto_publish status in this request" },
           { status: 400 }
         );
       }
@@ -175,6 +178,17 @@ export async function PATCH(
           },
           { status: 422 }
         );
+      }
+      if (data.automationStatus === "auto_publish") {
+        const quality = evaluateBlogDraft(candidateParsed.data);
+        const eligibilityError = getAutoPublicationError(existingPost, data, quality);
+        if (eligibilityError) {
+          return NextResponse.json(
+            { success: false, message: eligibilityError.message, quality },
+            { status: eligibilityError.status }
+          );
+        }
+        automaticQualityScore = quality.score;
       }
     }
 
@@ -254,7 +268,9 @@ export async function PATCH(
           automationStatus: data.published === true ? "published" : data.automationStatus,
         }),
         ...(data.automationRunId !== undefined && { automationRunId: data.automationRunId }),
-        ...(data.qualityScore !== undefined && { qualityScore: data.qualityScore }),
+        ...(automaticQualityScore !== undefined
+          ? { qualityScore: automaticQualityScore }
+          : data.qualityScore !== undefined && { qualityScore: data.qualityScore }),
         ...(data.categoryId !== undefined && { categoryId: data.categoryId }),
         ...(data.authorId !== undefined && { authorId: data.authorId }),
       },

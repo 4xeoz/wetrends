@@ -55,7 +55,7 @@ export const createBlogPostSchema = z.object({
     .optional(),
   sourceUrls: z.array(httpsUrlSchema).max(12).optional(),
   automationStatus: z
-    .enum(["drafted", "quality_blocked", "review_ready", "approved", "rejected", "published"])
+    .enum(["drafted", "quality_blocked", "review_ready", "auto_publish", "approved", "rejected", "published"])
     .optional(),
   automationRunId: z.string().trim().max(100).optional(),
   qualityScore: z.number().int().min(0).max(100).optional(),

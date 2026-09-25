@@ -1,5 +1,5 @@
 {
-  "name": "WeTrends Content Engine v3 — Draft + Image + Quality",
+  "name": "WeTrends Content Engine v3 — Automatic Publishing",
   "nodes": [
     {
       "parameters": {
@@ -7,13 +7,13 @@
           "interval": [
             {
               "field": "cronExpression",
-              "expression": "0 9 * * 2,4,6"
+              "expression": "0 9 * * 1,2,3,4,5"
             }
           ]
         }
       },
-      "id": "9bb35b5f-2f1c-4e22-8b67-8c06f5d3ef48",
-      "name": "Tue Thu Sat 09:00 London",
+      "id": "5f2c5524-46d2-4ab6-bdb7-9ffe269d4768",
+      "name": "Weekdays 09:00 London",
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.2,
       "position": [
@@ -266,25 +266,21 @@
     },
     {
       "parameters": {
-        "model": {
-          "__rl": true,
-          "value": "gpt-5.6-luna",
-          "mode": "id"
-        },
+        "model": "openai/gpt-5.6-luna",
         "options": {}
       },
-      "id": "e5b76aca-731e-4dd5-875a-1365caa750aa",
-      "name": "OpenAI Luna - Writer",
-      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
-      "typeVersion": 1.2,
+      "id": "28dcd297-6c5a-4164-8f4a-58d2dcb37ce5",
+      "name": "OpenRouter Luna - Writer",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
       "position": [
         780,
         760
       ],
       "credentials": {
-        "openAiApi": {
-          "id": "Lrj5HIOGIlIosZun",
-          "name": "OpenAI - WeTrends SEO"
+        "openRouterApi": {
+          "id": "J9bt6GNogK4tq81D",
+          "name": "OpenRouter account"
         }
       }
     },
@@ -317,31 +313,27 @@
     },
     {
       "parameters": {
-        "model": {
-          "__rl": true,
-          "value": "gpt-5.6-luna",
-          "mode": "id"
-        },
+        "model": "openai/gpt-5.6-luna",
         "options": {}
       },
-      "id": "2f029535-6af4-47ad-a9b1-669edf360e2c",
-      "name": "OpenAI Luna - Metadata",
-      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
-      "typeVersion": 1.2,
+      "id": "0b0f6f76-370e-4187-a08d-a468f75428c5",
+      "name": "OpenRouter Luna - Metadata",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
       "position": [
         1220,
         760
       ],
       "credentials": {
-        "openAiApi": {
-          "id": "Lrj5HIOGIlIosZun",
-          "name": "OpenAI - WeTrends SEO"
+        "openRouterApi": {
+          "id": "J9bt6GNogK4tq81D",
+          "name": "OpenRouter account"
         }
       }
     },
     {
       "parameters": {
-        "jsCode": "const output = $input.first().json;\n  const raw = String(output.text ?? output.response ?? output.output ?? '{}').replace(/```json/gi, '').replace(/```/g, '').trim();\n  const start = raw.indexOf('{');\n  const end = raw.lastIndexOf('}');\n  if (start < 0 || end <= start) throw new Error('Metadata model did not return JSON.');\n  let metadata;\n  try { metadata = JSON.parse(raw.slice(start, end + 1)); } catch (error) { throw new Error(`Could not parse metadata JSON: ${error.message}`); }\n  const context = $('Build Metadata Brief').first().json;\n  const clean = (value, limit) => String(value || '').replace(/<[^>]*>/g, '').replace(/\\s+/g, ' ').trim().slice(0, limit);\n  const escapeHtml = (value) => String(value || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g, '&quot;').replace(/'/g, '&#039;');\n  // Derive the slug from the queued topic, not the model response. This makes\n  // retries for the same topic converge on the database's unique slug instead\n  // of creating parallel drafts with slightly different model-generated URLs.\n  const slug = clean(context.topic, 100).toLowerCase().replace(/[^a-z0-9\\s-]/g, '').replace(/\\s+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '').slice(0, 90);\n  const faq = Array.isArray(metadata.faq) ? metadata.faq.slice(0, 3) : [];\n  const faqHtml = faq.length ? `<h2>Frequently asked questions</h2>${faq.map((item) => `<h3>${escapeHtml(item.q)}</h3><p>${escapeHtml(item.a)}</p>`).join('')}` : '';\n  let content = `${context.draft}${faqHtml}`;\n  if (!content.includes(context.primaryServiceUrl)) {\n    content += `<h2>What to do next</h2><p>If you need practical support, explore the relevant <a href=\"${context.primaryServiceUrl}\">WeTrends service</a> and bring us the real brief, constraints and desired outcome.</p>`;\n  }\n  const imageAlt = clean(metadata.imageAlt || `${context.topic} editorial concept`, 180);\n  const imagePrompt = `Create a premium editorial blog cover for a UK creative technology agency. Topic: ${clean(context.topic, 160)}. Campaign: ${context.campaign}. Wide landscape composition, sophisticated art direction, restrained WeTrends palette with charcoal, warm white and magenta accents, credible London context without landmarks unless relevant, natural detail, no logos, no readable text, no watermarks, no fake interface screenshots, no claims of being client work. This is supporting editorial art, not a portfolio photograph.`;\n  const corePayload = {\n    title: clean(metadata.title || context.topic, 80),\n    slug,\n    excerpt: clean(metadata.excerpt, 200),\n    content,\n    published: false,\n    metaTitle: clean(metadata.metaTitle || metadata.title || context.topic, 60),\n    metaDescription: clean(metadata.metaDescription || metadata.excerpt, 155),\n    keywords: (Array.isArray(metadata.keywords) ? metadata.keywords : String(context.keywords || '').split(',')).map((keyword) => clean(keyword, 80)).filter(Boolean).slice(0, 10),\n    campaign: context.campaign,\n    contentType: context.contentType,\n    primaryServiceUrl: context.primaryServiceUrl,\n    sourceUrls: context.sourceUrls,\n    automationStatus: 'drafted',\n    // The topic row is the durable unit of work. A stable key lets the website\n    // return an earlier successful draft when n8n retries after a lost response\n    // or a downstream Data Table/Telegram failure.\n    automationRunId: `seo-v3:topic:${String(context.rowId)}`,\n  };\n  return [{ json: { rowId: context.rowId, imageAlt, imagePrompt, corePayload } }];"
+        "jsCode": "const output = $input.first().json;\n  const raw = String(output.text ?? output.response ?? output.output ?? '{}').replace(/```json/gi, '').replace(/```/g, '').trim();\n  const start = raw.indexOf('{');\n  const end = raw.lastIndexOf('}');\n  if (start < 0 || end <= start) throw new Error('Metadata model did not return JSON.');\n  let metadata;\n  try { metadata = JSON.parse(raw.slice(start, end + 1)); } catch (error) { throw new Error(`Could not parse metadata JSON: ${error.message}`); }\n  const context = $('Build Metadata Brief').first().json;\n  const clean = (value, limit) => String(value || '').replace(/<[^>]*>/g, '').replace(/\\s+/g, ' ').trim().slice(0, limit);\n  const escapeHtml = (value) => String(value || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g, '&quot;').replace(/'/g, '&#039;');\n  // Derive the slug from the queued topic, not the model response. This makes\n  // retries for the same topic converge on the database's unique slug instead\n  // of creating parallel drafts with slightly different model-generated URLs.\n  const slug = clean(context.topic, 100).toLowerCase().replace(/[^a-z0-9\\s-]/g, '').replace(/\\s+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '').slice(0, 90).replace(/-+$/g, '');\n  if (!slug) throw new Error('Topic did not produce a URL-safe slug.');\n  const faq = Array.isArray(metadata.faq) ? metadata.faq.slice(0, 3) : [];\n  const faqHtml = faq.length ? `<h2>Frequently asked questions</h2>${faq.map((item) => `<h3>${escapeHtml(item.q)}</h3><p>${escapeHtml(item.a)}</p>`).join('')}` : '';\n  let content = `${context.draft}${faqHtml}`;\n  if (!content.includes(context.primaryServiceUrl)) {\n    content += `<h2>What to do next</h2><p>If you need practical support, explore the relevant <a href=\"${context.primaryServiceUrl}\">WeTrends service</a> and bring us the real brief, constraints and desired outcome.</p>`;\n  }\n  const imageAlt = clean(metadata.imageAlt || `${context.topic} editorial concept`, 180);\n  const imagePrompt = `Create a premium editorial blog cover for a UK creative technology agency. Topic: ${clean(context.topic, 160)}. Campaign: ${context.campaign}. Wide landscape composition, sophisticated art direction, restrained WeTrends palette with charcoal, warm white and magenta accents, credible London context without landmarks unless relevant, natural detail, no logos, no readable text, no watermarks, no fake interface screenshots, no claims of being client work. This is supporting editorial art, not a portfolio photograph.`;\n  const corePayload = {\n    title: clean(metadata.title || context.topic, 80),\n    slug,\n    excerpt: clean(metadata.excerpt, 200),\n    content,\n    published: false,\n    metaTitle: clean(metadata.metaTitle || metadata.title || context.topic, 60),\n    metaDescription: clean(metadata.metaDescription || metadata.excerpt, 155),\n    keywords: (Array.isArray(metadata.keywords) ? metadata.keywords : String(context.keywords || '').split(',')).map((keyword) => clean(keyword, 80)).filter(Boolean).slice(0, 10),\n    campaign: context.campaign,\n    contentType: context.contentType,\n    primaryServiceUrl: context.primaryServiceUrl,\n    sourceUrls: context.sourceUrls,\n    automationStatus: 'drafted',\n    // The topic row is the durable unit of work. A stable key lets the website\n    // return an earlier successful draft when n8n retries after a lost response\n    // or a downstream Data Table/Telegram failure.\n    automationRunId: `seo-v3:topic:${String(context.rowId)}`,\n  };\n  return [{ json: { rowId: context.rowId, imageAlt, imagePrompt, corePayload } }];"
       },
       "id": "7b95f529-9830-4298-9df1-d432eafcf4b8",
       "name": "Build Draft Package",
@@ -493,7 +485,67 @@
     },
     {
       "parameters": {
-        "jsCode": "return [{ json: { ...$('Normalise Final Draft').first().json, automationStatus: 'review_ready' } }];"
+        "method": "POST",
+        "url": "https://wetrends.co.uk/api/blog/quality/",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "id": "b6b79496-e0d3-4551-a8fd-b2345863897d",
+      "name": "Check Draft Quality",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2980,
+        520
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "jNOBFrsMFwW2ovdd",
+          "name": "WeTrends Blog API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f4f0fd4b-035b-4bfd-a690-14d3b4236afe",
+              "leftValue": "={{ $json.quality.pass === true && $(\"Normalise Final Draft\").first().json.contentType !== \"case_study\" && $(\"Normalise Final Draft\").first().json.sourceUrls.length > 0 }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "e53c2657-d949-463e-b2a1-806714324e5e",
+      "name": "Quality Pass?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3200,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: { ...$('Normalise Final Draft').first().json, automationStatus: 'review_ready', qualityScore: $('Check Draft Quality').first().json.quality.score } }];"
       },
       "id": "9aaf6a65-c571-4ba7-bd8b-9edc619e1b4b",
       "name": "Prepare Review-Ready Draft",
@@ -532,6 +584,195 @@
     },
     {
       "parameters": {
+        "method": "PATCH",
+        "url": "=https://wetrends.co.uk/api/blog/{{ $json.post.id }}/",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ published: true, automationStatus: \"auto_publish\" }) }}",
+        "options": {}
+      },
+      "id": "91dd33e0-bd9f-43f7-b58f-9a6e1ee2d667",
+      "name": "Publish Automatic Draft",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3860,
+        400
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "jNOBFrsMFwW2ovdd",
+          "name": "WeTrends Blog API"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e14b2e87-09db-4f63-bffe-ff90cd7d19e4",
+              "leftValue": "={{ $json.success === true && $json.post?.published === true }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "5ff70878-566e-4473-beeb-0e3d2908b0e1",
+      "name": "Publication Succeeded?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        4080,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "blog_topics",
+          "mode": "name"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ Number(String($('Publish Automatic Draft').first().json.post.automationRunId || '').split(':topic:')[1] || -1) }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "status": "published",
+            "published_url": "={{ 'https://wetrends.co.uk/blogs/' + $('Publish Automatic Draft').first().json.post.slug + '/' }}"
+          },
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "3c695bdc-963c-42a3-9d89-66077a023da6",
+      "name": "Mark Topic Published",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        4300,
+        300
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "chatId": "6833948326",
+        "text": "=✅ Published automatically after quality checks\n\n{{ String($json.post.title || \"\").replaceAll(\"&\", \"&amp;\").replaceAll(\"<\", \"&lt;\").replaceAll(\">\", \"&gt;\") }}\nhttps://wetrends.co.uk/blogs/{{ $json.post.slug }}/",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "0e8fedcd-9f69-4fbf-a0c0-53d65307fdf6",
+      "name": "Confirm Automatic Publication",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        4300,
+        500
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "7jUWAXImCuClzxG5",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "6833948326",
+        "text": "=⚠️ Automatic publication failed. The draft is private and its topic will be retried.\nDraft ID: {{ $(\"Create Review-Ready Draft\").first().json.post.id }}\nCheck the Content Engine execution in n8n.",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "c92e8fd7-e3a7-4d38-9b56-b66a9305c782",
+      "name": "Report Publication Failure",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        4300,
+        700
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "7jUWAXImCuClzxG5",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const response = $input.first().json;\n  const quality = response.quality || { score: 0, issues: [{ code: 'quality_api_error', message: response.message || 'Quality API failed.' }] };\n  return [{ json: { ...$('Normalise Final Draft').first().json, automationStatus: 'quality_blocked', qualityScore: Number(quality.score || 0) } }];"
+      },
+      "id": "c290da6e-1689-4b4d-82fa-45b88f1724e1",
+      "name": "Prepare Quality-Blocked Draft",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3420,
+        700
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://wetrends.co.uk/api/blog/",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "id": "1c5b5488-653a-40fc-8195-19ffb55b6f4d",
+      "name": "Create Quality-Blocked Draft",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3640,
+        700
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "jNOBFrsMFwW2ovdd",
+          "name": "WeTrends Blog API"
+        }
+      }
+    },
+    {
+      "parameters": {
         "operation": "update",
         "dataTableId": {
           "__rl": true,
@@ -551,7 +792,7 @@
         "columns": {
           "mappingMode": "defineBelow",
           "value": {
-            "status": "review_ready",
+            "status": "quality_blocked",
             "published_url": ""
           },
           "matchingColumns": [],
@@ -561,31 +802,31 @@
         },
         "options": {}
       },
-      "id": "9f7242dc-825c-49b9-bf82-67688b8db75a",
-      "name": "Mark Topic Review Ready",
+      "id": "766cc6df-1e26-41d6-aeac-34503f9056a9",
+      "name": "Mark Topic Quality Blocked",
       "type": "n8n-nodes-base.dataTable",
       "typeVersion": 1,
       "position": [
         3860,
-        400
+        700
       ]
     },
     {
       "parameters": {
         "chatId": "6833948326",
-        "text": "=📝 WeTrends draft ready\n\n{{ String($(\"Create Review-Ready Draft\").first().json.post.title || \"\").replaceAll(\"&\", \"&amp;\").replaceAll(\"<\", \"&lt;\").replaceAll(\">\", \"&gt;\") }}\nCampaign: {{ String($(\"Prepare Review-Ready Draft\").first().json.campaign || \"\").replaceAll(\"&\", \"&amp;\").replaceAll(\"<\", \"&lt;\").replaceAll(\">\", \"&gt;\") }}\nQuality: advisory only (not blocking)\nImage: {{ String($(\"Prepare Review-Ready Draft\").first().json.featuredImage || \"\").replaceAll(\"&\", \"&amp;\").replaceAll(\"<\", \"&lt;\").replaceAll(\">\", \"&gt;\") }}\n\nDraft ID: {{ $(\"Create Review-Ready Draft\").first().json.post.id }}\n\nApprove: /approve {{ $(\"Create Review-Ready Draft\").first().json.post.id }}\nRegenerate image: /regenerate {{ $(\"Create Review-Ready Draft\").first().json.post.id }}\nReject: /reject {{ $(\"Create Review-Ready Draft\").first().json.post.id }}\n\nNothing is public until you approve.",
+        "text": "=⚠️ Draft kept private for evidence or quality review\n\n{{ String($(\"Create Quality-Blocked Draft\").first().json.post.title || \"\").replaceAll(\"&\", \"&amp;\").replaceAll(\"<\", \"&lt;\").replaceAll(\">\", \"&gt;\") }}\nDraft ID: {{ $(\"Create Quality-Blocked Draft\").first().json.post.id }}\n{{ String($(\"Check Draft Quality\").first().json.quality.issues.slice(0, 3).map(issue => issue.message).join(\"; \") || \"A source or case-study evidence review is required.\").replaceAll(\"&\", \"&amp;\").replaceAll(\"<\", \"&lt;\").replaceAll(\">\", \"&gt;\") }}",
         "additionalFields": {
           "appendAttribution": false,
           "parse_mode": "HTML"
         }
       },
-      "id": "31c87782-1d2c-4f70-a4ec-7e0060e0ac8d",
-      "name": "Send Draft Review to Telegram",
+      "id": "7e2a9e91-63cd-4f73-8c26-74cbe8879f1f",
+      "name": "Send Quality Block to Telegram",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
         4080,
-        400
+        900
       ],
       "credentials": {
         "telegramApi": {
@@ -596,7 +837,7 @@
     },
     {
       "parameters": {
-        "content": "## Safety contract\n\n- New posts are always drafts.\n- GPT Image 2 uses medium quality at 1536×1024.\n- AI covers are labelled supporting editorial art.\n- Case studies require real portfolio proof and are not auto-generated.\n- London is a service area during the move.\n- Quality scoring is advisory, not a publication gate.\n- Telegram approval is required to publish.",
+        "content": "## Automatic publication contract\n\n- Create a private draft first, then auto-publish only when the website quality gate passes.\n- Missing sources, failed checks and case studies remain private.\n- GPT Image 2 covers are labelled supporting editorial art, never client work.\n- London is a service area during the move.\n- Telegram reports outcomes; manual commands remain available for exceptions.",
         "height": 360,
         "width": 620,
         "color": 5
@@ -612,7 +853,7 @@
     }
   ],
   "connections": {
-    "Tue Thu Sat 09:00 London": {
+    "Weekdays 09:00 London": {
       "main": [
         [
           {
@@ -729,7 +970,7 @@
         ]
       ]
     },
-    "OpenAI Luna - Writer": {
+    "OpenRouter Luna - Writer": {
       "ai_languageModel": [
         [
           {
@@ -762,7 +1003,7 @@
         ]
       ]
     },
-    "OpenAI Luna - Metadata": {
+    "OpenRouter Luna - Metadata": {
       "ai_languageModel": [
         [
           {
@@ -872,7 +1113,36 @@
       "main": [
         [
           {
+            "node": "Check Draft Quality",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Draft Quality": {
+      "main": [
+        [
+          {
+            "node": "Quality Pass?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Quality Pass?": {
+      "main": [
+        [
+          {
             "node": "Prepare Review-Ready Draft",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Quality-Blocked Draft",
             "type": "main",
             "index": 0
           }
@@ -894,18 +1164,74 @@
       "main": [
         [
           {
-            "node": "Mark Topic Review Ready",
+            "node": "Publish Automatic Draft",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Mark Topic Review Ready": {
+    "Publish Automatic Draft": {
       "main": [
         [
           {
-            "node": "Send Draft Review to Telegram",
+            "node": "Publication Succeeded?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Publication Succeeded?": {
+      "main": [
+        [
+          {
+            "node": "Mark Topic Published",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Confirm Automatic Publication",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Report Publication Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Quality-Blocked Draft": {
+      "main": [
+        [
+          {
+            "node": "Create Quality-Blocked Draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Quality-Blocked Draft": {
+      "main": [
+        [
+          {
+            "node": "Mark Topic Quality Blocked",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark Topic Quality Blocked": {
+      "main": [
+        [
+          {
+            "node": "Send Quality Block to Telegram",
             "type": "main",
             "index": 0
           }

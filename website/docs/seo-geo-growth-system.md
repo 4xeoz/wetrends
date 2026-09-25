@@ -39,9 +39,9 @@ image router (real portfolio proof or GPT Image 2 supporting cover)
         |
 quality, claim and link gates
         |
-CMS draft + Telegram review
+private CMS draft + server-side quality and evidence check
         |
-explicit approve / regenerate / reject action
+automatic publication on pass; private exception queue on failure
         |
 publish verification + sitemap check
         |
@@ -50,31 +50,29 @@ weekly performance feedback and backlink opportunity queue
 
 ## Runtime components
 
-All imported workflows use the `Europe/London` timezone and must remain inactive until the preview-deployment gates below pass.
+The scheduled workflows use the `Europe/London` timezone. Apply the website API change before importing the automatic Content Engine graph, and leave its schedule active only after the publication checks pass.
 
 | Workflow | Schedule | Responsibility |
 | --- | --- | --- |
-| Topic Planner | Sunday 18:00 | Uses the published site index and Search Console evidence to propose exactly one events, one photoshoots and one agency opportunity. It writes only new topics. |
-| Content Engine | Monday, Wednesday and Friday 09:00 | Consumes one London topic, checks duplication, researches sources, creates the draft and medium GPT Image 2 cover, applies the website quality gate and sends the private review message. |
-| Telegram Review | Event driven | Accepts commands only from the configured private chat. It can approve, reject or regenerate a cover; only the explicit approve path may request publication. |
+| Topic Planner | Monday 07:00 London | Uses the published site index and Search Console evidence to propose exactly one events, one photoshoots and one agency opportunity. It writes only new topics. |
+| Content Engine | Weekdays 09:00 in the current live workflow | Consumes one London topic, checks duplication, researches sources, creates the draft and medium GPT Image 2 cover, then publishes automatically only if the website quality gate passes. Failed or unsupported drafts stay private. |
+| Telegram Exceptions | Event driven | Reports publication outcomes and accepts manual approve, reject or regenerate commands from the configured private chat for exceptional drafts. No routine approval is required. |
 | Authority Scout | Tuesday 10:00 | Finds and scores relevant authority opportunities, drafts a suggested approach and sends a review queue. It never sends outreach. |
 | Growth Monitor | Monday 08:00 | Checks public technical surfaces, the authenticated legacy-content audit, Search Console and GA4 before sending the weekly decision report. It reports `RECOVERY` while published posts still need evidence review. |
 
 ### Canonical n8n workflow registry
 
-The generated JSON files in `automations/n8n/` remain the implementation source of truth. These are the current staged workflows in the n8n project:
+The generator and JSON files in `automations/n8n/` are the versioned implementation source of truth. The current live Content Engine runs on weekdays at 09:00 London time and uses OpenRouter for text models; the generator now reflects those runtime choices. Preserve node IDs and credentials when updating the existing live workflow.
 
 | Workflow | n8n workflow ID | Imported state |
 | --- | --- | --- |
 | Topic Planner | `LzR6taoMpC3k68Qw` | Inactive safety copy |
-| Content Engine | `DbXYFTeNUU8bzh2q` | Inactive OpenRouter rollout target |
-| Telegram Review | `iw2af7CkxL99ZogM` | Inactive OpenRouter rollout target |
+| Content Engine | `DbXYFTeNUU8bzh2q` | Active live scheduler; update in place after the website API deployment |
+| Telegram Exceptions | `iw2af7CkxL99ZogM` | Active manual exception handler |
 | Authority Scout | `fhis4BW52hTkOoLK` | Inactive safety copy |
 | Growth Monitor | `TVEVL2vFZDPxsM9i` | Inactive safety copy |
 
-The prior Content Engine (`Vuc77VC0jfE12Pob`) and Telegram Review (`h63iI564uWZSD2tT`) workflows remain inactive safety copies. On 8 September 2026, the staged imports were verified in n8n with `OpenRouter account` mapped to both GPT Image 2 nodes and `Telegram account` mapped to the private review trigger; neither workflow was published.
-
-Older similarly named workflows are preserved as historical copies and are not rollout targets. The legacy `WeTrends SEO + GEO Smart Draft System v2 (London)` workflow (`ieJd5NrbwH130x09`) is still published and draft-only. At cutover, deactivate that scheduler before activating the new Content Engine so two workflows cannot consume the topic queue or create parallel drafts. Do not make that cutover until the preview deployment and draft-only end-to-end gates pass.
+The older staged workflows are historical safety copies. Before a cutover, check the n8n workflow list and ensure that only one published Content Engine consumes `queued_london`; do not assume an older scheduler's active state from this document.
 
 The separate `WeTrends Content Engine v3 — PREVIEW E2E Manual Only` workflow (`qoc35Yh3PdEsWDq5`) is an inactive test harness whose CMS requests target the Vercel preview deployment. It is not a scheduled rollout target.
 
@@ -95,7 +93,7 @@ The automated state path is:
 ```text
 queued_london -> duplicate
 queued_london -> quality_blocked
-queued_london -> review_ready -> approved -> published
+queued_london -> review_ready -> published (automatic quality pass)
 queued_london -> review_ready -> rejected
 ```
 
@@ -105,8 +103,8 @@ Changing or bulk-migrating legacy `pending` rows requires a separate content rev
 
 n8n stores the secret values; exported workflow JSON contains credential references only:
 
-- `OpenAI - WeTrends SEO` for Luna text work;
-- `OpenRouter account` for GPT Image 2 cover generation and regeneration;
+- `OpenRouter account` for the current Content Engine and Topic Discovery Luna text models, and GPT Image 2 cover generation;
+- `OpenAI - WeTrends SEO` for any remaining staged analysis workflows;
 - `Google account` with read-only Search Console and Analytics scopes;
 - `Telegram account` for the private review chat;
 - `Tavily API` for research and opportunity discovery;
@@ -118,11 +116,12 @@ Telegram send nodes use explicit HTML mode, escape dynamic external text and dis
 
 ## Automation boundaries
 
-- Content may be researched, scored, drafted, illustrated and saved automatically.
-- New articles remain drafts until an explicit Telegram approval.
+- Content may be researched, scored, drafted, illustrated and published automatically after the server rechecks the stored draft.
+- Failed-quality drafts, missing-source drafts and case studies stay private for evidence review. A Telegram command is available for a deliberate manual exception but is not part of the standard path.
 - A publish action must use the exact CMS post ID returned when the draft was created. It must never publish by title alone.
 - Each queued topic has a stable automation run key and deterministic slug. If n8n retries after the CMS committed a draft but before the response or topic update completed, the create endpoint returns the same private draft instead of creating another one. A `quality_blocked` draft can be promoted to `review_ready` only when the retry uses that same run key and slug, remains unpublished, and the complete replacement payload passes the website quality gate again.
-- Published posts are read-only to the automation API. An exact two-field replay of an already-successful approval is a no-op success, while any attempt to change live copy, metadata or media is rejected.
+- Automatic publication accepts only the exact two-field `published: true` and `automationStatus: "auto_publish"` request for a private, review-ready draft with an automation run ID. The server checks quality again from stored content; n8n cannot submit revised copy in the publish request.
+- Published posts are read-only to the automation API. An exact two-field replay of an already-successful publish request is a no-op success, while any attempt to change live copy, metadata or media is rejected.
 - The automation API may delete only unpublished drafts. Human administrators retain the separate session-authenticated deletion path for any deliberate live-content decision.
 - Reject and regenerate commands apply only to review-ready drafts. The automation API cannot unpublish an article that is already live.
 - Backlink discovery, qualification and outreach copy may be automated. Outreach is not sent without approval.
@@ -146,11 +145,11 @@ Every queued opportunity carries:
 - `status`
 - `cms_post_id`
 - `quality_score`
-- `approval_token`
+- `automationRunId` (stable topic-row idempotency key)
 
 ## Quality gates
 
-A draft is reviewable only when all applicable checks pass:
+A draft is automatically publishable only when all applicable checks pass:
 
 - unique topic and canonical intent;
 - title no longer than 60 characters;
@@ -204,9 +203,9 @@ Paid-link networks, automated guest-post blasts, reciprocal-link farms and irrel
 1. Local schema, lint, type and contract tests.
 2. Preview deployment and browser/API checks.
 3. One draft-only end-to-end n8n execution.
-4. One Telegram regeneration test and one approval test on a non-production test post.
-5. Production promotion only after the preview checks pass.
-6. Observe the first scheduled cycle before enabling automatic publish actions.
+4. On a preview deployment, prove a passing draft publishes and a failing draft stays private; test an exact retry and a case-study block.
+5. Deploy the website API before changing the live n8n workflow. Keep the existing schedule and credentials when importing or editing it.
+6. Observe the first scheduled production cycle, including the public URL, topic-row status and Telegram outcome.
 
 ## Known external prerequisites
 

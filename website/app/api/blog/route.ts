@@ -85,9 +85,8 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Quality is retained as advisory metadata. Publication approval is a
-  // deliberate Telegram action and is no longer blocked by this content
-  // heuristic gate.
+  // Drafts can be stored regardless of quality. The automatic publication
+  // endpoint re-evaluates the stored draft and blocks publication on failure.
   const quality = evaluateBlogDraft(data);
 
   // 3. Verify authorId exists (if provided)

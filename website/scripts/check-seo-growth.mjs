@@ -94,7 +94,7 @@ for (const filename of workflowFiles) {
     }
   }
 
-  if (filename !== 'wetrends-telegram-review-v3.json') {
+  if (filename !== 'wetrends-telegram-review-v3.json' && filename !== 'wetrends-content-engine-v3.json') {
     assert.ok(!source.includes('published: true'), `${filename} may not publish content`);
   }
 }
@@ -161,22 +161,35 @@ const draftPackage = buildDraftPackage(
 )[0].json;
 assert.equal(draftPackage.corePayload.slug, 'london-event-planning-for-product-launches');
 assert.equal(draftPackage.corePayload.automationRunId, 'seo-v3:topic:374');
+const longTopicPackage = buildDraftPackage(
+  { first: () => ({ json: { text: JSON.stringify({ title: 'Long topic', excerpt: 'Useful summary' }) } }) },
+  (name) => ({ first: () => ({ json: name === 'Build Metadata Brief'
+    ? { rowId: 375, topic: 'The Corporate Event Livestream Run of Show A UK Checklist for Speakers Screens and Remote Audiences', draft: '<h1>Long topic</h1><p>Direct answer.</p>', campaign: 'events', contentType: 'guide', primaryServiceUrl: 'https://wetrends.co.uk/events/', sourceUrls: ['https://example.com/research'] }
+    : {} }) }),
+)[0].json;
+assert.match(longTopicPackage.corePayload.slug, /^[a-z0-9]+(?:-[a-z0-9]+)*$/);
+assert.ok(longTopicPackage.corePayload.slug.length <= 90);
 assert.equal(contentInventoryNode.parameters.url, 'https://wetrends.co.uk/api/blog/inventory/');
 assert.equal(contentInventoryNode.parameters.genericAuthType, 'httpHeaderAuth');
 assert.ok(duplicateGuardNode.parameters.jsCode.includes('post.discoveryReady'));
 assert.ok(duplicateGuardNode.parameters.jsCode.includes('top.containment >= 0.7'));
 assert.match(contentWorkflowSource, /automationStatus: 'review_ready'/);
-assert.match(contentWorkflowSource, /Nothing is public until you approve/);
-assert.ok(!contentWorkflow.nodes.some((node) => node.name === 'Quality Pass?'), 'Content quality must not block draft creation');
-assert.ok(!contentWorkflow.nodes.some((node) => node.name === 'Send Quality Block to Telegram'), 'Quality-blocked branch must be removed');
+assert.ok(contentWorkflow.nodes.some((node) => node.name === 'Quality Pass?'));
+assert.ok(contentWorkflow.nodes.some((node) => node.name === 'Send Quality Block to Telegram'));
+assert.equal(contentWorkflow.nodes.find((node) => node.name === 'Check Draft Quality').parameters.url, 'https://wetrends.co.uk/api/blog/quality/');
+assert.ok(contentWorkflow.nodes.find((node) => node.name === 'Publish Automatic Draft').parameters.jsonBody.includes('"auto_publish"'));
+assert.equal(contentWorkflow.nodes.find((node) => node.name === 'Mark Topic Published').parameters.columns.value.status, 'published');
 assert.deepEqual(
   new Set(contentWorkflow.connections['Normalise Final Draft'].main[0].map((edge) => edge.node)),
-  new Set(['Prepare Review-Ready Draft']),
-  'Every generated draft must go directly to review-ready status',
+  new Set(['Check Draft Quality']),
+  'Every generated draft must pass through the quality check',
 );
+assert.deepEqual(contentWorkflow.connections['Quality Pass?'].main.map((group) => group.map((edge) => edge.node)), [['Prepare Review-Ready Draft'], ['Prepare Quality-Blocked Draft']]);
+assert.deepEqual(contentWorkflow.connections['Publication Succeeded?'].main.map((group) => group.map((edge) => edge.node)), [['Mark Topic Published', 'Confirm Automatic Publication'], ['Report Publication Failure']]);
 
 const contentTelegramNamesWithExternalText = new Set([
-  'Send Draft Review to Telegram',
+  'Confirm Automatic Publication',
+  'Send Quality Block to Telegram',
 ]);
 for (const node of contentWorkflow.nodes.filter((item) => contentTelegramNamesWithExternalText.has(item.name))) {
   assert.ok(node.parameters.text.includes('.replaceAll("&", "&amp;")'), `${node.name} must HTML-escape external text`);
@@ -366,6 +379,7 @@ const automationStateModule = await import(`data:text/javascript;base64,${Buffer
 const {
   getAutomationRunRetryDisposition,
   getAutomationTransitionError,
+  getAutoPublicationError,
   getPublishedAutomationDisposition,
   isCreatableAutomationState,
 } = automationStateModule;
@@ -401,8 +415,10 @@ assert.match(createRoute, /getAutomationRunRetryDisposition/);
 assert.match(createRoute, /existingRun\.slug !== data\.slug/);
 assert.match(createRoute, /idempotent: true/);
 assert.match(createRoute, /promotedFromQualityBlocked: true/);
-assert.match(createRoute, /Quality is retained as advisory metadata/);
-assert.match(updateRoute, /explicit approved status in this request/);
+assert.match(createRoute, /automatic publication/);
+assert.match(updateRoute, /explicit approved or auto_publish status in this request/);
+assert.match(updateRoute, /getAutoPublicationError/);
+assert.match(updateRoute, /evaluateBlogDraft\(candidateParsed.data\)/);
 assert.match(updateRoute, /getAutomationTransitionError/);
 assert.match(updateRoute, /getPublishedAutomationDisposition/);
 assert.match(updateRoute, /Published posts are read-only through the automation API/);
@@ -463,6 +479,7 @@ assert.ok(fs.existsSync(path.join(websiteRoot, 'app/(main)/photoshoots/page.tsx'
 assert.equal(isCreatableAutomationState('drafted'), true);
 assert.equal(isCreatableAutomationState('quality_blocked'), true);
 assert.equal(isCreatableAutomationState('review_ready'), true);
+assert.equal(isCreatableAutomationState('auto_publish'), false);
 assert.equal(isCreatableAutomationState('approved'), false);
 assert.equal(isCreatableAutomationState('rejected'), false);
 assert.equal(isCreatableAutomationState('published'), false);
@@ -478,6 +495,15 @@ assert.equal(getAutomationTransitionError({ published: false, automationStatus: 
 assert.equal(getAutomationTransitionError({ published: false, automationStatus: 'review_ready' }, { published: false, automationStatus: 'review_ready' }), null);
 assert.equal(getAutomationTransitionError({ published: false, automationStatus: 'review_ready' }, { published: false, automationStatus: 'approved' })?.status, 400);
 assert.equal(getAutomationTransitionError({ published: false, automationStatus: 'review_ready' }, { published: true, automationStatus: 'approved' }), null);
+assert.equal(getAutomationTransitionError({ published: false, automationStatus: 'review_ready' }, { automationStatus: 'auto_publish' })?.status, 400);
+const eligibleAutoPost = { published: false, automationStatus: 'review_ready', automationRunId: 'seo-v3:topic:375', contentType: 'guide', sourceUrls: ['https://example.com/research'] };
+const autoRequest = { published: true, automationStatus: 'auto_publish' };
+assert.equal(getAutoPublicationError(eligibleAutoPost, autoRequest, { pass: true }), null);
+assert.equal(getAutoPublicationError(eligibleAutoPost, { ...autoRequest, title: 'Changed' }, { pass: true })?.status, 400);
+assert.equal(getAutoPublicationError({ ...eligibleAutoPost, automationStatus: 'quality_blocked' }, autoRequest, { pass: true })?.status, 409);
+assert.equal(getAutoPublicationError({ ...eligibleAutoPost, contentType: 'case_study' }, autoRequest, { pass: true })?.status, 422);
+assert.equal(getAutoPublicationError({ ...eligibleAutoPost, sourceUrls: [] }, autoRequest, { pass: true })?.status, 422);
+assert.equal(getAutoPublicationError(eligibleAutoPost, autoRequest, { pass: false })?.status, 422);
 assert.equal(
   getPublishedAutomationDisposition(
     { published: false, automationStatus: 'review_ready' },
