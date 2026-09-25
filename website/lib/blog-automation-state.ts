@@ -60,7 +60,7 @@ export function getPublishedAutomationDisposition(
   const requestedKeys = Object.keys(requested);
   const isExactApprovalReplay =
     requested.published === true &&
-    requested.automationStatus === 'approved' &&
+    (requested.automationStatus === 'approved' || requested.automationStatus === 'auto_publish') &&
     requestedKeys.length === 2 &&
     requestedKeys.every((key) => key === 'published' || key === 'automationStatus');
 
@@ -79,8 +79,8 @@ export function getAutomationTransitionError(
     return { status: 409, message: 'The automation API cannot unpublish an already-published post' };
   }
 
-  if (requested.automationStatus === 'approved' && requested.published !== true) {
-    return { status: 400, message: 'Approved status is valid only in the same request that publishes the post' };
+  if (['approved', 'auto_publish'].includes(requested.automationStatus || '') && requested.published !== true) {
+    return { status: 400, message: 'Publication status is valid only in the same request that publishes the post' };
   }
 
   if (requested.automationStatus === 'published') {
@@ -101,5 +101,39 @@ export function getAutomationTransitionError(
     return { status: 409, message: 'Only a review-ready draft can receive a regenerated cover' };
   }
 
+  return null;
+}
+
+/** The automatic path cannot edit a draft or bypass its current quality gate. */
+export function getAutoPublicationError(
+  existing: ExistingAutomationState & {
+    automationRunId?: string | null;
+    contentType?: string | null;
+    sourceUrls?: string[] | null;
+  },
+  requested: RequestedAutomationState,
+  quality: { pass: boolean },
+): { status: number; message: string } | null {
+  const requestedKeys = Object.keys(requested);
+  if (
+    requested.published !== true ||
+    requested.automationStatus !== 'auto_publish' ||
+    requestedKeys.length !== 2 ||
+    !requestedKeys.every((key) => key === 'published' || key === 'automationStatus')
+  ) {
+    return { status: 400, message: 'Automatic publication accepts only published and automationStatus' };
+  }
+  if (existing.published || existing.automationStatus !== 'review_ready' || !existing.automationRunId) {
+    return { status: 409, message: 'Automatic publication requires a private review-ready automation draft' };
+  }
+  if (existing.contentType === 'case_study') {
+    return { status: 422, message: 'Case studies require a human review of client evidence' };
+  }
+  if (!existing.sourceUrls?.length) {
+    return { status: 422, message: 'Automatic publication requires at least one source URL' };
+  }
+  if (!quality.pass) {
+    return { status: 422, message: 'Draft failed the automatic publication quality gate' };
+  }
   return null;
 }

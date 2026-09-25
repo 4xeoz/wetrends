@@ -46,8 +46,8 @@ Content-Type: application/json
 
 ### Published Logic
 - `POST` always creates a draft and rejects `published: true`.
-- API publication uses `PATCH` with both `published: true` and `automationStatus: "approved"`.
-- After publication, the post is read-only through the automation API. Repeating the exact two-field approval request is treated as an idempotent success; adding any content, metadata or image change is rejected.
+- Automatic API publication uses `PATCH` with only `published: true` and `automationStatus: "auto_publish"`. It requires a private review-ready automation draft, a source URL, a non-case-study content type and a passing server-side quality recheck. Manual exceptions may use `automationStatus: "approved"`.
+- After publication, the post is read-only through the automation API. Repeating an exact two-field publication request is an idempotent success; adding any content, metadata or image change is rejected.
 - `DELETE` is limited to unpublished drafts. Deliberate changes or deletion of live content use the session-authenticated admin interface.
 
 ---
@@ -201,7 +201,7 @@ curl -X PATCH http://localhost:3000/api/blog/6677a1b2c3d4e5f6g7h8i9j0/ \
 }
 ```
 
-If the response to a successful approval is lost, the same two-field request can be retried. The API returns the existing post with `"idempotent": true` and does not update it again.
+For automatic publication, replace `"approved"` in the example with `"auto_publish"`; send only those two fields. If a successful publication response is lost, the same two-field request can be retried. The API returns the existing post with `"idempotent": true` and does not update it again.
 
 #### Error Responses
 | Status | Message |
@@ -297,7 +297,7 @@ AI images must use `imageKind: "ai_supporting"` and must not be described as cli
 
 ### 7. Evaluate Draft — `POST /api/blog/quality/`
 
-Runs the same deterministic quality gate used during automated draft creation. It returns a score, word and heading counts, and machine-readable critical or warning issues. A post submitted with `automationStatus: "review_ready"` is rejected with `422` unless this gate passes.
+Returns the deterministic content-quality score, word and heading counts, and machine-readable critical or warning issues. Draft creation remains possible when checks fail so editors can repair a private draft. Automatic publication is rejected with `422` unless the stored draft passes the quality check and source/case-study rules.
 
 ### 8. Read Published Content Inventory — `GET /api/blog/inventory/`
 

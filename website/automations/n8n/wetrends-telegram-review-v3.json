@@ -1,5 +1,5 @@
 {
-  "name": "WeTrends Telegram Review v3 — Approve + Regenerate + Reject",
+  "name": "WeTrends Telegram Exceptions v3 — Approve + Regenerate + Reject",
   "nodes": [
     {
       "parameters": {
@@ -640,7 +640,7 @@
     },
     {
       "parameters": {
-        "content": "## Approval contract\n\nOnly private Telegram chat 6833948326 is accepted. Publishing requires `/approve <draft-id>`. Content quality scoring is advisory. Regeneration changes only the supporting image. Rejection keeps the draft private.",
+        "content": "## Manual exception contract\n\nRoutine articles publish automatically only after the website quality gate passes. This workflow accepts commands only from the private configured Telegram chat. `/approve <draft-id>` is a deliberate manual exception for a private draft; regeneration changes only its supporting image and rejection keeps it private.",
         "height": 260,
         "width": 620,
         "color": 5
