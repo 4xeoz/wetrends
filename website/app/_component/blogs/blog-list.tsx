@@ -18,6 +18,7 @@ interface Post {
   title: string;
   slug: string;
   excerpt: string;
+  content: string;
   featuredImage: string | null;
   featuredImageAlt: string | null;
   publishedAt: Date | null;
@@ -89,7 +90,7 @@ export function BlogList({ posts, categories: _categories }: BlogListProps) {
                       </span>
                       <span className="flex items-center gap-1.5">
                         <Clock className="h-3.5 w-3.5" />
-                        {Math.ceil(post.excerpt.split(' ').length / 200)} min read
+                        {Math.ceil(post.content.split(' ').length / 200)} min read
                       </span>
                     </div>
 

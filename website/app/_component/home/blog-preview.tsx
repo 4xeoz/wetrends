@@ -12,6 +12,7 @@ interface BlogPost {
   title: string;
   slug: string;
   excerpt: string;
+  content: string;
   featuredImage: string | null;
   featuredImageAlt: string | null;
   publishedAt: Date | null;
@@ -165,7 +166,7 @@ export function BlogPreview({ posts }: BlogPreviewProps) {
                       </span>
                       <span className="flex items-center gap-1.5">
                         <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
-                        {Math.ceil(post.excerpt.split(' ').length / 200)} min read
+                        {Math.ceil(post.content.split(' ').length / 200)} min read
                       </span>
                     </div>
                     
