@@ -244,11 +244,6 @@ export function BlogPostContent({ post, html, toc, relatedPosts, serviceCta }: B
                 className="object-cover"
               />
               <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent" />
-              {post.featuredImageKind === 'ai_supporting' && (
-                <span className="absolute bottom-5 left-5 rounded-full border border-white/30 bg-black/35 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur-sm">
-                  AI-assisted editorial cover
-                </span>
-              )}
             </div>
           </div>
         </div>
