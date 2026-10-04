@@ -122,6 +122,14 @@ const nextConfig: NextConfig = {
           },
         ],
       },
+      ...['/recover/:path*', '/api/recovery/:path*', '/api/admin/recoveries/:path*'].map((source) => ({
+        source,
+        headers: [
+          { key: "Cache-Control", value: "private, no-store, max-age=0" },
+          { key: "X-Robots-Tag", value: "noindex, nofollow, noarchive" },
+          { key: "Referrer-Policy", value: "no-referrer" },
+        ],
+      })),
       {
         source: "/me/:path*",
         headers: [

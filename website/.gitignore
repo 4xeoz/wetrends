@@ -40,3 +40,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Isolated recovery screenshots, provider fixtures and local test sessions
+.recovery-qa/

@@ -23,6 +23,19 @@ export default auth((req) => {
   const isAuthenticated = !!req.auth;
   const { pathname } = req.nextUrl;
 
+  // Recovery photos must never enter Next's shared image optimizer cache.
+  if (pathname === '/_next/image') {
+    const source = req.nextUrl.searchParams.get('url');
+    if (source) {
+      try {
+        const imagePath = decodeURIComponent(new URL(source, req.url).pathname);
+        if (/^\/api\/(recovery|admin\/recoveries)(\/|$)/.test(imagePath)) {
+          return new Response('Private images cannot be optimized', { status: 400, headers: { 'Cache-Control': 'no-store' } });
+        }
+      } catch { return new Response('Invalid image URL', { status: 400 }); }
+    }
+  }
+
   // Redirect authenticated users away from sign-in page
   if (isAuthenticated && pathname === "/sign-in") {
     return new Response(null, { status: 307, headers: { Location: requestScopedUrl('/me', req).toString() } });
@@ -41,6 +54,7 @@ export default auth((req) => {
 
 export const config = {
   matcher: [
+    "/_next/image",
     "/((?!api|_next/static|_next/image|favicon.ico|images|assets|fonts).*)",
   ],
 };

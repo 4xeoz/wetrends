@@ -219,6 +219,83 @@ model EventEmailLog {
   createdAt DateTime @default(now())
 }
 
+// Independent restored deliveries: the original event may no longer exist.
+model GalleryRecovery {
+  id              String @id @default(auto()) @map("_id") @db.ObjectId
+  sourceEventJobId String? @db.ObjectId
+  clientName      String
+  clientEmail     String
+  eventTitle      String
+  feeAmount       Int
+  currency        String @default("gbp")
+  accessDays      Int @default(14)
+  accessVersion   Int @default(1)
+  status          RecoveryStatus @default(DRAFT)
+  driveFolderId   String?
+  sentAt          DateTime?
+  paidAt          DateTime?
+  expiresAt       DateTime?
+  assets          RecoveryAsset[]
+  order           RecoveryOrder?
+  emails          RecoveryEmailLog[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([createdAt])
+}
+
+enum RecoveryStatus {
+  DRAFT
+  READY
+  PAID
+}
+
+model RecoveryAsset {
+  id            String @id @default(auto()) @map("_id") @db.ObjectId
+  recoveryId    String @db.ObjectId
+  recovery      GalleryRecovery @relation(fields: [recoveryId], references: [id])
+  title         String
+  driveFileId   String
+  driveMimeType String
+  driveName     String
+  sortOrder     Int @default(0)
+  createdAt     DateTime @default(now())
+
+  @@index([recoveryId])
+  @@unique([recoveryId, driveFileId])
+}
+
+// An immutable fee snapshot; repeated clicks reuse the same checkout attempt.
+model RecoveryOrder {
+  id                      String @id @default(auto()) @map("_id") @db.ObjectId
+  recoveryId              String @unique @db.ObjectId
+  recovery                GalleryRecovery @relation(fields: [recoveryId], references: [id])
+  status                  EventOrderStatus @default(CREATED)
+  total                   Int
+  currency                String
+  customerEmail           String
+  checkoutAttempt         Int @default(1)
+  stripeCheckoutSessionId String?
+  stripePaymentIntentId   String?
+  paidAt                  DateTime?
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+}
+
+model RecoveryEmailLog {
+  id           String @id @default(auto()) @map("_id") @db.ObjectId
+  recoveryId   String @db.ObjectId
+  recovery     GalleryRecovery @relation(fields: [recoveryId], references: [id])
+  kind         String
+  recipient    String
+  providerId   String?
+  status       String
+  errorMessage String?
+  createdAt    DateTime @default(now())
+
+  @@index([recoveryId, kind, status])
+}
+
 model BlogCategory {
   id          String     @id @default(auto()) @map("_id") @db.ObjectId
   name        String     @unique
