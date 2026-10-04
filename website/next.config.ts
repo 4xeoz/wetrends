@@ -48,6 +48,7 @@ const nextConfig: NextConfig = {
       { pathname: "/food/**" },
       { pathname: "/apple-touch-icon.png" },
       { pathname: "/_next/static/media/**" },
+      { pathname: "/api/gallery/**" },
     ],
     remotePatterns: [
       {

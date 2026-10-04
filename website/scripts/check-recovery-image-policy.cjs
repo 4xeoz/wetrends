@@ -29,6 +29,7 @@ for (const filename of files) {
 }
 assert.ok(hasLocalMatch(images.localPatterns, '/images/events-mesh-light.png?v=brand-magenta'));
 assert.ok(hasLocalMatch(images.localPatterns, '/_next/static/media/photo.123.png'));
+assert.ok(hasLocalMatch(images.localPatterns, '/api/gallery/event-token/assets/photo'));
 
 for (const url of [
   '/api/recovery/private-token/assets/photo',

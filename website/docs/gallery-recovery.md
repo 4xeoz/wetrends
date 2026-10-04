@@ -45,6 +45,8 @@ as well as using unoptimized previews. The image service also permits only publi
 local image paths via `images.localPatterns`: Vercel handles image optimization
 separately, so middleware alone is not a sufficient cache boundary. Private API
 paths are rejected before fetching or caching photographs.
+The existing `/api/gallery/**` image path remains allowed for the original event
+gallery and print flows; its separate access policy is outside this feature.
 
 One order per recovery plus Stripe idempotency handles repeated clicks/timeouts.
 Expired checkouts retry with a new attempt. Payment emails have stable keys and
