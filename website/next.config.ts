@@ -42,6 +42,14 @@ const nextConfig: NextConfig = {
   // trailingSlash redirect turn its POSTs into GETs.
   skipTrailingSlashRedirect: true,
   images: {
+    // Vercel's image service must reject private APIs before fetching/caching.
+    localPatterns: [
+      { pathname: "/images/**" },
+      { pathname: "/food/**" },
+      { pathname: "/apple-touch-icon.png" },
+      { pathname: "/_next/static/media/**" },
+      { pathname: "/api/gallery/**" },
+    ],
     remotePatterns: [
       {
         protocol: "https",
