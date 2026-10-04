@@ -197,6 +197,39 @@ export async function ensureEventDriveFolders(input: {
   };
 }
 
+export async function ensureRecoveryDriveFolder(input: {
+  recoveryId: string;
+  eventTitle: string;
+  existingFolderId?: string | null;
+}) {
+  if (input.existingFolderId) return input.existingFolderId;
+  const config = getGoogleDriveConfig();
+  const root = await ensureFolder('04 · Gallery Recoveries', config.eventsRootFolderId, config);
+  const delivery = await ensureFolder(`${input.eventTitle} · ${input.recoveryId}`, root.id, config);
+  const photographs = await ensureFolder('Photographs', delivery.id, config);
+  return photographs.id;
+}
+
+export async function listRecoveryDriveImages(folderId: string) {
+  const config = getGoogleDriveConfig();
+  const images: DriveFile[] = [];
+  let pageToken: string | undefined;
+  do {
+    const params = new URLSearchParams({
+      q: `'${escapeQueryValue(folderId)}' in parents and trashed = false`,
+      corpora: 'drive', driveId: config.sharedDriveId,
+      includeItemsFromAllDrives: 'true', supportsAllDrives: 'true',
+      pageSize: '100', fields: 'nextPageToken,files(id,name,mimeType)', orderBy: 'name',
+      ...(pageToken ? { pageToken } : {}),
+    });
+    const response = await driveFetch(`${DRIVE_API}/files?${params}`);
+    const page = await response.json() as { files?: DriveFile[]; nextPageToken?: string };
+    images.push(...(page.files || []).filter((file) => file.name && ['image/jpeg', 'image/png', 'image/webp'].includes(file.mimeType || '')));
+    pageToken = page.nextPageToken;
+  } while (pageToken);
+  return images;
+}
+
 export async function uploadGoogleDriveFile(input: {
   name: string;
   mimeType: string;

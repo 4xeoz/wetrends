@@ -4,6 +4,10 @@ import type { AnalyticsEventName, AnalyticsEventProperties } from "./events";
 const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || "unknown-site";
 let lastPageviewUrl = "";
 
+function isRecoveryUrl(url: string) {
+  try { return new URL(url).pathname.startsWith('/recover/'); } catch { return false; }
+}
+
 declare global {
   interface Window {
     dataLayer?: unknown[];
@@ -60,6 +64,17 @@ export function initPostHog() {
     // Bounce rate and time-on-page need this, and it is one event per visit.
     capture_pageleave: true,
 
+    // Signed recovery links grant access; never export them to analytics.
+    before_send: (event) => {
+      if (isRecoveryUrl(window.location.href) || isRecoveryUrl(String(event?.properties?.$current_url || ''))) return null;
+      if (event?.properties) {
+        for (const key of ['$referrer', '$initial_referrer', '$initial_current_url']) {
+          if (isRecoveryUrl(String(event.properties[key] || ''))) event.properties[key] = '[private gallery]';
+        }
+      }
+      return event;
+    },
+
     // Anonymous visitors stay event-only; a profile is only created once
     // someone is identified (e.g. after submitting a form), which keeps
     // free-tier person-profile quota under control.
@@ -84,7 +99,7 @@ export function trackEvent(name: AnalyticsEventName, properties?: AnalyticsEvent
 }
 
 export function capturePageview(url: string) {
-  if (typeof window === "undefined" || url === lastPageviewUrl) return;
+  if (typeof window === "undefined" || isRecoveryUrl(url) || url === lastPageviewUrl) return;
   lastPageviewUrl = url;
   if (posthog.__loaded) posthog.capture("$pageview", { $current_url: url });
   window.gtag?.("event", "page_view", {

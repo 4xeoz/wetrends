@@ -1,5 +1,7 @@
 # Events commerce system
 
+Paid restoration of expired deliveries is documented in [gallery-recovery.md](./gallery-recovery.md).
+
 ## Objective
 
 Turn an event enquiry into a private, personalised offer; collect any digital upgrade payment; deliver a private gallery; and sell physical prints through a second checkout.

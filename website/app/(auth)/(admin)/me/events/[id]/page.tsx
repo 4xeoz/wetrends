@@ -51,6 +51,8 @@ export default async function EventJobPage({ params }: { params: Promise<{ id: s
           <Fact icon={<ReceiptText className="h-4 w-4" />} label="Complete story" value={formatMoney(job.fullGalleryPrice, job.currency)} />
         </section>
 
+        <div className="mb-7 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#C72C5B]/15 bg-white p-5"><p className="text-sm text-black/55">Need to restore an expired delivery?</p><Link href={`/me/recoveries/new?event=${job.id}`} className="text-sm font-bold text-[#C72C5B]">Create gallery recovery →</Link></div>
+
         <AdminEventControls
           eventJobId={job.id}
           initialOfferUrl={offerUrl}

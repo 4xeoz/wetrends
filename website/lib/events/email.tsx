@@ -3,11 +3,10 @@ import { prisma } from '@/prisma/prisma';
 import { getResend } from '@/lib/resend';
 import EventEmail from '@/emails/event-email';
 
-type SendEventEmailInput = {
-  eventJobId: string;
+type SendEventEmailInput = ({ eventJobId: string; recoveryId?: never } | { recoveryId: string; eventJobId?: never }) & {
   recipient: string;
   clientName: string;
-  kind: 'offer' | 'digital-confirmation' | 'gallery-ready' | 'print-confirmation' | 'print-dispatched';
+  kind: 'offer' | 'digital-confirmation' | 'gallery-ready' | 'print-confirmation' | 'print-dispatched' | 'recovery-ready' | 'recovery-paid';
   subject: string;
   preview: string;
   eyebrow: string;
@@ -24,6 +23,17 @@ type SendEventEmailInput = {
   actionNote?: string;
   idempotencyKey: string;
 };
+
+async function logEmail(input: SendEventEmailInput, result: { status: string; providerId?: string; errorMessage?: string }) {
+  const data = { kind: input.kind, recipient: input.recipient, ...result };
+  if (input.recoveryId) {
+    await prisma.recoveryEmailLog.create({ data: { recoveryId: input.recoveryId, ...data } });
+  } else if (input.eventJobId) {
+    await prisma.eventEmailLog.create({ data: { eventJobId: input.eventJobId, ...data } });
+  } else {
+    throw new Error('Email requires an event or recovery reference');
+  }
+}
 
 export async function sendEventEmail(input: SendEventEmailInput) {
   const from = process.env.RESEND_FROM_EMAIL || 'WeTrends <events@wetrends.co.uk>';
@@ -78,28 +88,12 @@ export async function sendEventEmail(input: SendEventEmailInput) {
 
     if (error) throw new Error(error.message);
 
-    await prisma.eventEmailLog.create({
-      data: {
-        eventJobId: input.eventJobId,
-        kind: input.kind,
-        recipient: input.recipient,
-        providerId: data?.id,
-        status: 'sent',
-      },
-    });
+    await logEmail(input, { providerId: data?.id, status: 'sent' });
 
     return { success: true as const, providerId: data?.id };
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown email error';
-    await prisma.eventEmailLog.create({
-      data: {
-        eventJobId: input.eventJobId,
-        kind: input.kind,
-        recipient: input.recipient,
-        status: 'failed',
-        errorMessage: message.slice(0, 500),
-      },
-    });
+    await logEmail(input, { status: 'failed', errorMessage: message.slice(0, 500) });
     return { success: false as const, message };
   }
 }

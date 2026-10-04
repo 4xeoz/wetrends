@@ -11,6 +11,7 @@ import {
   QrCode,
   CalendarDays,
   ShoppingBag,
+  ArchiveRestore,
 } from 'lucide-react';
 import {
   Sidebar,
@@ -72,6 +73,11 @@ const navSections: NavSection[] = [
         label: 'Print Orders',
         href: '/me/print-orders',
         icon: <ShoppingBag className="h-5 w-5" />,
+      },
+      {
+        label: 'Gallery Recovery',
+        href: '/me/recoveries',
+        icon: <ArchiveRestore className="h-5 w-5" />,
       },
       {
         label: 'Cinematography',
