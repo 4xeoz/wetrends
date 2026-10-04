@@ -41,8 +41,10 @@ Anyone holding the private link has the same access: share it intentionally.
 
 Recovery pages are excluded from analytics so private access tokens are not sent
 to PostHog or GA4. Middleware rejects recovery image URLs passed to `/_next/image`
-as well as using unoptimized previews; this prevents manual optimizer requests
-from caching images past expiry.
+as well as using unoptimized previews. The image service also permits only public
+local image paths via `images.localPatterns`: Vercel handles image optimization
+separately, so middleware alone is not a sufficient cache boundary. Private API
+paths are rejected before fetching or caching photographs.
 
 One order per recovery plus Stripe idempotency handles repeated clicks/timeouts.
 Expired checkouts retry with a new attempt. Payment emails have stable keys and
@@ -60,6 +62,13 @@ Before live activation run `prisma db push` without destructive flags against th
 intended database; only new recovery collections/indexes are added. Existing
 Stripe webhook and Resend/Drive credentials are reused. Check real providers in
 Stripe test mode before claiming live payment verification.
+
+For an existing production database, apply only the recovery collections/indexes
+when a full schema push could affect unrelated indexes. The initial release used
+`createIndexes` with the exact index definitions from a Prisma-generated isolated
+database, and verified that all pre-existing index definitions were unchanged.
+Run `node scripts/check-recovery-image-policy.cjs` to verify the image-service
+allowlist against every existing public raster image and private recovery paths.
 
 ## Routes
 
