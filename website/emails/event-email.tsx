@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react';
+import TransactionalEventEmail from './transactional-event';
 import {
   Body,
   Button,
@@ -48,6 +49,24 @@ export default function EventEmail({
   guidanceSteps = [],
   actionNote,
 }: EventEmailProps) {
+  if (variant === 'transactional') {
+    return (
+      <TransactionalEventEmail
+        preview={preview}
+        eyebrow={eyebrow}
+        heading={heading}
+        greeting={greeting}
+        body={body}
+        buttonLabel={buttonLabel}
+        buttonUrl={buttonUrl}
+        detailLines={detailLines}
+        guidanceTitle={guidanceTitle}
+        guidanceSteps={guidanceSteps}
+        actionNote={actionNote}
+      />
+    );
+  }
+
   const isOffer = variant === 'offer';
 
   return (
