@@ -32,6 +32,7 @@ let simulatedTimeout = false;
 const sent = new Map();
 const sessions = new Map();
 const idempotency = new Map();
+const driveImagesByFolder = new Map();
 const stripe = {
   webhooks: new Stripe("sk_test_mock").webhooks,
   checkout: {
@@ -119,14 +120,16 @@ Module._load = function (name, parent, isMain) {
     };
   if (name === "@/lib/google-drive")
     return {
-      ensureRecoveryDriveFolder: async () => "private-recovery-folder",
-      listRecoveryDriveImages: async () => [
-        {
-          id: "private-drive-photo",
-          name: "birthday.jpg",
-          mimeType: "image/jpeg",
-        },
-      ],
+      ensureRecoveryDriveFolder: async ({ recoveryId }) =>
+        `private-recovery-folder-${recoveryId}`,
+      listRecoveryDriveImages: async (folderId) =>
+        driveImagesByFolder.get(folderId) || [
+          {
+            id: "private-drive-photo",
+            name: "birthday.jpg",
+            mimeType: "image/jpeg",
+          },
+        ],
       uploadGoogleDriveFile: async () => ({ id: "private-upload-photo" }),
       downloadGoogleDriveFile: async () => {
         driveFetches++;
@@ -197,6 +200,10 @@ async function main() {
       );
       await assert.rejects(
         () => actions.importRecoveryDrive("111111111111111111111111"),
+        /sign in/,
+      );
+      await assert.rejects(
+        () => actions.syncRecoveryDrive("111111111111111111111111"),
         /sign in/,
       );
       await assert.rejects(
@@ -279,6 +286,27 @@ async function main() {
         ).error,
       );
       assert.ok((await actions.importRecoveryDrive(id)).error);
+      driveImagesByFolder.set(`private-recovery-folder-${id}`, [
+        { id: "private-drive-photo", name: "birthday.jpg", mimeType: "image/jpeg" },
+        { id: "private-drive-photo-2", name: "cake.png", mimeType: "image/png" },
+      ]);
+      assert.equal(
+        (await actions.syncRecoveryDrive(id)).message,
+        "1 new photograph added. The fee and access end date are unchanged. Refresh the client gallery to see them.",
+      );
+      assert.equal(
+        (await actions.syncRecoveryDrive(id)).message,
+        "No new supported photographs found. Upload JPEG, PNG or WebP files directly into this ticket’s Photographs folder, then sync again.",
+      );
+      const syncedReady = await prisma.galleryRecovery.findUniqueOrThrow({
+        where: { id },
+      });
+      assert.equal(syncedReady.status, "READY");
+      assert.equal(syncedReady.feeAmount, 1999);
+      assert.equal(
+        await prisma.recoveryAsset.count({ where: { recoveryId: id } }),
+        2,
+      );
       assert.equal(
         (await imageRoute.GET(imageRequest, imageParams)).status,
         404,
@@ -458,10 +486,42 @@ async function main() {
       assert.equal(response.headers.get("content-type"), "image/jpeg");
       const paid = await access.getRecoveryFromToken(token);
       assert.equal(policy.canDownloadRecovery(paid, paid.expiresAt), false);
+      driveImagesByFolder.set(`private-recovery-folder-${id}`, [
+        { id: "private-drive-photo", name: "birthday.jpg", mimeType: "image/jpeg" },
+        { id: "private-drive-photo-2", name: "cake.png", mimeType: "image/png" },
+        { id: "private-drive-photo-3", name: "family.webp", mimeType: "image/webp" },
+      ]);
+      assert.equal(
+        (await actions.syncRecoveryDrive(id)).message,
+        "1 new photograph added. The fee and access end date are unchanged. Refresh the client gallery to see them.",
+      );
+      const paidAfterSync = await access.getRecoveryFromToken(token);
+      assert.equal(paidAfterSync.status, "PAID");
+      assert.equal(paidAfterSync.feeAmount, paid.feeAmount);
+      assert.equal(paidAfterSync.expiresAt.getTime(), paid.expiresAt.getTime());
+      assert.equal(
+        await prisma.recoveryAsset.count({ where: { recoveryId: id } }),
+        3,
+      );
+      const lateAsset = await prisma.recoveryAsset.findFirstOrThrow({
+        where: { recoveryId: id, driveFileId: "private-drive-photo-3" },
+      });
+      assert.equal(
+        (
+          await imageRoute.GET(
+            imageRequest,
+            {
+              params: Promise.resolve({ token, assetId: lateAsset.id }),
+            },
+          )
+        ).status,
+        200,
+      );
       await prisma.galleryRecovery.update({
         where: { id },
         data: { expiresAt: new Date(Date.now() - 1000) },
       });
+      assert.ok((await actions.syncRecoveryDrive(id)).error);
       assert.equal(
         (await imageRoute.GET(imageRequest, imageParams)).status,
         404,

@@ -1,11 +1,12 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Copy, FolderOpen, Loader2, Mail, Upload } from "lucide-react";
+import { Copy, FolderOpen, Loader2, Mail, RefreshCw, Upload } from "lucide-react";
 import {
   emailRecovery,
   prepareRecoveryDrive,
   importRecoveryDrive,
+  syncRecoveryDrive,
 } from "@/actions/recovery";
 
 export default function RecoveryControls({
@@ -171,6 +172,43 @@ export default function RecoveryControls({
                 originals, upload directly to Drive, then import.
               </p>
             </>
+          )}
+        </section>
+      )}
+      {(status === "READY" || (status === "PAID" && !expired)) && (
+        <section className="rounded-3xl border border-black/10 bg-white p-6 sm:p-8">
+          <p className="text-xs font-bold uppercase tracking-widest text-[#C72C5B]">
+            Drive photo sync
+          </p>
+          <h2 className="mt-2 text-xl font-bold">Added photos in Drive?</h2>
+          <p className="mt-3 text-sm leading-relaxed text-black/55">
+            Drive uploads do not appear in the gallery automatically. Add JPEG,
+            PNG or WebP files directly inside this ticket&apos;s Photographs
+            folder, then sync them here. The agreed fee and access end date will
+            stay the same.
+          </p>
+          {!driveConfigured ? (
+            <p className="mt-4 text-sm text-red-700">
+              Connect the company Google Drive before syncing.
+            </p>
+          ) : !folderUrl ? (
+            <p className="mt-4 text-sm text-amber-800">
+              This recovery has no linked Drive folder. Create a new recovery
+              with the photos in its Photographs folder.
+            </p>
+          ) : (
+            <div className="mt-5 flex flex-wrap gap-3">
+              <a href={folderUrl} target="_blank" rel="noreferrer" className={button}>
+                <FolderOpen className="h-4 w-4" /> Open Photographs folder
+              </a>
+              <button
+                disabled={Boolean(busy)}
+                onClick={() => run("Syncing Drive photos…", () => syncRecoveryDrive(id))}
+                className={button}
+              >
+                <RefreshCw className="h-4 w-4" /> Sync new photos
+              </button>
+            </div>
           )}
         </section>
       )}

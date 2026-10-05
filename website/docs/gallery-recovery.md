@@ -19,9 +19,14 @@ policy needs a separate implementation before describing it as automated.
 An existing event can prefill client details. Private Google Drive storage uses
 `Events / 04 · Gallery Recoveries / <title> · <recovery ID> / Photographs`.
 Admin can edit a draft, preview uploads, see payment/expiry and email logs, and
-resend the invitation or paid-gallery email. Fees, recipient and uploads are
-frozen when made ready, so checkout cannot pay an outdated price. Create a new
-recovery for a corrected delivery; files are never deleted by this feature.
+resend the invitation or paid-gallery email. The client and fee terms are frozen
+when sent. If more recovered photographs are added directly to that ticket's
+`Photographs` folder, an admin can sync them into a READY or still-active PAID
+gallery. Sync is idempotent and does not change the fee or extend paid access;
+the client sees them after reloading the same private link. Expired galleries
+must use a new recovery. Drive uploads must be JPEG, PNG or WebP files placed
+directly in `Photographs`, not a nested folder. Files are never deleted by this
+feature.
 
 ## Client journey and contracts
 
