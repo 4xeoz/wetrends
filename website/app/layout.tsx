@@ -1,14 +1,10 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { SessionProvider } from "next-auth/react";
 import { PostHogProvider } from "@/components/providers/posthog-provider";
 import { NavigationProgress } from "@/app/_component/shared/navigation-progress";
 import { organisationSchema, siteProfile } from "@/lib/site-profile";
 import { DEFAULT_SOCIAL_IMAGE, DEFAULT_SOCIAL_IMAGE_PATH } from "@/lib/social-metadata";
-
-const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
-const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "WeTrends | Creative Technology & Production Agency London",
@@ -80,10 +76,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en-GB">
       <head>
-        {/* Preconnect to external domains for performance */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        
         {/* Preload critical assets */}
         <link rel="preload" href="/images/logo-transparent.svg" as="image" type="image/svg+xml" />
         
@@ -97,7 +89,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organisationSchema) }}
         />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body className="antialiased">
         <PostHogProvider>
           <SessionProvider>
             <NavigationProgress />
