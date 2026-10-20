@@ -5,6 +5,7 @@ import { motion, useInView } from 'motion/react';
 import CardSwap, { Card } from '../../../components/ui/cardSwap';
 import { Camera, Globe, Video, Palette, Users, Zap, PenTool, ArrowUpRight } from 'lucide-react';
 import Link from 'next/link';
+import ViewportVideo from '@/components/media/viewport-video';
 
 const services = [
   {
@@ -83,7 +84,9 @@ const services = [
 export function Services() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
+  const isSectionVisible = useInView(sectionRef);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [activeCardIndex, setActiveCardIndex] = useState(0);
 
   return (
     <section
@@ -215,21 +218,14 @@ export function Services() {
                   delay={3000}
                   skewAmount={0}
                   easing="elastic"
+                  onActiveIndexChange={setActiveCardIndex}
                 >
-                  {services.map((item) => {
+                  {services.map((item, index) => {
                     const IconComponent = item.icon;
                     return (
                       <Card key={item.number} className="overflow-hidden">
                         {/* Video Background */}
-                        <video
-                          className="absolute inset-0 w-full h-full object-cover"
-                          autoPlay
-                          muted
-                          loop
-                          playsInline
-                        >
-                          <source src={item.videoSrc} type="video/mp4" />
-                        </video>
+                        <ViewportVideo src={item.videoSrc} active={isSectionVisible && activeCardIndex === index} />
 
                         {/* Solid Color Overlay */}
                         <div 
@@ -271,15 +267,7 @@ export function Services() {
                       className="flex-shrink-0 w-[280px] sm:w-[300px] h-[380px] rounded-2xl overflow-hidden relative snap-start border border-gray-200"
                     >
                       {/* Video Background */}
-                      <video
-                        className="absolute inset-0 w-full h-full object-cover"
-                        autoPlay
-                        muted
-                        loop
-                        playsInline
-                      >
-                        <source src={item.videoSrc} type="video/mp4" />
-                      </video>
+                      <ViewportVideo src={item.videoSrc} active={isSectionVisible} />
 
                       {/* Solid Color Overlay */}
                       <div 

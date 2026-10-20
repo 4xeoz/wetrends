@@ -4,6 +4,7 @@ import React, { useRef } from 'react';
 import { motion, useScroll, useTransform, useMotionValue, useSpring } from 'motion/react';
 import { Code, Video, Palette, Globe, Lightbulb } from 'lucide-react';
 import AnimatedContent from '@/components/ui/animated-content';
+import ViewportVideo from '@/components/media/viewport-video';
 
 const orbitPills = [
   { icon: Code, label: 'Software', delay: 0 },
@@ -99,14 +100,7 @@ const SubHero = () => {
         >
           {/* Video Background */}
           <div className="absolute inset-0 overflow-hidden">
-            <video
-              src="/videos/video-preview-wetrends.mp4"
-              autoPlay
-              muted
-              loop
-              playsInline
-              className="h-full w-full object-cover"
-            />
+            <ViewportVideo src="/videos/video-preview-wetrends.mp4" className="h-full w-full" />
           </div>
 
           {/* Dark overlay */}

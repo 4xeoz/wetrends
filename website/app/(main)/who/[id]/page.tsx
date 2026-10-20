@@ -94,11 +94,11 @@ export default async function TeamMemberPage({ params }: Props) {
         <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
           {/* Back Link */}
           <Link
-            href="/#team"
+            href="/"
             className="inline-flex items-center gap-2 text-sm font-bold text-gray-500 transition-colors hover:text-[#C72C5B]"
           >
             <ArrowLeft className="h-4 w-4" />
-            Back to Team
+            Back to Home
           </Link>
 
           <div className="mt-10 grid gap-12 lg:mt-16 lg:grid-cols-2 lg:gap-20">

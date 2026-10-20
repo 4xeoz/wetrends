@@ -3,7 +3,6 @@ import React from 'react';
 import Hero from '../_component/home/hero';
 import SubHero from '../_component/home/subHero';
 import { CaseStudies } from '../_component/home/case-studies';
-import { Team } from '../_component/home/team';
 import { Services } from '../_component/home/services';
 import { BlogPreview } from '../_component/home/blog-preview';
 import Contact from '../_component/home/contact';
@@ -42,7 +41,6 @@ export default async function Home() {
       <Hero/> 
       <SubHero/>
       <CaseStudies />
-      <Team />
       <Services />
       <BlogPreview posts={posts} />
       <Contact/>

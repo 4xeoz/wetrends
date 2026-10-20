@@ -21,6 +21,7 @@ export interface CardSwapProps {
   delay?: number;
   pauseOnHover?: boolean;
   onCardClick?: (idx: number) => void;
+  onActiveIndexChange?: (idx: number) => void;
   skewAmount?: number;
   easing?: "linear" | "elastic";
   children: ReactNode;
@@ -82,6 +83,7 @@ const CardSwap: React.FC<CardSwapProps> = ({
   delay = 5000,
   pauseOnHover = false,
   onCardClick,
+  onActiveIndexChange,
   skewAmount = 6,
   easing = "elastic",
   children,
@@ -131,6 +133,7 @@ const CardSwap: React.FC<CardSwapProps> = ({
         skewAmount
       )
     );
+    onActiveIndexChange?.(order.current[0]);
 
     const swap = () => {
       if (order.current.length < 2) return;
@@ -191,6 +194,7 @@ const CardSwap: React.FC<CardSwapProps> = ({
 
       tl.call(() => {
         order.current = [...rest, front];
+        onActiveIndexChange?.(order.current[0]);
       });
     };
 
@@ -216,7 +220,7 @@ const CardSwap: React.FC<CardSwapProps> = ({
       };
     }
     return () => clearInterval(intervalRef.current);
-  }, [cardDistance, verticalDistance, delay, pauseOnHover, skewAmount, easing]);
+  }, [cardDistance, verticalDistance, delay, pauseOnHover, skewAmount, easing, onActiveIndexChange]);
 
   const rendered = childArr.map((child, i) =>
     isValidElement<CardProps>(child)
