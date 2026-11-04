@@ -5,6 +5,9 @@ import { getClientPaymentFromToken, getClientPaymentUrl } from "./access";
 import { clientPaymentSessionMatches, fulfillClientPaymentSession } from "./fulfillment";
 import { paymentItemsFromJson } from "./policy";
 
+// Bump when Session creation parameters change; Stripe binds a key to its first parameter set.
+const checkoutParametersVersion = 2;
+
 export async function createClientPaymentCheckout(token: string) {
   let payment = await getClientPaymentFromToken(token);
   if (!payment || payment.status !== "OPEN") throw new Error("Payment request unavailable");
@@ -73,7 +76,7 @@ export async function createClientPaymentCheckout(token: string) {
       },
     })),
     return_url: returnUrl,
-  }, { idempotencyKey: `client-payment-${payment.id}-${payment.checkoutAttempt}` });
+  }, { idempotencyKey: `client-payment-v${checkoutParametersVersion}-${payment.id}-${payment.checkoutAttempt}` });
   if (!clientPaymentSessionMatches(session, payment)) {
     try { await stripe.checkout.sessions.expire(session.id); } catch { /* The session was never shown to the client. */ }
     throw new Error("Stripe checkout does not match the payment request");

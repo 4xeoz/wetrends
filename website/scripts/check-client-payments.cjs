@@ -78,6 +78,7 @@ const stripe = {
     sessions: {
       async create(input, options) {
         lastCheckoutInput = input;
+        assert.match(options.idempotencyKey, /^client-payment-v2-[a-f\d]{24}-\d+$/);
         assert.equal(input.ui_mode, "embedded_page");
         assert.equal(input.redirect_on_completion, "always");
         assert.equal(input.adaptive_pricing.enabled, false);
