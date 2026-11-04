@@ -36,6 +36,8 @@ accounting documents. Staff provide any required invoice separately.
   Pricing is disabled for this flow so the charged currency matches the GBP
   agreement. The key includes a Checkout parameter version so a corrected
   request does not conflict with parameters Stripe stored under an older key.
+  MongoDB records may omit the optional session ID, so the claim condition
+  accepts both a missing field and an explicit null.
   Repeated clicks reuse an open session; an expired attempt can be retried.
 - The signed Stripe webhook is the primary source for payment completion. It
   checks the stored session, request ID, amount, currency and email before an

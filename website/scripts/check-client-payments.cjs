@@ -24,7 +24,13 @@ let lastCheckoutInput;
 
 function copy(value) { return value == null ? value : structuredClone(value); }
 function matches(record, where) {
-  return Object.entries(where).every(([key, value]) => record[key] === value);
+  return Object.entries(where).every(([key, value]) => {
+    if (key === "OR") return value.some((branch) => matches(record, branch));
+    if (value && typeof value === "object" && "isSet" in value)
+      return Object.hasOwn(record, key) === value.isSet;
+    if (value === null) return Object.hasOwn(record, key) && record[key] === null;
+    return record[key] === value;
+  });
 }
 function write(record, data) {
   for (const [key, value] of Object.entries(data)) {
@@ -41,7 +47,7 @@ const prisma = {
       const record = {
         id, currency: "gbp", status: "DRAFT", accessVersion: 1,
         publishedAt: null, paidAt: null, checkoutAttempt: 1,
-        stripeCheckoutSessionId: null, lastFailedSessionId: null,
+        lastFailedSessionId: null,
         stripePaymentIntentId: null, createdAt: new Date(), updatedAt: new Date(),
         ...copy(data),
       };
@@ -78,7 +84,7 @@ const stripe = {
     sessions: {
       async create(input, options) {
         lastCheckoutInput = input;
-        assert.match(options.idempotencyKey, /^client-payment-v2-[a-f\d]{24}-\d+$/);
+        assert.match(options.idempotencyKey, /^client-payment-v3-[a-f\d]{24}-\d+$/);
         assert.equal(input.ui_mode, "embedded_page");
         assert.equal(input.redirect_on_completion, "always");
         assert.equal(input.adaptive_pricing.enabled, false);
@@ -198,6 +204,7 @@ async function main() {
 
   const first = await createOpenRequest();
   const firstRecord = records.get(first.id);
+  assert.equal(Object.hasOwn(firstRecord, "stripeCheckoutSessionId"), false);
   assert.equal(firstRecord.clientEmail, "client@example.invalid");
   assert.equal(firstRecord.total, 19998);
   assert.equal((await actions.saveClientPayment(validInput, first.id)).error.includes("Only drafts"), true);

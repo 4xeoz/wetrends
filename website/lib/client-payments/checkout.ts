@@ -6,7 +6,7 @@ import { clientPaymentSessionMatches, fulfillClientPaymentSession } from "./fulf
 import { paymentItemsFromJson } from "./policy";
 
 // Bump when Session creation parameters change; Stripe binds a key to its first parameter set.
-const checkoutParametersVersion = 2;
+const checkoutParametersVersion = 3;
 
 export async function createClientPaymentCheckout(token: string) {
   let payment = await getClientPaymentFromToken(token);
@@ -86,7 +86,11 @@ export async function createClientPaymentCheckout(token: string) {
     where: {
       id: payment.id,
       status: "OPEN",
-      stripeCheckoutSessionId: null,
+      // MongoDB optional fields can be absent or explicitly null.
+      OR: [
+        { stripeCheckoutSessionId: null },
+        { stripeCheckoutSessionId: { isSet: false } },
+      ],
       checkoutAttempt: payment.checkoutAttempt,
     },
     data: { stripeCheckoutSessionId: session.id },
