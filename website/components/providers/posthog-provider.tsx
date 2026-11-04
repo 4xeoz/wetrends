@@ -59,7 +59,7 @@ function PageviewTracker({ enabled }: { enabled: boolean }) {
 
 export function PostHogProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const privateRecovery = pathname?.startsWith('/recover/');
+  const privateClientPage = pathname?.startsWith('/recover/') || pathname?.startsWith('/pay/');
   const [consent, setConsent] = useState<AnalyticsConsent>(null);
   const [ready, setReady] = useState(false);
   const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
@@ -71,7 +71,7 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    if (consent !== "granted" || privateRecovery) return;
+    if (consent !== "granted" || privateClientPage) return;
     initPostHog();
 
     if (gaId) {
@@ -85,7 +85,7 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
     }
 
     capturePageview(window.location.href);
-  }, [consent, gaId, privateRecovery]);
+  }, [consent, gaId, privateClientPage]);
 
   const choose = (next: Exclude<AnalyticsConsent, null>) => {
     if (next === "denied") clearAnalyticsIdentifiers();
@@ -95,7 +95,7 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      {consent === "granted" && gaId && !privateRecovery && (
+      {consent === "granted" && gaId && !privateClientPage && (
         <Script
           id="wetrends-ga4"
           src={`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(gaId)}`}
@@ -103,10 +103,10 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
         />
       )}
       <Suspense fallback={null}>
-        <PageviewTracker enabled={consent === "granted" && !privateRecovery} />
+        <PageviewTracker enabled={consent === "granted" && !privateClientPage} />
       </Suspense>
       {children}
-      {ready && consent === null && !privateRecovery && (
+      {ready && consent === null && !privateClientPage && (
         <aside
           aria-label="Analytics preference"
           className="fixed inset-x-4 bottom-4 z-[100] mx-auto max-w-2xl rounded-2xl border border-white/15 bg-[#0F0F0F] p-5 text-white shadow-2xl sm:flex sm:items-center sm:justify-between sm:gap-6"
@@ -133,7 +133,7 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
           </div>
         </aside>
       )}
-      {ready && consent !== null && !privateRecovery && (
+      {ready && consent !== null && !privateClientPage && (
         <button
           type="button"
           onClick={() => {

@@ -296,6 +296,38 @@ model RecoveryEmailLog {
   @@index([recoveryId, kind, status])
 }
 
+// Staff enter agreed commercial terms; this is a payment request, not a tax invoice.
+model ClientPaymentRequest {
+  id                      String              @id @default(auto()) @map("_id") @db.ObjectId
+  clientName              String
+  clientEmail             String
+  projectTitle            String
+  note                    String?
+  items                   Json
+  total                   Int
+  currency                String              @default("gbp")
+  status                  ClientPaymentStatus @default(DRAFT)
+  accessVersion           Int                 @default(1)
+  publishedAt             DateTime?
+  paidAt                  DateTime?
+  checkoutAttempt         Int                 @default(1)
+  stripeCheckoutSessionId String?
+  lastFailedSessionId     String?
+  stripePaymentIntentId   String?
+  createdAt               DateTime            @default(now())
+  updatedAt               DateTime            @updatedAt
+
+  @@index([createdAt])
+  @@index([status, createdAt])
+}
+
+enum ClientPaymentStatus {
+  DRAFT
+  OPEN
+  PAID
+  VOID
+}
+
 model BlogCategory {
   id          String     @id @default(auto()) @map("_id") @db.ObjectId
   name        String     @unique

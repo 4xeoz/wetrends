@@ -130,7 +130,7 @@ const nextConfig: NextConfig = {
           },
         ],
       },
-      ...['/recover/:path*', '/api/recovery/:path*', '/api/admin/recoveries/:path*'].map((source) => ({
+      ...['/recover/:path*', '/api/recovery/:path*', '/api/admin/recoveries/:path*', '/pay/:path*', '/api/pay/:path*'].map((source) => ({
         source,
         headers: [
           { key: "Cache-Control", value: "private, no-store, max-age=0" },

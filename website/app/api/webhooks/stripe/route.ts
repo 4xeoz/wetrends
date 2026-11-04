@@ -3,6 +3,7 @@ import { getStripe } from '@/lib/stripe';
 import { prisma } from '@/prisma/prisma';
 import { fulfillCheckoutSession } from '@/lib/events/fulfillment';
 import { fulfillRecoverySession } from '@/lib/recovery/fulfillment';
+import { fulfillClientPaymentSession } from '@/lib/client-payments/fulfillment';
 
 export const runtime = 'nodejs';
 
@@ -27,9 +28,28 @@ export async function POST(request: Request) {
 
   try {
     if (event.type === 'checkout.session.completed' || event.type === 'checkout.session.async_payment_succeeded') {
-      if (event.data.object.metadata?.orderType === 'RECOVERY') {
+      if (event.data.object.metadata?.orderType === 'CLIENT_PAYMENT') {
+        await fulfillClientPaymentSession(await getStripe().checkout.sessions.retrieve(event.data.object.id));
+      } else if (event.data.object.metadata?.orderType === 'RECOVERY') {
         await fulfillRecoverySession(await getStripe().checkout.sessions.retrieve(event.data.object.id));
       } else await fulfillCheckoutSession(event.data.object.id);
+    } else if (
+      (event.type === 'checkout.session.async_payment_failed' || event.type === 'checkout.session.expired') &&
+      event.data.object.metadata?.orderType === 'CLIENT_PAYMENT'
+    ) {
+      const requestId = event.data.object.metadata.clientPaymentRequestId;
+      if (requestId) await prisma.clientPaymentRequest.updateMany({
+        where: {
+          id: requestId,
+          stripeCheckoutSessionId: event.data.object.id,
+          status: 'OPEN',
+        },
+        data: {
+          stripeCheckoutSessionId: null,
+          lastFailedSessionId: event.data.object.id,
+          checkoutAttempt: { increment: 1 },
+        },
+      });
     } else if ((event.type === 'checkout.session.async_payment_failed' || event.type === 'checkout.session.expired') && event.data.object.metadata?.orderType === 'RECOVERY') {
       const recoveryOrderId = event.data.object.metadata.recoveryOrderId;
       if (recoveryOrderId) await prisma.recoveryOrder.updateMany({

@@ -1,6 +1,8 @@
 # Events commerce system
 
 Paid restoration of expired deliveries is documented in [gallery-recovery.md](./gallery-recovery.md).
+Independent, itemised client payments for separately agreed work are documented
+in [client-payment-requests.md](./client-payment-requests.md).
 
 ## Objective
 
