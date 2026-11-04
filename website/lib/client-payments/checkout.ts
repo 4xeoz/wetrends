@@ -54,10 +54,6 @@ export async function createClientPaymentCheckout(token: string) {
       border_style: "rounded",
       button_color: "#C72C5B",
       font_family: "inter",
-      icon: {
-        type: "url",
-        url: new URL("/apple-touch-icon.png", paymentUrl).toString(),
-      },
     },
     customer_email: payment.clientEmail,
     client_reference_id: payment.id,

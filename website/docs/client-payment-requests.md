@@ -27,9 +27,10 @@ accounting documents. Staff provide any required invoice separately.
   private URLs are excluded from GA4 and PostHog.
 - The payment and result screens use the existing WeTrends logo image and
   app-icon asset instead of recreating brand marks or decorative icons in
-  markup. Stripe Checkout uses a white surface, rounded corners, the raspberry
-  button color with a white label, and the existing square brand icon. Keep the
-  visual preview button labelled so it cannot look like an empty bar.
+  markup. Stripe Checkout uses a white surface, rounded corners, and the
+  raspberry button color with a white label. Stripe does not allow a per-session
+  `icon` for `embedded_page` Checkout; the WeTrends page carries the logo.
+  Keep the visual preview button labelled so it cannot look like an empty bar.
 - A server-created Checkout Session uses the immutable item snapshot, GBP,
   client email, a request reference and a stable idempotency key. Adaptive
   Pricing is disabled for this flow so the charged currency matches the GBP

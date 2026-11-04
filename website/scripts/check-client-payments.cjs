@@ -86,7 +86,7 @@ const stripe = {
         assert.equal(input.branding_settings.background_color, "#FFFFFF");
         assert.equal(input.branding_settings.border_style, "rounded");
         assert.equal(input.branding_settings.font_family, "inter");
-        assert.equal(new URL(input.branding_settings.icon.url).pathname, "/apple-touch-icon.png");
+        assert.equal(input.branding_settings.icon, undefined);
         assert.ok(input.return_url.includes("{CHECKOUT_SESSION_ID}"));
         if (idempotency.has(options.idempotencyKey))
           return copy(sessions.get(idempotency.get(options.idempotencyKey)));
