@@ -5,7 +5,7 @@ type Step = "welcome" | "offer" | "payment";
 
 const steps: { key: Step; label: string }[] = [
   { key: "welcome", label: "Welcome" },
-  { key: "offer", label: "Your offer" },
+  { key: "offer", label: "Offer" },
   { key: "payment", label: "Payment" },
 ];
 
@@ -19,7 +19,7 @@ export default function ClientFlowHeader({ step, reference, compact = false }: {
           <Image src="/images/logo-transparent.svg" alt="WeTrends" width={58} height={39} priority className="h-8 w-auto brightness-0" />
         </Link>
         <div className="text-right">
-          <p className="hidden text-[10px] font-bold uppercase tracking-[0.2em] text-[#1B1819]/45 sm:block">Private project</p>
+          <p className="hidden text-[10px] font-bold uppercase tracking-[0.2em] text-[#1B1819]/55 sm:block">Private project</p>
           <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#1B1819]/70 sm:mt-1">{reference}</p>
         </div>
       </div>
@@ -30,8 +30,8 @@ export default function ClientFlowHeader({ step, reference, compact = false }: {
               const active = index === activeIndex;
               const completed = index < activeIndex;
               return <li key={item.key} aria-current={active ? "step" : undefined} className="flex min-w-0 items-baseline gap-1.5 sm:gap-3">
-                <span className={`font-serif text-xl italic leading-none sm:text-2xl ${active ? "wt-client-step-current text-[#A52249]" : completed ? "text-[#1B1819]" : "text-[#1B1819]/35"}`}>{String(index + 1).padStart(2, "0")}</span>
-                <span className={`text-[9px] font-bold uppercase tracking-[0.06em] sm:text-xs sm:tracking-[0.14em] ${active ? "text-[#1B1819]" : completed ? "text-[#1B1819]/65" : "text-[#1B1819]/40"}`}>{item.label}</span>
+                <span className={`font-serif text-xl italic leading-none sm:text-2xl ${active ? "wt-client-step-current text-[#A52249]" : completed ? "text-[#1B1819]" : "text-[#1B1819]/45"}`}>{String(index + 1).padStart(2, "0")}</span>
+                <span className={`text-[10px] font-bold uppercase tracking-[0.06em] sm:text-xs sm:tracking-[0.14em] ${active ? "text-[#1B1819]" : completed ? "text-[#1B1819]/65" : "text-[#1B1819]/55"}`}>{item.label}</span>
               </li>;
             })}
           </ol>
