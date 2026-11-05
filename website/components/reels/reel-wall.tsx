@@ -201,7 +201,7 @@ function ReelCard({
       type="button"
       onClick={() => onOpen({ reel, index })}
       aria-label={reel.label ? `Play reel: ${reel.label}` : `Play reel ${index + 1}`}
-      className={`group relative aspect-[9/16] shrink-0 overflow-hidden rounded-lg bg-gray-100 transition-transform duration-300 hover:-translate-y-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C72C5B] focus-visible:ring-offset-2 ${compact ? 'mr-3 w-[clamp(5.75rem,15svh,8.5rem)]' : 'w-36 sm:w-44 md:w-52'}`}
+      className={`group relative aspect-[9/16] shrink-0 overflow-hidden rounded-lg bg-gray-100 transition-transform duration-300 hover:-translate-y-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C72C5B] focus-visible:ring-offset-2 ${compact ? 'mr-3 w-[clamp(5rem,14svh,8.25rem)]' : 'w-36 sm:w-44 md:w-52'}`}
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img

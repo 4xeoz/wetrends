@@ -30,8 +30,10 @@ any required invoice separately.
 - The published link opens the welcome step. The offer step shows the itemised
   agreement and total; only the checkout step loads the embedded card form.
   The welcome is sized to keep its offer button visible within a normal desktop
-  or mobile viewport. Reels can be opened for viewing; motion pauses on hover
-  or keyboard focus and respects reduced-motion settings.
+  or mobile viewport. Very short screens omit the optional intro sentence so
+  the core welcome, reels and offer button remain visible. Reels can be opened
+  for viewing; motion pauses on hover or keyboard focus and respects
+  reduced-motion settings.
   Direct checkout links remain valid because acknowledgement is not stored or
   required by the payment API. Paid and voided requests open their result page;
   paid clients can still view the read-only offer from their result page.

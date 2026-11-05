@@ -31,7 +31,7 @@ export default async function ClientWelcomePage({ params }: { params: Promise<{ 
         <div className="relative mx-auto max-w-6xl">
           <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#F28AAA] sm:text-xs">A private welcome for {payment.clientName}</p>
           <h1 className="mt-2 max-w-4xl text-[clamp(2rem,5svh,4.5rem)] font-bold leading-[1.02] tracking-[-0.06em]">Thank you for <span className="font-serif italic text-[#F28AAA]">choosing us.</span></h1>
-          <p className="mt-2 max-w-2xl text-sm leading-5 text-white/70 sm:text-base sm:leading-6">We&apos;re excited to work on {payment.projectTitle} with you. Explore a few reels, then review your offer.</p>
+          <p className="mt-2 max-w-2xl text-sm leading-5 text-white/70 [@media(max-height:600px)]:hidden sm:text-base sm:leading-6">We&apos;re excited to work on {payment.projectTitle} with you. Explore a few reels, then review your offer.</p>
         </div>
       </section>
       <section aria-labelledby="selected-work-heading" className="flex min-h-0 flex-1 flex-col justify-center overflow-hidden bg-[#F7F4F2] py-3 sm:py-4">
@@ -42,7 +42,7 @@ export default async function ClientWelcomePage({ params }: { params: Promise<{ 
           </div>
           <p className="hidden text-xs text-black/55 sm:block">Select a reel to watch with sound</p>
         </div>
-        <ReelWall reels={selectedReels} rows={1} compact duration={44} className="mt-3 bg-transparent motion-reduce:overflow-x-auto" />
+        <ReelWall reels={selectedReels} rows={1} compact duration={44} className="mt-2 bg-transparent motion-reduce:overflow-x-auto" />
       </section>
       <section className="shrink-0 border-t border-black/10 bg-white px-4 py-3 sm:px-6 sm:py-4">
         <div className="mx-auto flex max-w-6xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
