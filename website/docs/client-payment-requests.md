@@ -1,15 +1,19 @@
 # Client payment requests
 
-## Decision (2 November 2026)
+## Decision (2 November 2026; updated 5 November 2026)
 
 WeTrends agrees scope and commercial terms with clients outside the website. An
 administrator then creates an itemised **payment request** in the private admin
 area and shares its signed WeTrends link through the existing conversation. The
-client reviews the exact services, quantities and prices on `wetrends.co.uk`,
-enters card details in Stripe Checkout embedded on that page, and returns to a
-branded payment result. Stripe handles card data. This feature does not create
-or email a formal numbered invoice, calculate VAT, or replace the company's
-accounting documents. Staff provide any required invoice separately.
+client opens the link to a personalized welcome with three existing portfolio
+reels, continues to a document-style summary of the exact services, quantities
+and prices, then uses “Agree and continue” to open embedded Stripe Checkout on
+a separate payment step. That action is an acknowledgement before payment, not
+a stored acceptance or electronic signature; terms were agreed outside the
+website. The client then returns to a branded payment result. Stripe handles
+card data. This feature does not create or email a formal numbered invoice,
+calculate VAT, or replace the company's accounting documents. Staff provide
+any required invoice separately.
 
 ## Contract and lifecycle
 
@@ -22,8 +26,12 @@ accounting documents. Staff provide any required invoice separately.
 - A published request can be voided by an admin before payment. Voiding first
   expires any open Stripe Checkout Session. Paid requests cannot be voided here;
   refunds remain an explicit Stripe/accounting operation outside this flow.
-- The client page shows the itemised agreement and total before loading the
-  embedded card form. The page and API use no-store, noindex and no-referrer;
+- The published link opens the welcome step. The offer step shows the itemised
+  agreement and total; only the checkout step loads the embedded card form.
+  Direct checkout links remain valid because acknowledgement is not stored or
+  required by the payment API. Paid and voided requests open their result page;
+  paid clients can still view the read-only offer from their result page.
+  The pages and API use no-store, noindex and no-referrer;
   private URLs are excluded from GA4 and PostHog.
 - The payment and result screens use the existing WeTrends logo image and
   app-icon asset instead of recreating brand marks or decorative icons in
@@ -56,4 +64,11 @@ walk through desktop and mobile screens in Stripe test mode. The production
 MongoDB collection/index must be reviewed and created before activation; never
 use destructive schema flags. Reuse the existing restricted Stripe Checkout key,
 publishable key and signed webhook. Do not claim live payment verification from
-mocked tests or local rendering. This work does not publish or deploy the site.
+mocked tests or local rendering.
+
+The 5 November route extension does not change the payment API, signed token,
+database schema, Stripe configuration or agreed amounts. Before release, pass
+the focused payment checks, TypeScript and route lint; check the production
+build; and walk the published link through welcome, offer and checkout without
+submitting a real payment. If the route or checkout fails, restore the preceding
+production deployment and recheck the published link.
