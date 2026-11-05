@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   referrer: "no-referrer",
 };
 
-const selectedReels = reels.slice(0, 12);
+const selectedReels = reels.slice(0, 6);
 
 export default async function ClientWelcomePage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
@@ -23,38 +23,35 @@ export default async function ClientWelcomePage({ params }: { params: Promise<{ 
   if (payment.status !== "OPEN") redirect("/pay/" + token + "/result");
   const reference = paymentReference(payment.id);
 
-  return <main className="flex min-h-svh flex-col overflow-x-hidden bg-[#171619] text-white">
+  return <main className="flex min-h-svh flex-col overflow-x-hidden bg-[#F3F0EA] text-[#1B1819]">
     <ClientFlowHeader step="welcome" reference={reference} compact />
-    <div className="flex flex-1 flex-col">
-      <section className="relative isolate shrink-0 overflow-hidden px-4 py-3 sm:px-6 sm:py-5">
-        <div aria-hidden="true" className="pointer-events-none absolute -right-24 top-0 h-72 w-72 rounded-full bg-[#C72C5B]/20 blur-3xl" />
-        <div className="wt-client-welcome-enter relative mx-auto max-w-6xl">
-          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#F8B9CB] sm:text-xs">A personal welcome for {payment.clientName}</p>
-          <h1 className="mt-2 max-w-5xl text-[clamp(2rem,5svh,4.5rem)] font-black leading-[1.02] tracking-[-0.065em] sm:text-[clamp(2.5rem,6svh,5.5rem)]">Thank you for <span className="font-serif italic text-[#F28AAA]">choosing us.</span></h1>
-          <p className="mt-2 max-w-2xl text-sm leading-5 text-white/75 [@media(max-height:600px)]:hidden sm:text-base sm:leading-6">We&apos;re excited to work on {payment.projectTitle} with you. Take a look at our work, then review your offer.</p>
+    <div className="mx-auto grid w-full max-w-[1480px] flex-1 lg:grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)]">
+      <section className="flex flex-col justify-center px-5 pb-12 pt-12 sm:px-8 sm:pb-16 sm:pt-16 lg:py-12 lg:pl-12 lg:pr-10 xl:pl-16 xl:pr-16">
+        <div className="wt-client-welcome-enter">
+          <p className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.22em] text-[#A52249] sm:text-xs"><span aria-hidden="true" className="h-px w-8 bg-[#A52249]" />A private welcome</p>
+          <p className="mt-4 text-sm font-semibold tracking-[-0.01em] text-[#1B1819]/65 sm:text-base">For {payment.clientName}</p>
+        </div>
+        <h1 className="wt-client-welcome-enter mt-9 max-w-3xl text-[clamp(3.3rem,8vw,7rem)] font-semibold leading-[0.89] tracking-[-0.075em] sm:mt-11 lg:text-[clamp(4.5rem,6.6vw,7.5rem)]" style={{ animationDelay: "90ms" }}>Let&apos;s make it<br /><span className="font-serif font-normal italic tracking-[-0.065em] text-[#A52249]">matter.</span></h1>
+        <p className="wt-client-welcome-enter mt-7 max-w-xl text-base leading-7 text-[#1B1819]/70 sm:mt-9 sm:text-lg sm:leading-8" style={{ animationDelay: "170ms" }}>Thank you for choosing us. We&apos;re looking forward to bringing <span className="font-semibold text-[#1B1819]">{payment.projectTitle}</span> to life with you.</p>
+        <div className="wt-client-welcome-enter mt-9 flex flex-wrap items-center gap-x-6 gap-y-4 sm:mt-11" style={{ animationDelay: "250ms" }}>
+          <Link href={"/pay/" + token + "/offer"} prefetch={false} className="inline-flex min-h-14 w-full items-center justify-center bg-[#1B1819] px-9 text-center text-sm font-bold uppercase tracking-[0.12em] text-white transition duration-300 hover:-translate-y-1 hover:bg-[#A52249] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A52249] active:translate-y-0 sm:w-auto">View your offer</Link>
+          <p className="text-xs leading-5 text-[#1B1819]/55">Next: everything we agreed, clearly laid out.</p>
         </div>
       </section>
-      <section aria-labelledby="selected-work-heading" className="flex min-h-0 flex-1 flex-col justify-center overflow-hidden border-y border-white/10 bg-[#211B21] py-3 sm:py-4">
-        <div className="mx-auto flex w-full max-w-6xl items-end justify-between gap-4 px-4 sm:px-6">
-          <div>
-            <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.18em] text-[#F8B9CB]"><span aria-hidden="true" className="h-[2px] w-5 bg-[#F28AAA]" />Selected work</p>
-            <h2 id="selected-work-heading" className="mt-1 text-xl font-black tracking-[-0.04em] sm:text-2xl">Ideas, in motion.</h2>
-          </div>
-          <p className="hidden text-xs text-white/60 sm:block">Select a reel to watch with sound</p>
+      <section aria-labelledby="selected-work-heading" className="wt-client-showcase-enter relative isolate mx-5 mb-5 flex min-h-[420px] flex-col justify-between overflow-hidden bg-[#21191C] py-6 text-white sm:mx-8 sm:mb-8 sm:min-h-[480px] sm:py-8 lg:mx-0 lg:my-6 lg:mr-8 lg:min-h-[500px] xl:mr-12">
+        <div aria-hidden="true" className="pointer-events-none absolute -right-28 -top-24 h-80 w-80 rounded-full bg-[#8C2949]/30 blur-3xl" />
+        <div className="relative flex items-center justify-between gap-4 px-6 sm:px-8">
+          <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#EDB8C7]">From our studio</p>
+          <p className="text-[10px] font-semibold tracking-[0.16em] text-white/45">01 — {String(selectedReels.length).padStart(2, "0")}</p>
         </div>
-        <div className="relative mt-2">
-          <ReelWall reels={selectedReels} rows={1} compact duration={44} className="bg-transparent motion-reduce:overflow-x-auto" />
-          <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 left-0 w-4 bg-gradient-to-r from-[#211B21] to-transparent sm:w-12" />
-          <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 right-0 w-4 bg-gradient-to-l from-[#211B21] to-transparent sm:w-12" />
+        <div className="relative my-8 sm:my-7">
+          <ReelWall reels={selectedReels} rows={1} duration={39} className="bg-transparent motion-reduce:overflow-x-auto" />
+          <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 left-0 w-6 bg-gradient-to-r from-[#21191C] to-transparent sm:w-10" />
+          <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 right-0 w-6 bg-gradient-to-l from-[#21191C] to-transparent sm:w-10" />
         </div>
-      </section>
-      <section className="shrink-0 px-4 py-3 [@media(max-height:600px)]:pb-2 sm:px-6 sm:py-4">
-        <div className="mx-auto flex max-w-6xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#F8B9CB]">Next · Your offer</p>
-            <h2 className="mt-1 hidden text-xl font-black tracking-[-0.04em] sm:block">Everything we agreed, clearly laid out.</h2>
-          </div>
-          <Link href={"/pay/" + token + "/offer"} prefetch={false} className="inline-flex min-h-12 w-full shrink-0 items-center justify-center rounded-full bg-white px-9 text-center text-base font-black text-[#171619] shadow-[0_10px_30px_rgba(0,0,0,0.24)] transition hover:-translate-y-0.5 hover:bg-[#FCE1E9] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:translate-y-0 sm:w-auto">View your offer</Link>
+        <div className="relative flex flex-wrap items-end justify-between gap-3 px-6 sm:px-8">
+          <h2 id="selected-work-heading" className="font-serif text-3xl font-normal italic tracking-[-0.04em] sm:text-4xl">Made to move.</h2>
+          <p className="text-xs text-white/55">Select a reel to watch.</p>
         </div>
       </section>
     </div>
