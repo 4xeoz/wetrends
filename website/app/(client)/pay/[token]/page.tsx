@@ -44,7 +44,7 @@ export default async function ClientWelcomePage({ params }: { params: Promise<{ 
         </div>
         <ReelWall reels={selectedReels} rows={1} compact duration={44} className="mt-2 bg-transparent motion-reduce:overflow-x-auto" />
       </section>
-      <section className="shrink-0 border-t border-black/10 bg-white px-4 py-3 sm:px-6 sm:py-4">
+      <section className="shrink-0 border-t border-black/10 bg-white px-4 py-3 [@media(max-height:600px)]:pb-2 sm:px-6 sm:py-4">
         <div className="mx-auto flex max-w-6xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#B12552]">Next · Your offer</p>
