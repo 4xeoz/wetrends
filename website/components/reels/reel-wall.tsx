@@ -22,11 +22,15 @@ export default function ReelWall({
   reels,
   rows = 2,
   className = 'bg-[#e9e9e9] pb-16 md:pb-24',
+  compact = false,
+  duration = 55,
 }: {
   reels: Reel[];
   rows?: 1 | 2;
   /** Section chrome, so each page can set its own background and spacing. */
   className?: string;
+  compact?: boolean;
+  duration?: number;
 }) {
   const [open, setOpen] = useState<{ reel: Reel; index: number } | null>(null);
   const [mounted, setMounted] = useState(false);
@@ -61,6 +65,8 @@ export default function ReelWall({
             direction={railIndex === 0 ? 'left' : 'right'}
             offset={railIndex * half}
             onOpen={setOpen}
+            compact={compact}
+            duration={duration}
           />
         ))}
       </div>
@@ -114,11 +120,15 @@ function Rail({
   direction,
   offset,
   onOpen,
+  compact,
+  duration,
 }: {
   reels: Reel[];
   direction: 'left' | 'right';
   offset: number;
   onOpen: (value: { reel: Reel; index: number }) => void;
+  compact: boolean;
+  duration: number;
 }) {
   const [paused, setPaused] = useState(false);
   const track = [...reels, ...reels];
@@ -127,11 +137,13 @@ function Rail({
     <div
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
+      onFocusCapture={() => setPaused(true)}
+      onBlurCapture={() => setPaused(false)}
     >
       <div
-        className="flex w-max gap-3 md:gap-5"
+        className={compact ? "flex w-max" : "flex w-max gap-3 md:gap-5"}
         style={{
-          animation: `wt-marquee-${direction} 55s linear infinite`,
+          animation: `wt-marquee-${direction} ${duration}s linear infinite`,
           animationPlayState: paused ? 'paused' : 'running',
         }}
       >
@@ -141,6 +153,7 @@ function Rail({
             reel={reel}
             index={offset + (i % reels.length)}
             onOpen={onOpen}
+            compact={compact}
           />
         ))}
       </div>
@@ -152,10 +165,12 @@ function ReelCard({
   reel,
   index,
   onOpen,
+  compact,
 }: {
   reel: Reel;
   index: number;
   onOpen: (value: { reel: Reel; index: number }) => void;
+  compact: boolean;
 }) {
   const ref = useRef<HTMLButtonElement>(null);
   const [playing, setPlaying] = useState(false);
@@ -186,7 +201,7 @@ function ReelCard({
       type="button"
       onClick={() => onOpen({ reel, index })}
       aria-label={reel.label ? `Play reel: ${reel.label}` : `Play reel ${index + 1}`}
-      className="group relative aspect-[9/16] w-36 shrink-0 overflow-hidden rounded-lg bg-gray-100 transition-transform duration-300 hover:-translate-y-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C72C5B] focus-visible:ring-offset-2 sm:w-44 md:w-52"
+      className={`group relative aspect-[9/16] shrink-0 overflow-hidden rounded-lg bg-gray-100 transition-transform duration-300 hover:-translate-y-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C72C5B] focus-visible:ring-offset-2 ${compact ? 'mr-3 w-[clamp(5.75rem,15svh,8.5rem)]' : 'w-36 sm:w-44 md:w-52'}`}
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img

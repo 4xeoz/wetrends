@@ -5,10 +5,11 @@
 WeTrends agrees scope and commercial terms with clients outside the website. An
 administrator then creates an itemised **payment request** in the private admin
 area and shares its signed WeTrends link through the existing conversation. The
-client opens the link to a personalized welcome with three existing portfolio
-reels, continues to a document-style summary of the exact services, quantities
-and prices, then uses “Agree and continue” to open embedded Stripe Checkout on
-a separate payment step. That action is an acknowledgement before payment, not
+client opens the link to a personalized welcome with a compact, continuously
+moving strip of existing portfolio reels, continues to a document-style summary
+of the exact services, quantities and prices, then uses “Agree and continue” to
+open embedded Stripe Checkout on a separate payment step. That action is an
+acknowledgement before payment, not
 a stored acceptance or electronic signature; terms were agreed outside the
 website. The client then returns to a branded payment result. Stripe handles
 card data. This feature does not create or email a formal numbered invoice,
@@ -28,6 +29,9 @@ any required invoice separately.
   refunds remain an explicit Stripe/accounting operation outside this flow.
 - The published link opens the welcome step. The offer step shows the itemised
   agreement and total; only the checkout step loads the embedded card form.
+  The welcome is sized to keep its offer button visible within a normal desktop
+  or mobile viewport. Reels can be opened for viewing; motion pauses on hover
+  or keyboard focus and respects reduced-motion settings.
   Direct checkout links remain valid because acknowledgement is not stored or
   required by the payment API. Paid and voided requests open their result page;
   paid clients can still view the read-only offer from their result page.
