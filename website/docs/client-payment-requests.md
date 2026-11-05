@@ -9,9 +9,9 @@ client opens the link to a personalized welcome with a compact, continuously
 moving strip of existing portfolio reels, continues to a document-style summary
 of the exact services, quantities and prices, then uses “Agree and continue” to
 open embedded Stripe Checkout on a separate payment step. That action is an
-acknowledgement before payment, not
-a stored acceptance or electronic signature; terms were agreed outside the
-website. The client then returns to a branded payment result. Stripe handles
+acknowledgement before payment, not a stored acceptance or electronic signature;
+terms were agreed outside the website. The client then returns to a branded
+payment result. Stripe handles
 card data. This feature does not create or email a formal numbered invoice,
 calculate VAT, or replace the company's accounting documents. Staff provide
 any required invoice separately.
@@ -33,7 +33,9 @@ any required invoice separately.
   or mobile viewport. Very short screens omit the optional intro sentence so
   the core welcome, reels and offer button remain visible. Reels can be opened
   for viewing; motion pauses on hover or keyboard focus and respects
-  reduced-motion settings.
+  reduced-motion settings. A connected three-step progress rail carries through
+  welcome, offer and checkout. The welcome uses one dark brand canvas; its
+  entrance and step progress animation are decorative and respect reduced motion.
   Direct checkout links remain valid because acknowledgement is not stored or
   required by the payment API. Paid and voided requests open their result page;
   paid clients can still view the read-only offer from their result page.
