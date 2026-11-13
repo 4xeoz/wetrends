@@ -1,0 +1,80 @@
+<!--
+  WeTrends intro film email v2: branded, matches emails/transactional-event.tsx (mesh mark, wordmark, burgundy).
+  Table layout + inline CSS (Gmail, Outlook, Apple Mail). No video attached: the "video" is a linked JPG with a play pill.
+  Fill with:  node scripts/render-intro-email.mjs <slug> [--base https://wetrends.co.uk] [--out file.html]
+  Rules: no recipient email in any URL, no tracking pixel (PostHog on the page measures views), keep under ~1MB.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="supported-color-schemes" content="light">
+<title>{{SUBJECT}}</title>
+<style>
+  @media only screen and (max-width:520px){
+    .wt-body{padding:0 !important}
+    .wt-card{border-radius:0 !important}
+    .wt-pad{padding-left:22px !important;padding-right:22px !important}
+    .wt-h1{font-size:36px !important;line-height:38px !important}
+    .wt-btn{display:block !important;text-align:center !important}
+  }
+</style>
+</head>
+<body class="wt-body" style="margin:0;padding:32px 12px;background-color:#F7F1F3;">
+<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:#F7F1F3;font-size:1px;line-height:1px;">A {{DURATION}} film about who we are and what we make.&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr><td align="center">
+    <table role="presentation" class="wt-card" width="580" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:580px;background-color:#ffffff;border-radius:14px;overflow:hidden;">
+
+      <!-- hero: dark, holds the headline, the message, the "video" and the button -->
+      <tr><td class="wt-pad" bgcolor="#21191C" style="background-color:#21191C;padding:30px 32px 34px 32px;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+          <tr>
+            <td width="46" style="width:46px;vertical-align:middle;"><img src="{{LOGO_URL}}" width="46" height="46" alt="WeTrends" style="display:block;border:0;border-radius:10px;" /></td>
+            <td style="vertical-align:middle;padding-left:12px;font-family:Arial,Helvetica,sans-serif;font-size:13px;font-weight:700;letter-spacing:3px;color:#ffffff;">WETRENDS</td>
+            <td align="right" style="vertical-align:middle;font-family:Arial,Helvetica,sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;color:#EDB8C7;">PRIVATE INTRODUCTION</td>
+          </tr>
+        </table>
+
+        <div style="height:34px;line-height:34px;font-size:0;">&nbsp;</div>
+        <div class="wt-h1" style="font-family:Arial,Helvetica,sans-serif;font-size:46px;line-height:48px;font-weight:700;letter-spacing:-2px;color:#ffffff;">Hi {{FIRST_NAME}},<br /><span style="font-family:Georgia,'Times New Roman',serif;font-style:italic;font-weight:400;letter-spacing:-1.5px;color:#F08BAB;">{{HEADLINE_ACCENT}}</span></div>
+        <div style="width:44px;height:3px;line-height:3px;font-size:0;background-color:#A52249;margin-top:20px;">&nbsp;</div>
+
+        <div style="font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:25px;color:#E9DDE1;margin-top:22px;">{{PERSONAL_LINE}}</div>
+
+        <div style="height:24px;line-height:24px;font-size:0;">&nbsp;</div>
+        <a href="{{PAGE_URL}}" target="_blank" style="display:block;text-decoration:none;border:0;">
+          <img src="{{THUMBNAIL_URL}}" alt="Play the WeTrends introduction film ({{DURATION}})" width="516" style="display:block;width:100%;max-width:516px;height:auto;border:0;outline:none;border-radius:10px;" />
+        </a>
+
+        <div style="height:22px;line-height:22px;font-size:0;">&nbsp;</div>
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+          <tr>
+            <td class="wt-btn" bgcolor="#A52249" style="background-color:#A52249;border-radius:4px;text-align:center;">
+              <a href="{{PAGE_URL}}" target="_blank" style="display:block;padding:17px 30px;font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:700;letter-spacing:2px;color:#ffffff;text-decoration:none;text-transform:uppercase;">Watch the film &rarr;</a>
+            </td>
+          </tr>
+        </table>
+        <div style="font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:18px;color:#B9A9AF;text-align:center;margin-top:12px;">{{DURATION}} &middot; best with sound on</div>
+      </td></tr>
+
+      <!-- close: the ask and the signature -->
+      <tr><td class="wt-pad" style="padding:28px 32px 30px 32px;">
+        <div style="font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:25px;color:#21191D;">{{CLOSING_LINE}}</div>
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:22px;border-top:1px solid #EADFE3;">
+          <tr><td style="padding-top:18px;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:21px;color:#6B5C62;">
+            <strong style="color:#21191D;">{{SENDER_NAME}}</strong><br />
+            {{SENDER_ROLE}}<br />
+            {{#SENDER_PHONE}}{{SENDER_PHONE}}<br />{{/SENDER_PHONE}}
+            <a href="https://{{SENDER_SITE}}" target="_blank" style="color:#A52249;text-decoration:underline;">{{SENDER_SITE}}</a>
+          </td></tr>
+        </table>
+      </td></tr>
+    </table>
+    <div style="max-width:580px;font-family:Arial,Helvetica,sans-serif;font-size:11px;line-height:17px;color:#9A8A91;text-align:center;padding:16px 8px 0 8px;">Can't see the image? <a href="{{PAGE_URL}}" target="_blank" style="color:#9A8A91;text-decoration:underline;">Watch it here</a>. &nbsp;WeTrends &middot; London &amp; Guildford</div>
+  </td></tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,39 @@
+{
+  "video": {
+    "driveFileId": "17nEy8Xy6cFKVwQ6jK6SIUSrMRIENLBIE",
+    "duration": "1:30",
+    "thumbnailPath": "/images/email/intro-thumbnail.jpg"
+  },
+  "sender": {
+    "name": "The WeTrends team",
+    "role": "WeTrends",
+    "phone": "",
+    "email": "team@wetrends.co.uk",
+    "site": "wetrends.co.uk"
+  },
+  "recipients": [
+    {
+      "slug": "preview",
+      "devOnly": true,
+      "firstName": "Alex",
+      "business": "Example Co",
+      "subject": "A short introduction to WeTrends",
+      "headlineAccent": "meet WeTrends.",
+      "personalLine": "It was good to talk the other day. Rather than send a long email about us, I put together a short film so you can see who we are and what we make before we speak properly.",
+      "closingLine": "If it's of interest, just reply to this email and we'll send over a couple of dates to talk.",
+      "ctaLabel": "Reply to us",
+      "ctaNote": "Or just reply to the email."
+    },
+    {
+      "slug": "farah",
+      "firstName": "Farah",
+      "business": "New salon",
+      "subject": "Your next step with WeTrends",
+      "headlineAccent": "your next step.",
+      "personalLine": "Thank you for getting back to us, and no apology needed. It sounds like a busy few weeks, and we're glad to be part of getting the new salon ready for opening. We're going to book you in with Eddy, and we'll send over the booking link as soon as we can. We'll keep your late afternoon and weekend preference in mind. In the meantime, have a look at the short film below to learn more about your next step with us.",
+      "closingLine": "If you have any questions before then, just reply to this email.",
+      "ctaLabel": "Reply to us",
+      "ctaNote": "Your booking link is on its way."
+    }
+  ]
+}
