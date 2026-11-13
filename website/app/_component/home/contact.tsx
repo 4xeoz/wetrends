@@ -11,8 +11,8 @@ const contactInfo = [
   {
     icon: Mail,
     label: 'Email',
-    value: 'team@wetrends.co.uk',
-    href: 'mailto:team@wetrends.co.uk',
+    value: 'eddy.c@wetrends.co.uk',
+    href: 'mailto:eddy.c@wetrends.co.uk',
   },
   {
     icon: MapPin,
