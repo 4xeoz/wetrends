@@ -59,7 +59,7 @@ function PageviewTracker({ enabled }: { enabled: boolean }) {
 
 export function PostHogProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const privateClientPage = pathname?.startsWith('/recover/') || pathname?.startsWith('/pay/');
+  const privateClientPage = pathname?.startsWith('/recover/') || pathname?.startsWith('/pay/') || pathname?.startsWith('/book/');
   const [consent, setConsent] = useState<AnalyticsConsent>(null);
   const [ready, setReady] = useState(false);
   const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;

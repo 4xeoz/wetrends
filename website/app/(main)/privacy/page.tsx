@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Privacy & Cookies | WeTrends',
-  description: 'How WeTrends handles enquiries, event and photography data, orders, website analytics and privacy choices.',
+  description: 'How WeTrends handles enquiries, meeting bookings, event and photography data, orders, website analytics and privacy choices.',
   alternates: { canonical: 'https://wetrends.co.uk/privacy/' },
 };
 
@@ -15,6 +15,7 @@ const sections = [
         <p>Depending on how you use the site or work with us, we may collect:</p>
         <ul>
           <li>your name, email address, selected service and the details you put in an enquiry;</li>
+          <li>client meeting invitations, chosen call times and confirmation email status;</li>
           <li>agreed services, itemised prices and payment-request details prepared for a client;</li>
           <li>event, photoshoot and delivery information needed to plan or provide a service;</li>
           <li>private-gallery activity, image selections, order status and delivery details;</li>
@@ -90,7 +91,7 @@ export default function PrivacyPage() {
           <p className="mt-2 text-black/65">
             Email <a className="font-semibold text-[#A3244A] underline underline-offset-4" href="mailto:team@wetrends.co.uk">team@wetrends.co.uk</a> with a privacy question or rights request.
           </p>
-          <p className="mt-3 text-sm text-black/45">Last updated: 2 November 2026</p>
+          <p className="mt-3 text-sm text-black/45">Last updated: 14 November 2026</p>
         </div>
 
         <div className="mt-12 space-y-10">

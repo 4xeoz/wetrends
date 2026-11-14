@@ -7,7 +7,7 @@ let lastPageviewUrl = "";
 function isPrivateClientUrl(url: string) {
   try {
     const pathname = new URL(url).pathname;
-    return pathname.startsWith('/recover/') || pathname.startsWith('/pay/');
+    return pathname.startsWith('/recover/') || pathname.startsWith('/pay/') || pathname.startsWith('/book/');
   } catch { return false; }
 }
 

@@ -328,6 +328,66 @@ enum ClientPaymentStatus {
   VOID
 }
 
+// Staff publish specific call times; a client claims one open slot atomically.
+model MeetingSlot {
+  id                      String            @id @default(auto()) @map("_id") @db.ObjectId
+  startsAt                DateTime          @unique
+  endsAt                  DateTime
+  durationMinutes         Int
+  status                  MeetingSlotStatus @default(OPEN)
+  manualUnavailable       Boolean           @default(false)
+  invitationId            String?           @db.ObjectId
+  invitation              MeetingInvitation? @relation(fields: [invitationId], references: [id])
+  clientName              String?
+  clientEmail             String?
+  clientMessage           String?
+  bookedAt                DateTime?
+  confirmationEmailSentAt DateTime?
+  createdAt               DateTime          @default(now())
+  updatedAt               DateTime          @updatedAt
+
+  @@index([status, startsAt])
+  @@index([invitationId])
+}
+
+// One weekly schedule generates the default booking slots; staff can block
+// individual occurrences without changing the recurring hours.
+model MeetingAvailability {
+  id               String   @id @default("weekly") @map("_id")
+  weeklyHours      Json
+  durationMinutes  Int
+  generatedThrough DateTime?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model MeetingInvitation {
+  id            String                  @id @default(auto()) @map("_id") @db.ObjectId
+  clientName    String
+  clientEmail   String
+  context       String?
+  status        MeetingInvitationStatus @default(OPEN)
+  accessVersion Int                     @default(1)
+  bookedAt      DateTime?
+  slots         MeetingSlot[]
+  createdAt     DateTime                @default(now())
+  updatedAt     DateTime                @updatedAt
+
+  @@index([status, createdAt])
+}
+
+enum MeetingSlotStatus {
+  OPEN
+  BOOKED
+  CLOSED
+}
+
+enum MeetingInvitationStatus {
+  OPEN
+  BOOKED
+  VOID
+}
+
 model BlogCategory {
   id          String     @id @default(auto()) @map("_id") @db.ObjectId
   name        String     @unique

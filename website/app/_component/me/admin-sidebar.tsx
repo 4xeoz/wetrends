@@ -14,6 +14,7 @@ import {
   ShoppingBag,
   ArchiveRestore,
   CreditCard,
+  CalendarClock,
 } from 'lucide-react';
 import {
   Sidebar,
@@ -101,6 +102,11 @@ const navSections: NavSection[] = [
   {
     title: 'Communication',
     items: [
+      {
+        label: 'Meetings',
+        href: '/me/meetings',
+        icon: <CalendarClock className="h-5 w-5" />,
+      },
       {
         label: 'Messages',
         href: '/me/messages',
