@@ -366,6 +366,8 @@ model MeetingInvitation {
   clientName    String
   clientEmail   String
   context       String?
+  // A JSON string list limits this link to those London dates; null or [] means unrestricted.
+  allowedBookingDates Json?
   status        MeetingInvitationStatus @default(OPEN)
   accessVersion Int                     @default(1)
   bookedAt      DateTime?

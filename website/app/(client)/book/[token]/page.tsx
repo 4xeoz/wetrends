@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { prisma } from "@/prisma/prisma";
 import { getMeetingInvitationFromToken } from "@/lib/meetings/access";
-import { MIN_BOOKING_NOTICE_MS } from "@/lib/meetings/time";
+import { londonDayRange, MIN_BOOKING_NOTICE_MS, readAllowedBookingDates } from "@/lib/meetings/time";
 import { syncMeetingAvailabilitySlots } from "@/lib/meetings/schedule";
 import MeetingBookingPage from "@/app/_component/meetings/meeting-booking-page";
 
@@ -20,13 +20,21 @@ export default async function PrivateBookCallPage({ params }: { params: Promise<
   try { await syncMeetingAvailabilitySlots(); } catch (error) {
     console.error("[meeting booking page] availability refresh failed", error instanceof Error ? error.name : "unknown");
   }
+  const allowedBookingDates = readAllowedBookingDates(invitation.allowedBookingDates);
+  const dateFilter = allowedBookingDates === null ? {} : {
+    OR: allowedBookingDates.map((dateKey) => {
+      const { start, end } = londonDayRange(dateKey);
+      return { startsAt: { gte: start, lt: end } };
+    }),
+  };
   const slots = invitation.status === "OPEN" ? await prisma.meetingSlot.findMany({
     where: {
       status: "OPEN",
       startsAt: { gt: new Date(Date.now() + MIN_BOOKING_NOTICE_MS) },
+      ...dateFilter,
     },
     orderBy: { startsAt: "asc" },
-    take: 120,
+    take: allowedBookingDates === null ? 120 : 3200,
     select: { id: true, startsAt: true, endsAt: true, durationMinutes: true },
   }) : [];
 

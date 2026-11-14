@@ -13,6 +13,10 @@ import {
   formatMeetingDay,
   formatMeetingTime,
   generateWeeklyMeetingTimes,
+  addLondonCalendarMonths,
+  isValidLondonDateKey,
+  londonDateKey,
+  readAllowedBookingDates,
   MEETING_DURATIONS,
   MIN_BOOKING_NOTICE_MS,
   parseLondonSlot,
@@ -47,6 +51,10 @@ const weeklyHoursSchema = z.object({
   durationMinutes: z.number().int(),
 }).refine(({ weeklyHours }) => new Set(weeklyHours.map((day) => day.dayOfWeek)).size === 7)
   .refine(({ weeklyHours }) => weeklyHours.every((day) => day.startTime < day.endTime));
+const unavailableSlotIdsSchema = z.array(z.string().regex(slotIdPattern)).min(1).max(3200)
+  .refine((ids) => new Set(ids).size === ids.length);
+const bookingDateKeysSchema = z.array(z.string().regex(/^\d{4}-\d{2}-\d{2}$/)).max(32)
+  .refine((dateKeys) => new Set(dateKeys).size === dateKeys.length);
 
 async function requireAdmin() {
   const session = await auth();
@@ -78,6 +86,48 @@ export async function createMeetingInvitation(input: z.infer<typeof invitationSc
   });
   revalidatePath("/me/meetings");
   return { success: true as const, id: invitation.id, url: getMeetingInvitationUrl(invitation.id, invitation.accessVersion) };
+}
+
+export async function setMeetingInvitationBookingDates(invitationId: string, dateKeys: string[]) {
+  await requireAdmin();
+  if (!slotIdPattern.test(invitationId)) return { success: false as const, message: "Invitation not found." };
+  const parsed = bookingDateKeysSchema.safeParse(dateKeys);
+  if (!parsed.success || parsed.data.some((dateKey) => !isValidLondonDateKey(dateKey))) {
+    return { success: false as const, message: "Choose valid booking dates." };
+  }
+
+  const now = new Date();
+  const firstDateKey = londonDateKey(now);
+  const lastDateKey = addLondonCalendarMonths(firstDateKey, 1);
+  if (parsed.data.some((dateKey) => dateKey < firstDateKey || dateKey > lastDateKey)) {
+    return { success: false as const, message: "Choose dates within the next month." };
+  }
+
+  if (parsed.data.length) {
+    const openSlots = await prisma.meetingSlot.findMany({
+      where: {
+        status: "OPEN",
+        startsAt: {
+          gt: new Date(now.getTime() + MIN_BOOKING_NOTICE_MS),
+          lt: new Date(now.getTime() + 32 * 24 * 60 * 60 * 1000),
+        },
+      },
+      select: { startsAt: true },
+    });
+    const datesWithOpenTimes = new Set(openSlots.map((slot) => londonDateKey(slot.startsAt)));
+    if (parsed.data.some((dateKey) => !datesWithOpenTimes.has(dateKey))) {
+      return { success: false as const, message: "One of those days has no open times. Refresh and choose again." };
+    }
+  }
+
+  const changed = await prisma.meetingInvitation.updateMany({
+    where: { id: invitationId, status: "OPEN" },
+    data: { allowedBookingDates: parsed.data as Prisma.InputJsonValue },
+  });
+  if (!changed.count) return { success: false as const, message: "Only open invitations can be changed." };
+  revalidatePath("/book");
+  revalidatePath("/me/meetings");
+  return { success: true as const };
 }
 
 export async function sendMeetingInvitationEmail(invitationId: string) {
@@ -242,9 +292,58 @@ export async function createMeetingSlot(input: z.infer<typeof newSlotSchema>) {
   return { success: true as const };
 }
 
+export async function setMeetingSlotsUnavailable(slotIds: string[]) {
+  await requireAdmin();
+  const parsed = unavailableSlotIdsSchema.safeParse(slotIds);
+  if (!parsed.success) return { success: false as const, message: "Choose valid meeting times to mark unavailable." };
+
+  const now = new Date();
+  const firstEligibleStart = new Date(now.getTime() + MIN_BOOKING_NOTICE_MS);
+  const latestDateKey = addLondonCalendarMonths(londonDateKey(now), 1);
+  const queryEnd = new Date(now.getTime() + 32 * 24 * 60 * 60 * 1000);
+  const where = {
+    id: { in: parsed.data },
+    status: "OPEN" as const,
+    startsAt: { gt: firstEligibleStart, lt: queryEnd },
+  };
+
+  try {
+    await prisma.$transaction(async (tx) => {
+      const currentSlots = await tx.meetingSlot.findMany({
+        where,
+        select: { id: true, startsAt: true },
+      });
+      if (currentSlots.length !== parsed.data.length) throw new Error("meeting-times-changed");
+      if (currentSlots.some((slot) => londonDateKey(slot.startsAt) > latestDateKey)) {
+        throw new Error("meeting-time-outside-window");
+      }
+
+      const changed = await tx.meetingSlot.updateMany({
+        where,
+        data: { status: "CLOSED", manualUnavailable: true },
+      });
+      if (changed.count !== parsed.data.length) throw new Error("meeting-times-changed");
+    });
+  } catch (error) {
+    if (error instanceof Error && error.message === "meeting-time-outside-window") {
+      return { success: false as const, message: "Choose times within the next month." };
+    }
+    if (error instanceof Error && error.message === "meeting-times-changed") {
+      return { success: false as const, message: "One or more times changed. Refresh and choose again." };
+    }
+    console.error("[setMeetingSlotsUnavailable] block update failed", error instanceof Error ? error.name : "unknown");
+    return { success: false as const, message: "Could not save these unavailable times. Please try again." };
+  }
+
+  revalidatePath("/book");
+  revalidatePath("/me/meetings");
+  return { success: true as const };
+}
+
 export async function setMeetingSlotOpen(slotId: string, open: boolean) {
   await requireAdmin();
   if (!slotIdPattern.test(slotId) || typeof open !== "boolean") return { success: false as const, message: "Meeting time not found." };
+  if (!open) return { success: false as const, message: "Use the unavailable days and times steps to block a meeting time." };
   const slot = await prisma.meetingSlot.findUnique({
     where: { id: slotId },
     select: { startsAt: true, endsAt: true, status: true },
@@ -329,17 +428,31 @@ export async function bookMeetingSlot(input: z.infer<typeof bookingSchema>) {
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
       slot = await prisma.$transaction(async (tx) => {
-        const claimedInvitation = await tx.meetingInvitation.updateMany({
-          where: { id: invitation.id, status: "OPEN", accessVersion: invitation.accessVersion },
-          data: { status: "BOOKED", bookedAt: new Date() },
+        const currentInvitation = await tx.meetingInvitation.findUnique({
+          where: { id: invitation.id },
+          select: { status: true, accessVersion: true, allowedBookingDates: true },
         });
-        if (!claimedInvitation.count) throw new Error("invitation-unavailable");
+        if (!currentInvitation || currentInvitation.status !== "OPEN"
+          || currentInvitation.accessVersion !== invitation.accessVersion) {
+          throw new Error("invitation-unavailable");
+        }
 
         const candidate = await tx.meetingSlot.findUnique({
           where: { id: slotId },
           select: { id: true, startsAt: true, endsAt: true, durationMinutes: true },
         });
         if (!candidate) throw new Error("slot-unavailable");
+        const allowedBookingDates = readAllowedBookingDates(currentInvitation.allowedBookingDates);
+        if (allowedBookingDates && !allowedBookingDates.includes(londonDateKey(candidate.startsAt))) {
+          throw new Error("slot-unavailable");
+        }
+
+        const claimedInvitation = await tx.meetingInvitation.updateMany({
+          where: { id: invitation.id, status: "OPEN", accessVersion: invitation.accessVersion },
+          data: { status: "BOOKED", bookedAt: new Date() },
+        });
+        if (!claimedInvitation.count) throw new Error("invitation-unavailable");
+
         const claimedSlot = await tx.meetingSlot.updateMany({
           where: {
             id: slotId,

@@ -2,12 +2,23 @@
 
 ## Decision (14 November 2026)
 
-WeTrends staff set recurring weekly hours in UK time, choose one call length,
-and mark individual occurrences unavailable when needed. No weekday is enabled
-by default. The site generates those times for the next 180 days and refreshes
-the horizon as it approaches. Updating weekly hours preserves booked calls;
-future slots outside the new hours close. A marked unavailable time stays
-closed while it remains within the weekly schedule.
+WeTrends staff set recurring weekly hours in UK time and choose one call
+length. No weekday is enabled by default. The site generates those times for
+the next 180 days and refreshes the horizon as it approaches. Updating weekly
+hours preserves booked calls; future slots outside the new hours close.
+
+To block time, staff use a two-step flow: select one or more calendar days,
+then select the unavailable call times on each day. The calendar allows dates
+through the same date in the next London calendar month. Only future open
+occurrences are selectable; booked times cannot be blocked. A manually blocked
+time stays closed while it remains within the weekly schedule. This one-month
+limit applies to manual closures; the client booking horizon remains 180 days.
+
+Staff can also limit an individual open invitation to selected London calendar
+dates in that same one-month window. The booking page and booking action both
+enforce the invitation's dates. Changing one invitation does not close shared
+slots or change any other client's link. A missing or empty date list means the
+invitation can use all open dates.
 
 Staff create a separate signed link for each existing client. After creation,
 they can review a branded invitation email and explicitly send it to the
@@ -26,8 +37,9 @@ slot together in a MongoDB transaction so two clients cannot claim one time and
 one invitation cannot claim multiple times. The site sends a transactional
 confirmation email to the invitation's stored address after the database commit.
 If email delivery fails, the booking stays confirmed and the client and admin
-screens say so. The admin can close or reopen unbooked slots and revoke an
-unbooked invitation. Existing bookings are preserved for manual changes.
+screens say so. The admin can restore a manually blocked unbooked slot or
+revoke an unbooked invitation. Existing bookings are preserved for manual
+changes.
 An expected transaction write conflict is retried once, then rechecked against
 the current invitation and slot state.
 
@@ -47,7 +59,9 @@ collected in this flow.
 - `MeetingSlot` holds generated times and booking snapshots; explicit
   unavailable exceptions are kept as closed occurrences.
 - `MeetingInvitation` holds client details, link version, invitation status,
-  and the last successful invitation-email send time.
+  optional allowed booking dates, and the last successful invitation-email
+  send time. The optional JSON date list does not require a MongoDB index or a
+  collection-wide backfill; existing invitations without it remain unrestricted.
 - The invitation token is HMAC signed with the existing `EVENT_LINK_SECRET`
   using a meeting-specific purpose, and the route uses no-store/noindex and
   no-referrer. Analytics must exclude private booking URLs.
@@ -71,11 +85,15 @@ Before production activation, review the MongoDB schema and indexes. Do not run
 a full production `db push`: the existing database contains unrelated indexes.
 The Prisma-generated meeting indexes are applied idempotently to only the
 `MeetingSlot` and `MeetingInvitation` collections before staff can save hours.
-Set weekly hours in a safe test environment, block and restore a time, create a
-private invitation, verify creation sends no email, then review and send the
-custom invitation email to its stored address. Confirm the sent time appears in
-the admin list, a manual resend is accepted, and the link opens the booking
-stages. Walk an existing client through confirmation email, verify two
-simultaneous attempts for one slot, and check a revoked link.
+In a safe test environment, select multiple dates and times within the one-month
+staff window, save them, and restore a blocked time. Confirm booked and
+out-of-window times cannot be blocked. Limit one open invitation to selected
+dates and verify another invitation still shows the shared open dates; confirm
+the server rejects a slot outside the allowed dates. Create a private
+invitation, verify creation sends no email, then review and send the custom
+invitation email to its stored address. Confirm the sent time appears in the
+admin list, a manual resend is accepted, and the link opens the booking stages.
+Walk an existing client through confirmation email, verify two simultaneous
+attempts for one slot, and check a revoked link.
 If any gate fails after release, restore the prior deployment and leave the
 booking route unavailable until records and email status are reconciled.

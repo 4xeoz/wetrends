@@ -107,6 +107,56 @@ export function londonDateKey(date: Date) {
   return `${parts.year}-${parts.month}-${parts.day}`;
 }
 
+export function isValidLondonDateKey(dateKey: string) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateKey);
+  if (!match) return false;
+  const [, yearText, monthText, dayText] = match;
+  const year = Number(yearText);
+  const month = Number(monthText);
+  const day = Number(dayText);
+  return month >= 1 && month <= 12 && day >= 1 && day <= new Date(Date.UTC(year, month, 0)).getUTCDate();
+}
+
+export function readAllowedBookingDates(value: unknown): string[] | null {
+  if (value === null || value === undefined) return null;
+  if (!Array.isArray(value) || !value.every((dateKey) => typeof dateKey === "string" && isValidLondonDateKey(dateKey))) return [];
+  return value.length ? value as string[] : null;
+}
+
+export function addLondonCalendarMonths(dateKey: string, months: number) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateKey);
+  if (!match || !isValidLondonDateKey(dateKey) || !Number.isInteger(months)) throw new Error("Choose a valid London calendar date.");
+  const [, yearText, monthText, dayText] = match;
+  const monthIndex = Number(yearText) * 12 + Number(monthText) - 1 + months;
+  const targetYear = Math.floor(monthIndex / 12);
+  const targetMonthIndex = ((monthIndex % 12) + 12) % 12;
+  const lastDay = new Date(Date.UTC(targetYear, targetMonthIndex + 1, 0)).getUTCDate();
+  const targetDay = Math.min(Number(dayText), lastDay);
+  return `${targetYear}-${String(targetMonthIndex + 1).padStart(2, "0")}-${String(targetDay).padStart(2, "0")}`;
+}
+
+export function londonDayRange(dateKey: string) {
+  if (!isValidLondonDateKey(dateKey)) throw new Error("Choose a valid London calendar date.");
+  const [yearText, monthText, dayText] = dateKey.split("-");
+  const midnightAsUtc = Date.UTC(Number(yearText), Number(monthText) - 1, Number(dayText));
+  const midnightCandidates = [0, 1].map((offsetHours) => new Date(midnightAsUtc - offsetHours * 60 * 60 * 1000));
+  const start = midnightCandidates.find((candidate) => {
+    const parts = partsOf(candidate);
+    return parts.year === yearText && parts.month === monthText && parts.day === dayText
+      && parts.hour === "00" && parts.minute === "00";
+  });
+  const nextDateKey = addLondonCalendarDays(dateKey, 1);
+  const [nextYearText, nextMonthText, nextDayText] = nextDateKey.split("-");
+  const nextMidnightAsUtc = Date.UTC(Number(nextYearText), Number(nextMonthText) - 1, Number(nextDayText));
+  const end = [0, 1].map((offsetHours) => new Date(nextMidnightAsUtc - offsetHours * 60 * 60 * 1000)).find((candidate) => {
+    const parts = partsOf(candidate);
+    return parts.year === nextYearText && parts.month === nextMonthText && parts.day === nextDayText
+      && parts.hour === "00" && parts.minute === "00";
+  });
+  if (!start || !end) throw new Error("Could not resolve this London calendar date.");
+  return { start, end };
+}
+
 export function formatMeetingDay(date: Date) {
   return new Intl.DateTimeFormat("en-GB", {
     timeZone: MEETING_TIME_ZONE,
