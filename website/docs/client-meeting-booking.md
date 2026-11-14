@@ -58,6 +58,12 @@ collected in this flow.
   booking link and no onboarding or marketing copy. An authenticated admin
   action sends it through Resend and records the send time. A confirmation
   email is sent separately only after a successful booking.
+- MongoDB can omit an optional timestamp when it is not set. Prisma reads both
+  omitted and explicit `null` values as `null`, but a `field: null` filter only
+  matches explicit `null`; send-time compare-and-set queries must also match
+  `isSet: false`. If Resend accepts an email but its invitation status cannot
+  be confirmed, tell staff the email may already have been accepted and ask
+  them to refresh before retrying.
 
 ## Release and verification
 

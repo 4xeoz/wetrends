@@ -133,7 +133,12 @@ export async function sendMeetingInvitationEmail(invitationId: string) {
         id: invitation.id,
         status: "OPEN",
         accessVersion: invitation.accessVersion,
-        invitationEmailSentAt: invitation.invitationEmailSentAt,
+        OR: invitation.invitationEmailSentAt === null
+          ? [
+              { invitationEmailSentAt: null },
+              { invitationEmailSentAt: { isSet: false } },
+            ]
+          : [{ invitationEmailSentAt: invitation.invitationEmailSentAt }],
       },
       data: { invitationEmailSentAt: sentAt },
     });
@@ -143,7 +148,7 @@ export async function sendMeetingInvitationEmail(invitationId: string) {
         select: { status: true, accessVersion: true, invitationEmailSentAt: true },
       });
       if (!current || current.status !== "OPEN" || current.accessVersion !== invitation.accessVersion || !current.invitationEmailSentAt) {
-        return { success: false as const, message: "The invitation changed while sending. Refresh the page and check its status." };
+        return { success: false as const, message: "The email was accepted, but its status could not be confirmed. Refresh the page and check before retrying." };
       }
     }
     revalidatePath("/me/meetings");
