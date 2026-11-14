@@ -61,6 +61,7 @@ export default async function MeetingsAdminPage({ searchParams }: { searchParams
           clientEmail: invitation.clientEmail,
           status: invitation.status,
           createdAt: invitation.createdAt.toISOString(),
+          invitationEmailSentAt: invitation.invitationEmailSentAt?.toISOString() ?? null,
           bookedSlotStartsAt: invitation.slots[0]?.startsAt.toISOString() ?? null,
           url,
         };

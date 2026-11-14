@@ -369,6 +369,7 @@ model MeetingInvitation {
   status        MeetingInvitationStatus @default(OPEN)
   accessVersion Int                     @default(1)
   bookedAt      DateTime?
+  invitationEmailSentAt DateTime?
   slots         MeetingSlot[]
   createdAt     DateTime                @default(now())
   updatedAt     DateTime                @updatedAt

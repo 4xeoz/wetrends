@@ -6,12 +6,14 @@ WeTrends agrees scope and commercial terms with clients outside the website. An
 administrator then creates an itemised **payment request** in the private admin
 area and shares its signed WeTrends link through the existing conversation. The
 client opens the link to a personalized welcome with a panel of six moving
-portfolio reels, continues to a document-style summary
-of the exact services, quantities and prices, then uses “Agree and continue” to
-open embedded Stripe Checkout on a separate payment step. That action is an
-acknowledgement before payment, not a stored acceptance or electronic signature;
-terms were agreed outside the website. The client then returns to a branded
-payment result. Stripe handles
+portfolio reels, continues to a polished, itemised offer document with the
+exact services, quantities and prices, then uses “Agree and continue” to open
+embedded Stripe Checkout on a separate payment step. On desktop, the offer
+keeps the amount and next action in a side summary; on mobile, a safe-area-aware
+payment action stays visible while the document scrolls. That action is an
+acknowledgement before payment, not a stored acceptance or electronic
+signature; terms were agreed outside the website. The client then returns to a
+branded payment result. Stripe handles
 card data. This feature does not create or email a formal numbered invoice,
 calculate VAT, or replace the company's accounting documents. Staff provide
 any required invoice separately.

@@ -3,8 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { CalendarDays, Check, Clipboard, Loader2, UserRound } from "lucide-react";
-import { createMeetingInvitation, revokeMeetingInvitation, saveMeetingAvailability, setMeetingSlotOpen } from "@/actions/meetings";
+import { CalendarDays, Check, Clipboard, Loader2, Mail, UserRound } from "lucide-react";
+import { createMeetingInvitation, revokeMeetingInvitation, saveMeetingAvailability, sendMeetingInvitationEmail, setMeetingSlotOpen } from "@/actions/meetings";
 import { defaultWeeklyHours, formatMeetingDay, formatMeetingTime, MEETING_DURATIONS, WEEK_DAYS, type WeeklyHoursDay } from "@/lib/meetings/time";
 
 type Slot = {
@@ -26,6 +26,7 @@ type Invitation = {
   clientEmail: string;
   status: "OPEN" | "BOOKED" | "VOID";
   createdAt: string;
+  invitationEmailSentAt: string | null;
   bookedSlotStartsAt: string | null;
   url: string | null;
 };
@@ -47,7 +48,8 @@ export default function MeetingAdmin({ slots, invitations, hasOpenSlots, availab
   const [clientName, setClientName] = useState("");
   const [clientEmail, setClientEmail] = useState("");
   const [inviting, setInviting] = useState(false);
-  const [createdUrl, setCreatedUrl] = useState("");
+  const [createdInvitation, setCreatedInvitation] = useState<{ id: string; url: string; clientName: string; clientEmail: string; emailSentAt: string | null } | null>(null);
+  const [sendingEmailId, setSendingEmailId] = useState("");
   const [revokingId, setRevokingId] = useState("");
   const [armedId, setArmedId] = useState("");
   const [copiedId, setCopiedId] = useState("");
@@ -91,18 +93,38 @@ export default function MeetingAdmin({ slots, invitations, hasOpenSlots, availab
     setInviting(true);
     setError("");
     setNotice("");
-    setCreatedUrl("");
+    setCreatedInvitation(null);
     try {
       const result = await createMeetingInvitation({ clientName, clientEmail, context: "" });
       if (!result.success) setError(result.message);
       else {
-        setCreatedUrl(result.url);
-        setNotice(`Private invitation ready for ${clientName.trim()}. Copy and share it with this client.`);
+        setCreatedInvitation({ id: result.id, url: result.url, clientName: clientName.trim(), clientEmail: clientEmail.trim(), emailSentAt: null });
+        setNotice(`Private link created for ${clientName.trim()}. Review the email preview, then send it when ready.`);
         setClientName(""); setClientEmail("");
         router.refresh();
       }
     } catch { setError("Could not create the invitation. Try again."); }
     finally { setInviting(false); }
+  }
+
+  async function sendInvitationEmail(id: string, name: string) {
+    if (sendingEmailId) return;
+    setSendingEmailId(id);
+    setError("");
+    setNotice("");
+    try {
+      const result = await sendMeetingInvitationEmail(id);
+      if (!result.success) setError(result.message);
+      else {
+        setNotice(`Invitation email sent to ${name}.`);
+        setCreatedInvitation((current) => current?.id === id ? { ...current, emailSentAt: result.sentAt } : current);
+        router.refresh();
+      }
+    } catch {
+      setError("Could not send the invitation email. Try again.");
+    } finally {
+      setSendingEmailId("");
+    }
   }
 
   async function revokeInvitation(id: string) {
@@ -113,7 +135,7 @@ export default function MeetingAdmin({ slots, invitations, hasOpenSlots, availab
     try {
       const result = await revokeMeetingInvitation(id);
       if (!result.success) setError(result.message);
-      else { setNotice("Private invitation revoked."); setCreatedUrl(""); router.refresh(); }
+      else { setNotice("Private invitation revoked."); setCreatedInvitation(null); router.refresh(); }
     } catch { setError("Could not revoke this invitation. Try again."); }
     finally { setRevokingId(""); setArmedId(""); }
   }
@@ -156,7 +178,30 @@ export default function MeetingAdmin({ slots, invitations, hasOpenSlots, availab
 
     {error && <p role="alert" className="mt-5 rounded-2xl bg-red-50 px-5 py-4 text-sm font-semibold text-red-800">{error}</p>}
     {notice && <p role="status" className="mt-5 rounded-2xl bg-emerald-50 px-5 py-4 text-sm font-semibold text-emerald-800">{notice}</p>}
-    {createdUrl && <div className="mt-4 flex flex-wrap items-center gap-3 rounded-2xl border border-[#A52249]/20 bg-white p-4"><p className="min-w-0 flex-1 break-all text-xs text-black/65">{createdUrl}</p><button type="button" onClick={() => copyLink(createdUrl, "new")} className="inline-flex min-h-11 items-center gap-2 rounded-full bg-[#211B1D] px-5 text-sm font-bold text-white hover:bg-[#A52249]">{copiedId === "new" ? <Check className="h-4 w-4" /> : <Clipboard className="h-4 w-4" />}{copiedId === "new" ? "Copied" : "Copy link"}</button></div>}
+    {createdInvitation && <section aria-label="New booking invitation" className="mt-4 rounded-3xl border border-[#A52249]/20 bg-white p-5 shadow-sm sm:p-6">
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div className="min-w-0 flex-1">
+          <h3 className="font-bold">Private link for {createdInvitation.clientName}</h3>
+          <p className="mt-1 break-all text-sm text-black/55">{createdInvitation.clientEmail}</p>
+          <p className="mt-3 break-all rounded-xl bg-[#F7F4F2] p-3 text-xs text-black/65">{createdInvitation.url}</p>
+        </div>
+        <div className="flex w-full flex-col gap-2 sm:w-auto sm:min-w-44">
+          <button type="button" onClick={() => copyLink(createdInvitation.url, "new")} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-black/15 px-5 text-sm font-bold transition hover:border-[#A52249] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A52249]">{copiedId === "new" ? <Check className="h-4 w-4" /> : <Clipboard className="h-4 w-4" />}{copiedId === "new" ? "Copied" : "Copy link"}</button>
+          <button type="button" disabled={!!sendingEmailId} onClick={() => sendInvitationEmail(createdInvitation.id, createdInvitation.clientName)} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#A52249] px-5 text-sm font-bold text-white transition hover:bg-[#7E1736] disabled:cursor-wait disabled:opacity-55 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A52249]">{sendingEmailId === createdInvitation.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Mail className="h-4 w-4" />}{sendingEmailId === createdInvitation.id ? "Sending…" : createdInvitation.emailSentAt ? "Resend email" : "Send email"}</button>
+        </div>
+      </div>
+      <details className="mt-5 border-t border-black/10 pt-4">
+        <summary className="min-h-11 cursor-pointer py-2 text-sm font-semibold text-[#8B2040] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A52249]">Preview invitation email</summary>
+        <div className="mt-2 rounded-2xl bg-[#F7F1F3] p-5 text-sm leading-6 text-[#342B30]">
+          <p className="text-xs font-bold uppercase tracking-[.12em] text-black/45">Subject</p>
+          <p className="mt-1 font-semibold">Choose a time for your WeTrends call</p>
+          <p className="mt-4">Hi {createdInvitation.clientName},</p>
+          <p className="mt-2">We&apos;re looking forward to speaking with you. Choose the day and time that works best.</p>
+          <span className="mt-4 inline-flex min-h-11 items-center rounded-full bg-[#A52249] px-5 font-bold text-white">Choose a time <span aria-hidden="true" className="ml-2">→</span></span>
+          <p className="mt-3 text-xs text-black/55">Times are shown in UK time. Your private link can be used once to book the call.</p>
+        </div>
+      </details>
+    </section>}
 
     <section className="mt-10">
       <div><h2 className="text-2xl font-bold tracking-tight">Client invitations</h2></div>
@@ -164,8 +209,10 @@ export default function MeetingAdmin({ slots, invitations, hasOpenSlots, availab
         {invitations.map((invitation) => <article key={invitation.id} className="rounded-3xl border border-black/10 bg-white p-6 shadow-sm">
           <div className="flex items-start justify-between gap-3"><div className="min-w-0"><h3 className="text-lg font-bold">{invitation.clientName}</h3><p className="mt-1 break-all text-sm text-black/55">{invitation.clientEmail}</p></div><span className={`shrink-0 rounded-full px-3 py-1 text-xs font-bold ${invitation.status === "BOOKED" ? "bg-emerald-50 text-emerald-800" : invitation.status === "OPEN" ? "bg-[#FFF0F4] text-[#8B2040]" : "bg-slate-100 text-slate-600"}`}>{invitation.status === "BOOKED" ? "Booked" : invitation.status === "OPEN" ? "Open" : "Revoked"}</span></div>
           {invitation.bookedSlotStartsAt && <p className="mt-3 text-sm font-semibold text-emerald-800">{formatMeetingDay(new Date(invitation.bookedSlotStartsAt))} · {formatMeetingTime(new Date(invitation.bookedSlotStartsAt))}</p>}
+          {invitation.invitationEmailSentAt && <p className="mt-2 text-xs font-medium text-black/50">Invitation email sent {new Intl.DateTimeFormat("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "Europe/London" }).format(new Date(invitation.invitationEmailSentAt))}</p>}
           <div className="mt-5 flex flex-wrap items-center gap-2 border-t border-black/10 pt-4">
             {invitation.status === "OPEN" && invitation.url && <button type="button" onClick={() => copyLink(invitation.url || "", invitation.id)} className="inline-flex min-h-10 items-center gap-2 rounded-full border border-black/15 px-4 text-sm font-semibold hover:border-[#A52249]">{copiedId === invitation.id ? <Check className="h-4 w-4" /> : <Clipboard className="h-4 w-4" />}{copiedId === invitation.id ? "Copied" : "Copy private link"}</button>}
+            {invitation.status === "OPEN" && <button type="button" disabled={!!sendingEmailId} onClick={() => sendInvitationEmail(invitation.id, invitation.clientName)} className="inline-flex min-h-10 items-center gap-2 rounded-full bg-[#A52249] px-4 text-sm font-semibold text-white transition hover:bg-[#7E1736] disabled:cursor-wait disabled:opacity-55">{sendingEmailId === invitation.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Mail className="h-4 w-4" />}{sendingEmailId === invitation.id ? "Sending…" : invitation.invitationEmailSentAt ? "Resend email" : "Send email"}</button>}
             {invitation.status === "OPEN" && (armedId === invitation.id ? <><button type="button" disabled={!!revokingId} onClick={() => revokeInvitation(invitation.id)} className="min-h-10 rounded-full bg-red-700 px-4 text-sm font-semibold text-white disabled:opacity-50">{revokingId === invitation.id ? "Revoking…" : "Confirm revoke"}</button><button type="button" onClick={() => setArmedId("")} className="min-h-10 rounded-full px-3 text-sm font-semibold text-black/55">Cancel</button></> : <button type="button" onClick={() => setArmedId(invitation.id)} className="min-h-10 rounded-full px-3 text-sm font-semibold text-red-700 hover:bg-red-50">Revoke link</button>)}
           </div>
         </article>)}

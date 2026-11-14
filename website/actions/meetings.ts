@@ -6,6 +6,7 @@ import { getResend } from "@/lib/resend";
 import { getMeetingInvitationFromToken, getMeetingInvitationUrl } from "@/lib/meetings/access";
 import { prisma } from "@/prisma/prisma";
 import EventEmail from "@/emails/event-email";
+import MeetingInvitationEmail from "@/emails/meeting-invitation";
 import { Prisma } from "@prisma/client";
 import { ensureMeetingIndexes, syncMeetingAvailabilitySlots } from "@/lib/meetings/schedule";
 import {
@@ -76,7 +77,81 @@ export async function createMeetingInvitation(input: z.infer<typeof invitationSc
     },
   });
   revalidatePath("/me/meetings");
-  return { success: true as const, url: getMeetingInvitationUrl(invitation.id, invitation.accessVersion) };
+  return { success: true as const, id: invitation.id, url: getMeetingInvitationUrl(invitation.id, invitation.accessVersion) };
+}
+
+export async function sendMeetingInvitationEmail(invitationId: string) {
+  await requireAdmin();
+  if (!slotIdPattern.test(invitationId)) {
+    return { success: false as const, message: "This invitation could not be found." };
+  }
+
+  const invitation = await prisma.meetingInvitation.findUnique({
+    where: { id: invitationId },
+    select: {
+      id: true,
+      clientName: true,
+      clientEmail: true,
+      status: true,
+      accessVersion: true,
+      invitationEmailSentAt: true,
+    },
+  });
+  if (!invitation || invitation.status !== "OPEN") {
+    return { success: false as const, message: "This invitation is no longer open." };
+  }
+
+  let url: string;
+  try {
+    url = getMeetingInvitationUrl(invitation.id, invitation.accessVersion);
+  } catch {
+    return { success: false as const, message: "Private booking links are not configured for this environment." };
+  }
+
+  const from = process.env.RESEND_FROM_EMAIL || "WeTrends <events@wetrends.co.uk>";
+  const replyTo = process.env.RESEND_REPLY_TO_EMAIL || "events@wetrends.co.uk";
+  const idempotencyKey = `meeting-invite-${invitation.id}-${invitation.accessVersion}-${invitation.invitationEmailSentAt?.getTime() ?? "first"}`;
+  try {
+    const result = await getResend().emails.send({
+      from,
+      to: invitation.clientEmail,
+      replyTo,
+      subject: "Choose a time for your WeTrends call",
+      text: `Hi ${invitation.clientName},\n\nWe are looking forward to our call. Choose the day and time that works for you using your private link:\n${url}\n\nTimes are shown in UK time. If you need help, reply to this email.`,
+      react: MeetingInvitationEmail({ clientName: invitation.clientName, bookingUrl: url }),
+    }, { idempotencyKey });
+    if (result.error) throw new Error(result.error.message);
+  } catch (error) {
+    console.error("[sendMeetingInvitationEmail] provider send failed", error instanceof Error ? error.name : "unknown");
+    return { success: false as const, message: "The email could not be sent. Check the invitation and try again." };
+  }
+
+  const sentAt = new Date();
+  try {
+    const recorded = await prisma.meetingInvitation.updateMany({
+      where: {
+        id: invitation.id,
+        status: "OPEN",
+        accessVersion: invitation.accessVersion,
+        invitationEmailSentAt: invitation.invitationEmailSentAt,
+      },
+      data: { invitationEmailSentAt: sentAt },
+    });
+    if (!recorded.count) {
+      const current = await prisma.meetingInvitation.findUnique({
+        where: { id: invitation.id },
+        select: { status: true, accessVersion: true, invitationEmailSentAt: true },
+      });
+      if (!current || current.status !== "OPEN" || current.accessVersion !== invitation.accessVersion || !current.invitationEmailSentAt) {
+        return { success: false as const, message: "The invitation changed while sending. Refresh the page and check its status." };
+      }
+    }
+    revalidatePath("/me/meetings");
+    return { success: true as const, sentAt: sentAt.toISOString() };
+  } catch (error) {
+    console.error("[sendMeetingInvitationEmail] send status update failed", error instanceof Error ? error.name : "unknown");
+    return { success: false as const, message: "The email was accepted, but its send status could not be saved. Refresh and check before retrying." };
+  }
 }
 
 export async function saveMeetingAvailability(input: z.infer<typeof weeklyHoursSchema>) {
